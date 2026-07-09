@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Glow Book 💌 — Glass Closet</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Anton&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;700&family=Caveat:wght@500;600&display=swap');
+
+  :root { --accent: #d49bb1; }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0; padding: 0; min-height: 100%;
+    background: #100d0a; color: #f7f4f0;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  body {
+    display: flex; align-items: center; justify-content: center;
+    padding: 1.5rem;
+  }
+
+  #glow-panel {
+    background: #1a1414; border-radius: 14px; padding: 1.6rem 1.3rem 1.4rem;
+    width: 100%; max-width: 440px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5); position: relative;
+  }
+
+  #glow-back {
+    display: inline-flex; align-items: center; gap: 0.3rem;
+    font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 0.65rem;
+    text-transform: uppercase; letter-spacing: 0.08em; color: #9a9390;
+    text-decoration: none; margin-bottom: 1rem;
+  }
+  #glow-back:hover { color: var(--accent); }
+
+  #glow-eyebrow {
+    font-family: 'Anton', sans-serif; text-transform: uppercase; letter-spacing: 0.02em;
+    font-size: 1.6rem; color: #f7f4f0;
+  }
+  #glow-sub {
+    font-family: 'Playfair Display', serif; font-style: italic; font-size: 0.9rem;
+    color: var(--accent); margin-bottom: 1.2rem;
+  }
+
+  #glow-tabs { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+  .glow-tab {
+    flex: 1; font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 0.65rem;
+    text-transform: uppercase; letter-spacing: 0.08em; padding: 0.6rem;
+    background: rgba(255,255,255,0.06); color: #9a9390; border: none;
+    border-radius: 6px; cursor: pointer; transition: background 0.15s, color 0.15s;
+  }
+  .glow-tab.active { background: var(--accent); color: #1a1414; }
+
+  #glow-name, #glow-search {
+    width: 100%; background: #100d0a; border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 8px; color: #f7f4f0; font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem; padding: 0.7rem 0.85rem; outline: none;
+    transition: border-color 0.15s; margin-bottom: 0.6rem;
+  }
+  #glow-message {
+    width: 100%; background: #100d0a; border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 8px; color: #f7f4f0; font-family: 'Caveat', cursive;
+    font-size: 1.2rem; padding: 0.75rem 0.85rem; resize: vertical;
+    outline: none; transition: border-color 0.15s; margin-bottom: 0.6rem;
+  }
+  #glow-name:focus, #glow-search:focus, #glow-message:focus { border-color: var(--accent); }
+
+  #glow-submit-btn {
+    width: 100%; font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 0.72rem;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    background: var(--accent); color: #1a1414; border: none;
+    padding: 0.7rem; border-radius: 6px; cursor: pointer; transition: opacity 0.15s;
+  }
+  #glow-submit-btn:disabled { opacity: 0.6; cursor: default; }
+
+  #glow-status {
+    font-family: 'DM Sans', sans-serif; font-size: 0.7rem; margin-top: 0.6rem;
+    text-align: center; min-height: 1em;
+  }
+  #glow-status.success { color: #8fd19e; }
+  #glow-status.error { color: #e08080; }
+
+  #glow-feed { display: flex; flex-direction: column; gap: 0.7rem; margin-top: 0.2rem; max-height: 55vh; overflow-y: auto; }
+  .glow-card {
+    background: linear-gradient(135deg, #2a1a20 0%, #1a1414 70%);
+    border: 1px solid rgba(212,155,177,0.25); border-radius: 10px;
+    padding: 0.85rem 0.95rem; position: relative;
+  }
+  .glow-card-name {
+    font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 0.64rem;
+    text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent);
+    margin-bottom: 0.3rem;
+  }
+  .glow-card-msg {
+    font-family: 'Caveat', cursive; font-size: 1.25rem; line-height: 1.3; color: #f0ede8;
+  }
+  #glow-empty {
+    text-align: center; font-family: 'DM Sans', sans-serif; font-size: 0.72rem;
+    color: #6a6460; padding: 1.5rem 0;
+  }
+</style>
+</head>
+<body>
+
+<div id="glow-panel">
+  <a id="glow-back" href="index.html">&larr; Back to Glass Closet</a>
+  <div id="glow-eyebrow">The Glow Book 💌</div>
+  <div id="glow-sub">Compliments only — no burns.</div>
+
+  <div id="glow-tabs">
+    <button class="glow-tab active" data-tab="write" onclick="setGlowTab('write')">Write one</button>
+    <button class="glow-tab" data-tab="read" onclick="setGlowTab('read')">Read the glow</button>
+  </div>
+
+  <div id="glow-write">
+    <input id="glow-name" maxlength="40" placeholder="Who's it for?">
+    <textarea id="glow-message" maxlength="240" rows="4" placeholder="Say something nice..."></textarea>
+    <button id="glow-submit-btn" onclick="submitGlow()">Send it 💌</button>
+    <div id="glow-status"></div>
+  </div>
+
+  <div id="glow-read" style="display:none">
+    <input id="glow-search" placeholder="Search a name...">
+    <div id="glow-feed"></div>
+  </div>
+</div>
+
+<!-- ── THE GLOW BOOK — live synced compliments board ── -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getDatabase, ref, push, onValue, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+  // Same Firebase project as the Glass Closet app — keep in sync with index.html
+  const firebaseConfig = {
+    apiKey: "AIzaSyABrfzps49T4yKj0IMMmgYO1_qL2JObP_U",
+    authDomain: "compl-9fc28.firebaseapp.com",
+    databaseURL: "https://compl-9fc28-default-rtdb.firebaseio.com",
+    projectId: "compl-9fc28",
+    storageBucket: "compl-9fc28.firebasestorage.app",
+    messagingSenderId: "221106364265",
+    appId: "1:221106364265:web:07ef6fe3f71f2ef733e7f8"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+  const glowQuery = query(ref(db, "glowbook"), limitToLast(300));
+
+  // Best-effort keyword filter. Not foolproof — it just blocks the most obvious stuff
+  // client-side so people get a nudge before something ugly ever gets synced live.
+  const BLOCKED_WORDS = ["fuck","shit","bitch","slut","whore","ugly","fat","stupid","idiot","kill yourself","kys","hate you"];
+  function containsBlockedWord(text) {
+    const lower = text.toLowerCase();
+    return BLOCKED_WORDS.some(w => lower.includes(w));
+  }
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  window.setGlowTab = function(tab) {
+    document.querySelectorAll('.glow-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+    document.getElementById('glow-write').style.display = tab === 'write' ? '' : 'none';
+    document.getElementById('glow-read').style.display = tab === 'read' ? '' : 'none';
+  };
+
+  window.submitGlow = function() {
+    const nameEl = document.getElementById('glow-name');
+    const msgEl = document.getElementById('glow-message');
+    const statusEl = document.getElementById('glow-status');
+    const btn = document.getElementById('glow-submit-btn');
+    const name = nameEl.value.trim();
+    const message = msgEl.value.trim();
+
+    statusEl.className = '';
+    if (!name || !message) { statusEl.textContent = "Add a name and a compliment first!"; statusEl.classList.add('error'); return; }
+    if (containsBlockedWord(name) || containsBlockedWord(message)) {
+      statusEl.textContent = "Keep it kind — try rewording that 💗";
+      statusEl.classList.add('error');
+      return;
+    }
+
+    btn.disabled = true;
+    push(ref(db, "glowbook"), { name, message, ts: Date.now() })
+      .then(() => {
+        statusEl.textContent = "Sent! 💌";
+        statusEl.classList.add('success');
+        nameEl.value = ''; msgEl.value = '';
+      })
+      .catch(err => {
+        statusEl.textContent = "Couldn't send — try again.";
+        statusEl.classList.add('error');
+        console.warn('[glow book] push failed:', err);
+      })
+      .finally(() => { btn.disabled = false; });
+  };
+
+  let glowEntries = [];
+  function renderGlowFeed() {
+    const feed = document.getElementById('glow-feed');
+    if (!feed) return;
+    const q = (document.getElementById('glow-search').value || '').toLowerCase();
+    const filtered = q ? glowEntries.filter(e => e.name.toLowerCase().includes(q)) : glowEntries;
+    feed.innerHTML = filtered.length
+      ? filtered.map(e => `
+        <div class="glow-card">
+          <div class="glow-card-name">For ${escapeHtml(e.name)}</div>
+          <div class="glow-card-msg">${escapeHtml(e.message)}</div>
+        </div>`).join('')
+      : `<div id="glow-empty">No compliments yet — be the first 💌</div>`;
+  }
+
+  onValue(glowQuery, (snap) => {
+    const val = snap.val() || {};
+    glowEntries = Object.values(val).sort((a, b) => b.ts - a.ts);
+    renderGlowFeed();
+  }, (err) => console.warn('[glow book] live sync error — check your Firebase config and database rules:', err));
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const searchEl = document.getElementById('glow-search');
+    if (searchEl) searchEl.addEventListener('input', renderGlowFeed);
+  });
+</script>
+</body>
+</html>
