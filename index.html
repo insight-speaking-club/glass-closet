@@ -107,27 +107,17 @@
     display: flex; justify-content: flex-end; align-items: center; gap: 0.5rem;
     margin-top: 0.45rem;
   }
-  #glow-pill {
-    display: inline-block; text-decoration: none;
-    font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 0.6rem;
-    text-transform: uppercase; letter-spacing: 0.07em;
-    background: rgba(26,20,20,0.14); color: #7a3550;
-    border: none; padding: 0.35rem 0.65rem; border-radius: 999px;
-    cursor: pointer; transition: background 0.15s, transform 0.1s;
-    white-space: nowrap; flex-shrink: 0;
-  }
-  #glow-pill:active { transform: scale(0.95); background: rgba(26,20,20,0.24); }
   #topbar-icon-group { display: flex; gap: 0.5rem; }
-  #lookbook-btn, #shake-btn, #request-btn, #mission-btn {
+  #lookbook-btn, #glow-btn, #request-btn, #mission-btn {
     width: 32px; height: 32px; border-radius: 50%;
     background: rgba(26,20,20,0.14); border: none;
-    color: rgba(26,20,20,0.75);
+    color: rgba(26,20,20,0.75); text-decoration: none;
     display: flex; align-items: center; justify-content: center;
     cursor: pointer; transition: background 0.15s, transform 0.1s;
     position: relative;
   }
-  #lookbook-btn svg, #shake-btn svg, #request-btn svg, #mission-btn svg { width: 16px; height: 16px; }
-  #lookbook-btn:active, #shake-btn:active, #request-btn:active, #mission-btn:active { transform: scale(0.9); background: rgba(26,20,20,0.24); }
+  #lookbook-btn svg, #glow-btn svg, #request-btn svg, #mission-btn svg { width: 16px; height: 16px; }
+  #lookbook-btn:active, #glow-btn:active, #request-btn:active, #mission-btn:active { transform: scale(0.9); background: rgba(26,20,20,0.24); }
 
   #mission-btn-dot {
     position: absolute; top: -2px; right: -2px;
@@ -753,19 +743,15 @@
           <path d="M20 5.5C20 4.67 19.33 4 18.5 4H13v16h5.5c.83 0 1.5-.67 1.5-1.5V5.5Z"></path>
         </svg>
       </button>
-      <button id="shake-btn" onclick="enableShakeDetection(); triggerRandomFit();" aria-label="Shake for a fit" title="Shake for a fit">
+      <a id="glow-btn" href="glow-book.html" aria-label="The Glow Book" title="The Glow Book">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M4 6h3.5c1.5 0 2.4 1 3.2 2.2L15 16.8c.8 1.2 1.7 2.2 3.2 2.2H21"></path>
-          <path d="M18 4l3 3-3 3"></path>
-          <path d="M4 18h3.5c1.5 0 2.4-1 3.2-2.2l.8-1.2"></path>
-          <path d="M18 20l3-3-3-3"></path>
+          <path d="M12 20.5s-7.5-4.6-9.8-9.1C.6 8 2 4.8 5.2 4.1c2-.4 3.9.5 4.8 2.2.9-1.7 2.8-2.6 4.8-2.2 3.2.7 4.6 3.9 3 7.3-2.3 4.5-9.8 9.1-9.8 9.1Z"></path>
         </svg>
-      </button>
+      </a>
     </div>
   </div>
   <div id="topbar-row2">
     <span id="topbar-gossip-link" onclick="spillTea()">See latest gossip on Sasha</span>
-    <a id="glow-pill" href="glow-book.html">Leave someone a compliment 💌</a>
   </div>
 </div>
 
@@ -2335,102 +2321,6 @@ function setupTransforms(el, spin, rotateHandle, resizeHandle, state, uid) {
   el.addEventListener('touchmove', e => { if (!mode) return; e.preventDefault(); const t=e.touches[0]; onMove(t.clientX,t.clientY); }, {passive:false});
   el.addEventListener('touchend', onEnd); window.addEventListener('mousemove', e => { if (mode) onMove(e.clientX,e.clientY); });
   window.addEventListener('mouseup', () => { if (mode) onEnd(); });
-}
-
-function clearCanvasOutfit() {
-  Object.keys(onCanvas).forEach(uid => removeFromCanvas(uid));
-}
-
-function pickRandomFrom(catIds) {
-  const pool = [];
-  catIds.forEach(id => {
-    const cat = categories.find(c => c.id === id);
-    if (cat) cat.items.forEach(item => pool.push({ item, catId: cat.id }));
-  });
-  if (pool.length === 0) return null;
-  return pool[Math.floor(Math.random() * pool.length)];
-}
-
-function triggerRandomFit() {
-  clearCanvasOutfit();
-
-  const picks = [];
-  const wantsDress = Math.random() < 0.4;
-
-  if (wantsDress) {
-    const dress = pickRandomFrom(['dresses']);
-    if (dress) picks.push(dress);
-  } else {
-    const top = pickRandomFrom(['tops-basic', 'tops-shirts', 'tops-knitwear', 'tops-statement']);
-    const bottom = pickRandomFrom(['bottoms-trousers', 'bottoms-jeans', 'bottoms-skirts']);
-    if (top) picks.push(top);
-    if (bottom) picks.push(bottom);
-  }
-
-  if (Math.random() < 0.75) {
-    const shoes = pickRandomFrom(['shoes-flat', 'shoes-heels']);
-    if (shoes) picks.push(shoes);
-  }
-
-  // sprinkle 1-3 accessories for flair
-  const accessoryCats = ['jackets', 'hats', 'neck', 'bags', 'glasses', 'belts', 'gloves', 'jewellery', 'scarves'];
-  const shuffled = [...accessoryCats].sort(() => Math.random() - 0.5);
-  const numAccessories = 1 + Math.floor(Math.random() * 3);
-  shuffled.slice(0, numAccessories).forEach(catId => {
-    const pick = pickRandomFrom([catId]);
-    if (pick) picks.push(pick);
-  });
-
-  // rare surprise: a fully iconic look instead
-  if (Math.random() < 0.06) {
-    picks.length = 0;
-    const iconicCats = categories.filter(c => c.id.startsWith('iconic-')).map(c => c.id);
-    const p1 = pickRandomFrom(iconicCats);
-    if (p1) picks.push(p1);
-  }
-
-  bulkAddMode = true;
-  bulkAddToastShown = false;
-  picks.forEach(({ item, catId }) => {
-    const uid = catId + '_' + item.name.replace(/\s+/g, '_');
-    addToCanvas(uid, item, catId);
-  });
-  bulkAddMode = false;
-
-  playShutterSound();
-}
-
-// ── SHAKE GESTURE ──
-let shakePermissionGranted = false;
-let lastShakeTime = 0;
-const SHAKE_THRESHOLD = 18; // m/s^2 delta
-const SHAKE_COOLDOWN_MS = 1500;
-
-function handleDeviceMotion(e) {
-  const acc = e.accelerationIncludingGravity;
-  if (!acc) return;
-  const magnitude = Math.abs(acc.x || 0) + Math.abs(acc.y || 0) + Math.abs(acc.z || 0);
-  const now = Date.now();
-  if (magnitude > SHAKE_THRESHOLD * 2.2 && now - lastShakeTime > SHAKE_COOLDOWN_MS) {
-    lastShakeTime = now;
-    triggerRandomFit();
-  }
-}
-
-function enableShakeDetection() {
-  if (shakePermissionGranted) return;
-  if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
-    // iOS 13+ requires an explicit user-gesture permission request
-    DeviceMotionEvent.requestPermission().then(state => {
-      if (state === 'granted') {
-        window.addEventListener('devicemotion', handleDeviceMotion);
-        shakePermissionGranted = true;
-      }
-    }).catch(() => {});
-  } else if (typeof DeviceMotionEvent !== 'undefined') {
-    window.addEventListener('devicemotion', handleDeviceMotion);
-    shakePermissionGranted = true;
-  }
 }
 
 function toggleDrawer() {

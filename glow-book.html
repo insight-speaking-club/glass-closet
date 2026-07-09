@@ -4,136 +4,359 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The Glow Book 💌 — Glass Closet</title>
+<meta name="description" content="Leave someone a compliment — no burns, just glow.">
+<meta property="og:title" content="The Glow Book 💌">
+<meta property="og:description" content="Leave someone a compliment — no burns, just glow.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💌</text></svg>">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Anton&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;700&family=Caveat:wght@500;600&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Anton&family=Playfair+Display:ital,wght@0,700;1,700&family=DM+Sans:wght@400;500;700;800&family=Caveat:wght@500;600&family=Permanent+Marker&display=swap');
 
-  :root { --accent: #d49bb1; }
+  :root {
+    --ink: #1c1714;
+    --paper: #f7ecd9;
+    --paper-line: rgba(120,74,90,0.16);
+    --paper-margin: rgba(168,69,109,0.35);
+    --glow-pink: #eb9dbd;
+    --glow-gold: #e3ae4a;
+    --glow-deep: #a8456d;
+  }
 
   * { box-sizing: border-box; }
 
   html, body {
     margin: 0; padding: 0; min-height: 100%;
-    background: #100d0a; color: #f7f4f0;
     font-family: 'DM Sans', sans-serif;
   }
 
   body {
+    background-color: var(--ink);
+    background-image:
+      radial-gradient(circle at 18% 24%, rgba(255,255,255,0.09) 0%, transparent 24%),
+      radial-gradient(circle at 78% 12%, rgba(255,255,255,0.06) 0%, transparent 30%),
+      radial-gradient(circle at 38% 68%, rgba(255,255,255,0.08) 0%, transparent 28%),
+      radial-gradient(circle at 88% 78%, rgba(255,255,255,0.05) 0%, transparent 26%),
+      radial-gradient(circle at 8% 85%, rgba(255,255,255,0.05) 0%, transparent 22%),
+      repeating-linear-gradient(118deg, rgba(255,255,255,0.025) 0px, rgba(255,255,255,0.025) 2px, transparent 2px, transparent 7px);
+    color: var(--ink);
     display: flex; align-items: center; justify-content: center;
-    padding: 1.5rem;
+    padding: 2rem 1.2rem;
   }
 
-  #glow-panel {
-    background: #1a1414; border-radius: 14px; padding: 1.6rem 1.3rem 1.4rem;
+  @media (prefers-reduced-motion: no-preference) {
+    .notebook { animation: nb-settle 0.7s cubic-bezier(.2,.8,.3,1) both; }
+  }
+  @keyframes nb-settle {
+    0% { opacity: 0; transform: rotate(-6deg) scale(0.94) translateY(14px); }
+    100% { opacity: 1; transform: rotate(-1deg) scale(1) translateY(0); }
+  }
+
+  .notebook {
     width: 100%; max-width: 440px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.5); position: relative;
+    transform: rotate(-1deg);
   }
 
-  #glow-back {
+  /* ── back tab ── */
+  .nb-back {
     display: inline-flex; align-items: center; gap: 0.3rem;
     font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 0.65rem;
-    text-transform: uppercase; letter-spacing: 0.08em; color: #9a9390;
-    text-decoration: none; margin-bottom: 1rem;
+    text-transform: uppercase; letter-spacing: 0.08em; color: var(--paper);
+    text-decoration: none; margin-bottom: 0.7rem; margin-left: 0.4rem;
+    background: rgba(247,236,217,0.12); padding: 0.3rem 0.7rem 0.3rem 0.5rem;
+    border-radius: 3px 3px 0 0; opacity: 0.85; transition: opacity 0.15s, background 0.15s;
   }
-  #glow-back:hover { color: var(--accent); }
+  .nb-back:hover { opacity: 1; background: rgba(247,236,217,0.2); }
+
+  /* ── cover: marbled composition-notebook front ── */
+  .nb-cover {
+    position: relative;
+    background:
+      radial-gradient(circle at 15% 20%, rgba(255,255,255,0.14) 0%, transparent 22%),
+      radial-gradient(circle at 82% 15%, rgba(255,255,255,0.1) 0%, transparent 26%),
+      radial-gradient(circle at 30% 75%, rgba(255,255,255,0.12) 0%, transparent 24%),
+      radial-gradient(circle at 90% 70%, rgba(255,255,255,0.08) 0%, transparent 22%),
+      radial-gradient(circle at 55% 45%, rgba(255,255,255,0.06) 0%, transparent 30%),
+      repeating-linear-gradient(112deg, rgba(255,255,255,0.035) 0px, rgba(255,255,255,0.035) 1.5px, transparent 1.5px, transparent 5px),
+      #100d0c;
+    border-radius: 10px 10px 4px 4px;
+    padding: 2.4rem 1.3rem 1.6rem;
+    box-shadow: 0 14px 34px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(255,255,255,0.04);
+  }
+
+  .nb-tape {
+    position: absolute; width: 62px; height: 22px; opacity: 0.88;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    z-index: 3;
+  }
+  .nb-tape--tl {
+    top: 1.1rem; left: 2.2rem; transform: rotate(-10deg);
+    background: repeating-linear-gradient(45deg, var(--glow-pink) 0 5px, rgba(255,255,255,0.55) 5px 10px);
+  }
+  .nb-tape--tr {
+    top: 1.1rem; right: 2.1rem; transform: rotate(9deg);
+    background: repeating-linear-gradient(45deg, var(--glow-gold) 0 5px, rgba(255,255,255,0.55) 5px 10px);
+  }
+
+  /* ── label / photo frame (the "burn book" label, glow-ified) ── */
+  .nb-frame {
+    position: relative;
+    background: var(--paper);
+    border: 3px solid var(--ink);
+    border-radius: 2px;
+    padding: 0.35rem;
+    aspect-ratio: 5 / 4;
+    transform: rotate(0.8deg);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+    overflow: hidden;
+  }
+  #glow-cover-img {
+    width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 1px;
+  }
+  .nb-cover-fallback {
+    width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+    flex-wrap: wrap; align-content: center; gap: 0 0.15rem; padding: 0.6rem;
+    background:
+      repeating-linear-gradient(rgba(28,23,20,0.05) 0px, rgba(28,23,20,0.05) 1px, transparent 1px, transparent 26px);
+  }
+  .ransom-title { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; row-gap: 0; }
+  .ransom-title .sp { width: 0.5rem; }
+  .rl { display: inline-block; line-height: 1; }
+  .rl-g  { font-family: 'Anton', sans-serif; color: var(--ink); font-size: clamp(1.7rem,9vw,2.3rem); transform: rotate(-7deg) translateY(3px); }
+  .rl-l  { font-family: 'Permanent Marker', cursive; color: var(--glow-deep); font-size: clamp(1.5rem,7.6vw,2rem); transform: rotate(5deg) translateY(-4px); }
+  .rl-o1 { font-family: 'Playfair Display', serif; font-style: italic; font-weight: 700; color: var(--glow-gold); font-size: clamp(1.9rem,9.6vw,2.5rem); transform: rotate(-3deg) translateY(0); }
+  .rl-w  { font-family: 'DM Sans', sans-serif; font-weight: 800; color: var(--ink); font-size: clamp(1.6rem,8vw,2.1rem); transform: rotate(8deg) translateY(4px); }
+  .rl-b  { font-family: 'Permanent Marker', cursive; color: var(--glow-pink); font-size: clamp(1.8rem,9vw,2.4rem); transform: rotate(-6deg) translateY(-3px); }
+  .rl-o2 { font-family: 'Anton', sans-serif; color: var(--ink); font-size: clamp(1.6rem,8vw,2.1rem); transform: rotate(6deg) translateY(3px); }
+  .rl-o3 { font-family: 'Playfair Display', serif; font-style: italic; font-weight: 700; color: var(--glow-gold); font-size: clamp(2rem,10vw,2.6rem); transform: rotate(-4deg) translateY(-2px); }
+  .rl-k  { font-family: 'DM Sans', sans-serif; font-weight: 800; color: var(--glow-deep); font-size: clamp(1.7rem,8.6vw,2.2rem); transform: rotate(7deg) translateY(3px); }
+
+  /* ── sticky note callout ── */
+  .nb-sticky {
+    margin: 1.1rem auto 0; width: fit-content; max-width: 88%;
+    background: var(--glow-gold); color: var(--ink);
+    font-family: 'Caveat', cursive; font-size: 1.15rem; line-height: 1.15;
+    padding: 0.5rem 0.9rem 0.6rem; border-radius: 2px;
+    transform: rotate(-2.5deg);
+    box-shadow: 0 6px 14px rgba(0,0,0,0.35);
+    text-align: center;
+  }
+
+  /* ── torn edge into the pages ── */
+  .nb-torn {
+    height: 14px; margin-top: -1px; position: relative; z-index: 2;
+    background: var(--paper);
+    clip-path: polygon(0% 100%,4% 20%,8% 100%,12% 15%,16% 100%,20% 25%,24% 100%,28% 10%,32% 100%,36% 20%,40% 100%,44% 15%,48% 100%,52% 25%,56% 100%,60% 10%,64% 100%,68% 20%,72% 100%,76% 15%,80% 100%,84% 25%,88% 100%,92% 15%,96% 100%,100% 20%,100% 100%);
+  }
+
+  /* ── pages: ruled cream paper ── */
+  .nb-pages {
+    background: var(--paper);
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 14px 30px rgba(0,0,0,0.4);
+    padding: 1.3rem 1.1rem 1.4rem 2.1rem;
+    position: relative;
+    background-image: repeating-linear-gradient(var(--paper) 0px, var(--paper) 27px, var(--paper-line) 28px);
+    background-position: 0 4px;
+  }
+  .nb-pages::before {
+    content: ''; position: absolute; top: 0; bottom: 0; left: 1.35rem;
+    width: 1.5px; background: var(--paper-margin);
+  }
 
   #glow-eyebrow {
     font-family: 'Anton', sans-serif; text-transform: uppercase; letter-spacing: 0.02em;
-    font-size: 1.6rem; color: #f7f4f0;
+    font-size: 1.3rem; color: var(--ink);
   }
   #glow-sub {
-    font-family: 'Playfair Display', serif; font-style: italic; font-size: 0.9rem;
-    color: var(--accent); margin-bottom: 1.2rem;
+    font-family: 'Caveat', cursive; font-size: 1.05rem; color: var(--glow-deep);
+    margin-bottom: 1rem;
   }
 
-  #glow-tabs { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+  /* ── tabs styled as folder tabs ── */
+  #glow-tabs { display: flex; gap: 0.5rem; margin-bottom: 1.1rem; }
   .glow-tab {
-    flex: 1; font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 0.65rem;
-    text-transform: uppercase; letter-spacing: 0.08em; padding: 0.6rem;
-    background: rgba(255,255,255,0.06); color: #9a9390; border: none;
-    border-radius: 6px; cursor: pointer; transition: background 0.15s, color 0.15s;
+    flex: 1; font-family: 'Permanent Marker', cursive; font-size: 0.82rem;
+    letter-spacing: 0.01em; padding: 0.5rem 0.4rem 0.45rem;
+    background: rgba(28,23,20,0.06); color: #6a5d55; border: none;
+    border-bottom: 3px solid rgba(28,23,20,0.12);
+    border-radius: 5px 5px 0 0; cursor: pointer;
+    transition: background 0.15s, color 0.15s, transform 0.15s;
+    transform: translateY(2px);
   }
-  .glow-tab.active { background: var(--accent); color: #1a1414; }
+  .glow-tab.active {
+    background: var(--glow-pink); color: var(--ink);
+    border-bottom-color: var(--glow-deep);
+    transform: translateY(0) rotate(-0.5deg);
+  }
+  .glow-tab:nth-child(2).active { transform: translateY(0) rotate(0.5deg); }
+
+  /* ── write panel: an index card clipped to the page ── */
+  #glow-write {
+    background: #fffaf0; border: 1px solid rgba(28,23,20,0.1);
+    border-radius: 6px; padding: 1rem 0.9rem 0.85rem;
+    box-shadow: 0 8px 18px rgba(28,23,20,0.12);
+    transform: rotate(0.4deg);
+    position: relative;
+  }
+  #glow-write::before {
+    content: ''; position: absolute; top: -9px; left: 50%; transform: translateX(-50%) rotate(-3deg);
+    width: 26px; height: 14px;
+    background: repeating-linear-gradient(45deg, var(--glow-gold) 0 4px, rgba(255,255,255,0.55) 4px 8px);
+    opacity: 0.9; box-shadow: 0 2px 4px rgba(0,0,0,0.25);
+  }
 
   #glow-name, #glow-search {
-    width: 100%; background: #100d0a; border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 8px; color: #f7f4f0; font-family: 'DM Sans', sans-serif;
-    font-size: 0.85rem; padding: 0.7rem 0.85rem; outline: none;
-    transition: border-color 0.15s; margin-bottom: 0.6rem;
+    width: 100%; background: #fff; border: 1px solid rgba(28,23,20,0.18);
+    border-radius: 6px; color: var(--ink); font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem; padding: 0.6rem 0.75rem; outline: none;
+    transition: border-color 0.15s; margin-bottom: 0.55rem;
   }
   #glow-message {
-    width: 100%; background: #100d0a; border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 8px; color: #f7f4f0; font-family: 'Caveat', cursive;
-    font-size: 1.2rem; padding: 0.75rem 0.85rem; resize: vertical;
-    outline: none; transition: border-color 0.15s; margin-bottom: 0.6rem;
+    width: 100%; background: #fff; border: 1px solid rgba(28,23,20,0.18);
+    border-radius: 6px; color: var(--ink); font-family: 'Caveat', cursive;
+    font-size: 1.25rem; padding: 0.7rem 0.8rem; resize: vertical;
+    outline: none; transition: border-color 0.15s; margin-bottom: 0.4rem;
   }
-  #glow-name:focus, #glow-search:focus, #glow-message:focus { border-color: var(--accent); }
+  #glow-name:focus, #glow-search:focus, #glow-message:focus { border-color: var(--glow-deep); }
+
+  #glow-counter {
+    text-align: right; font-family: 'Caveat', cursive; font-size: 0.85rem;
+    color: #9a8b7f; margin: 0 0 0.5rem;
+  }
+  #glow-counter.near-limit { color: var(--glow-deep); }
 
   #glow-submit-btn {
-    width: 100%; font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 0.72rem;
-    text-transform: uppercase; letter-spacing: 0.1em;
-    background: var(--accent); color: #1a1414; border: none;
-    padding: 0.7rem; border-radius: 6px; cursor: pointer; transition: opacity 0.15s;
+    width: 100%; font-family: 'Permanent Marker', cursive; font-size: 0.95rem;
+    letter-spacing: 0.01em;
+    background: var(--glow-deep); color: var(--paper); border: none;
+    padding: 0.65rem; border-radius: 6px; cursor: pointer;
+    transition: opacity 0.15s, transform 0.15s;
+    box-shadow: 0 4px 0 rgba(0,0,0,0.2);
   }
   #glow-submit-btn:disabled { opacity: 0.6; cursor: default; }
+  #glow-submit-btn.sent { transform: translateY(2px); box-shadow: 0 2px 0 rgba(0,0,0,0.2); }
 
   #glow-status {
-    font-family: 'DM Sans', sans-serif; font-size: 0.7rem; margin-top: 0.6rem;
-    text-align: center; min-height: 1em;
+    font-family: 'Caveat', cursive; font-size: 0.95rem; margin-top: 0.5rem;
+    text-align: center; min-height: 1.2em; color: var(--ink);
   }
-  #glow-status.success { color: #8fd19e; }
-  #glow-status.error { color: #e08080; }
+  #glow-status.success { color: #4f8f5f; }
+  #glow-status.error { color: var(--glow-deep); }
 
-  #glow-feed { display: flex; flex-direction: column; gap: 0.7rem; margin-top: 0.2rem; max-height: 55vh; overflow-y: auto; }
+  @keyframes glow-pop {
+    0% { opacity: 0; transform: translateY(-8px) scale(0.96); }
+    60% { opacity: 1; transform: translateY(1px) scale(1.01); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  @keyframes glow-burst-heart {
+    0% { opacity: 0; transform: translate(-50%, -50%) scale(0.4); }
+    35% { opacity: 1; transform: translate(-50%, -70%) scale(1.15); }
+    100% { opacity: 0; transform: translate(-50%, -110%) scale(1); }
+  }
+  #glow-burst {
+    position: fixed; left: 50%; top: 50%; font-size: 2.4rem;
+    pointer-events: none; z-index: 30; display: none;
+  }
+  #glow-burst.play { display: block; animation: glow-burst-heart 0.9s ease-out; }
+
+  /* ── read feed: taped index cards, grouped by date ── */
+  #glow-read { padding-top: 0.2rem; }
+  #glow-feed { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.7rem; max-height: 52vh; overflow-y: auto; padding: 0.2rem 0.2rem 0.4rem; }
+  .glow-date-heading {
+    display: inline-block; align-self: flex-start;
+    font-family: 'Permanent Marker', cursive; font-size: 0.8rem; color: var(--ink);
+    background: linear-gradient(120deg, transparent 0%, var(--glow-gold) 8%, var(--glow-gold) 92%, transparent 100%);
+    padding: 0.12rem 0.6rem; margin: 0.5rem 0 0.15rem; transform: rotate(-1deg);
+  }
+  .glow-date-group { display: flex; flex-direction: column; gap: 0.65rem; }
   .glow-card {
-    background: linear-gradient(135deg, #2a1a20 0%, #1a1414 70%);
-    border: 1px solid rgba(212,155,177,0.25); border-radius: 10px;
-    padding: 0.85rem 0.95rem; position: relative;
+    background: #fffaf0;
+    border: 1px solid rgba(28,23,20,0.1); border-radius: 6px;
+    padding: 0.75rem 0.85rem; position: relative;
+    box-shadow: 0 6px 14px rgba(28,23,20,0.12);
+    animation: glow-pop 0.35s ease-out;
+  }
+  .glow-date-group .glow-card:nth-child(odd)  { transform: rotate(-0.6deg); }
+  .glow-date-group .glow-card:nth-child(even) { transform: rotate(0.6deg); }
+  .glow-card-top {
+    display: flex; justify-content: space-between; align-items: baseline; gap: 0.5rem;
+    margin-bottom: 0.25rem;
   }
   .glow-card-name {
-    font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 0.64rem;
-    text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent);
-    margin-bottom: 0.3rem;
+    font-family: 'Permanent Marker', cursive; font-size: 0.68rem;
+    letter-spacing: 0.02em; color: var(--glow-deep);
+  }
+  .glow-card-time {
+    font-family: 'DM Sans', sans-serif; font-size: 0.6rem; color: #9a8b7f;
+    white-space: nowrap; flex-shrink: 0;
   }
   .glow-card-msg {
-    font-family: 'Caveat', cursive; font-size: 1.25rem; line-height: 1.3; color: #f0ede8;
+    font-family: 'Caveat', cursive; font-size: 1.2rem; line-height: 1.25; color: var(--ink);
   }
   #glow-empty {
-    text-align: center; font-family: 'DM Sans', sans-serif; font-size: 0.72rem;
-    color: #6a6460; padding: 1.5rem 0;
+    text-align: center; font-family: 'Caveat', cursive; font-size: 1rem;
+    color: #9a8b7f; padding: 1.5rem 0;
   }
 </style>
 </head>
 <body>
 
-<div id="glow-panel">
-  <a id="glow-back" href="index.html">&larr; Back to Glass Closet</a>
-  <div id="glow-eyebrow">The Glow Book 💌</div>
-  <div id="glow-sub">Compliments only — no burns.</div>
+<div class="notebook">
+  <a class="nb-back" href="index.html">&larr; Back to Glass Closet</a>
 
-  <div id="glow-tabs">
-    <button class="glow-tab active" data-tab="write" onclick="setGlowTab('write')">Write one</button>
-    <button class="glow-tab" data-tab="read" onclick="setGlowTab('read')">Read the glow</button>
+  <div class="nb-cover">
+    <div class="nb-tape nb-tape--tl"></div>
+    <div class="nb-tape nb-tape--tr"></div>
+
+    <div class="nb-frame">
+      <!-- Drop a file named glow-book.png next to this page to use it as the cover photo. -->
+      <img id="glow-cover-img" src="glow-book.png" alt="The Glow Book"
+           onerror="this.remove(); document.getElementById('glow-cover-fallback').style.display='flex';">
+      <div id="glow-cover-fallback" class="nb-cover-fallback" style="display:none">
+        <div class="ransom-title">
+          <span class="rl rl-g">G</span><span class="rl rl-l">L</span><span class="rl rl-o1">O</span><span class="rl rl-w">W</span>
+          <span class="sp"></span>
+          <span class="rl rl-b">B</span><span class="rl rl-o2">O</span><span class="rl rl-o3">O</span><span class="rl rl-k">K</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="nb-sticky">like a burn book...<br>but glow instead of burn 💌</div>
   </div>
 
-  <div id="glow-write">
-    <input id="glow-name" maxlength="40" placeholder="Who's it for?">
-    <textarea id="glow-message" maxlength="240" rows="4" placeholder="Say something nice..."></textarea>
-    <button id="glow-submit-btn" onclick="submitGlow()">Send it 💌</button>
-    <div id="glow-status"></div>
-  </div>
+  <div class="nb-torn"></div>
 
-  <div id="glow-read" style="display:none">
-    <input id="glow-search" placeholder="Search a name...">
-    <div id="glow-feed"></div>
+  <div class="nb-pages">
+    <div id="glow-eyebrow">The Glow Book</div>
+    <div id="glow-sub">Compliments only — no burns.</div>
+
+    <div id="glow-tabs">
+      <button class="glow-tab active" data-tab="write" onclick="setGlowTab('write')">write one</button>
+      <button class="glow-tab" data-tab="read" onclick="setGlowTab('read')">read the glow</button>
+    </div>
+
+    <div id="glow-write">
+      <input id="glow-name" maxlength="40" placeholder="Who's it for?">
+      <textarea id="glow-message" maxlength="240" rows="4" placeholder="Say something nice..."></textarea>
+      <div id="glow-counter">240 left</div>
+      <button id="glow-submit-btn" onclick="submitGlow()">send it 💌</button>
+      <div id="glow-status"></div>
+    </div>
+
+    <div id="glow-read" style="display:none">
+      <input id="glow-search" placeholder="Search a name or message...">
+      <div id="glow-feed"></div>
+    </div>
   </div>
 </div>
+
+<div id="glow-burst">💌</div>
 
 <!-- ── THE GLOW BOOK — live synced compliments board ── -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import { getDatabase, ref, push, onValue, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-  // Same Firebase project as the Glass Closet app — keep in sync with index.html
   const firebaseConfig = {
     apiKey: "AIzaSyABrfzps49T4yKj0IMMmgYO1_qL2JObP_U",
     authDomain: "compl-9fc28.firebaseapp.com",
@@ -148,8 +371,6 @@
   const db = getDatabase(app);
   const glowQuery = query(ref(db, "glowbook"), limitToLast(300));
 
-  // Best-effort keyword filter. Not foolproof — it just blocks the most obvious stuff
-  // client-side so people get a nudge before something ugly ever gets synced live.
   const BLOCKED_WORDS = ["fuck","shit","bitch","slut","whore","ugly","fat","stupid","idiot","kill yourself","kys","hate you"];
   function containsBlockedWord(text) {
     const lower = text.toLowerCase();
@@ -159,6 +380,46 @@
     const div = document.createElement('div');
     div.textContent = str;
     return div.innerHTML;
+  }
+
+  const MSG_LIMIT = 240;
+  function updateCounter() {
+    const msgEl = document.getElementById('glow-message');
+    const counterEl = document.getElementById('glow-counter');
+    if (!msgEl || !counterEl) return;
+    const left = MSG_LIMIT - msgEl.value.length;
+    counterEl.textContent = `${left} left`;
+    counterEl.classList.toggle('near-limit', left <= 20);
+  }
+
+  function relativeTime(ts) {
+    const diff = Date.now() - ts;
+    const min = Math.floor(diff / 60000);
+    if (min < 1) return 'just now';
+    if (min < 60) return `${min}m ago`;
+    const hr = Math.floor(min / 60);
+    if (hr < 24) return `${hr}h ago`;
+    const day = Math.floor(hr / 24);
+    if (day < 7) return `${day}d ago`;
+    return new Date(ts).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+  }
+
+  function dateLabel(ts) {
+    const d = new Date(ts);
+    const now = new Date();
+    const startOf = date => new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
+    const diffDays = Math.round((startOf(now) - startOf(d)) / 86400000);
+    if (diffDays === 0) return 'Today';
+    if (diffDays === 1) return 'Yesterday';
+    if (diffDays < 7) return d.toLocaleDateString(undefined, { weekday: 'long' });
+    return d.toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: d.getFullYear() !== now.getFullYear() ? 'numeric' : undefined });
+  }
+
+  function playBurst() {
+    const burst = document.getElementById('glow-burst');
+    burst.classList.remove('play');
+    void burst.offsetWidth;
+    burst.classList.add('play');
   }
 
   window.setGlowTab = function(tab) {
@@ -189,6 +450,10 @@
         statusEl.textContent = "Sent! 💌";
         statusEl.classList.add('success');
         nameEl.value = ''; msgEl.value = '';
+        updateCounter();
+        btn.classList.add('sent');
+        setTimeout(() => btn.classList.remove('sent'), 200);
+        playBurst();
       })
       .catch(err => {
         statusEl.textContent = "Couldn't send — try again.";
@@ -203,14 +468,39 @@
     const feed = document.getElementById('glow-feed');
     if (!feed) return;
     const q = (document.getElementById('glow-search').value || '').toLowerCase();
-    const filtered = q ? glowEntries.filter(e => e.name.toLowerCase().includes(q)) : glowEntries;
-    feed.innerHTML = filtered.length
-      ? filtered.map(e => `
-        <div class="glow-card">
-          <div class="glow-card-name">For ${escapeHtml(e.name)}</div>
-          <div class="glow-card-msg">${escapeHtml(e.message)}</div>
-        </div>`).join('')
-      : `<div id="glow-empty">No compliments yet — be the first 💌</div>`;
+    const filtered = q
+      ? glowEntries.filter(e => e.name.toLowerCase().includes(q) || e.message.toLowerCase().includes(q))
+      : glowEntries;
+
+    if (!filtered.length) {
+      feed.innerHTML = `<div id="glow-empty">No compliments yet — be the first 💌</div>`;
+      return;
+    }
+
+    const groups = [];
+    let currentLabel = null, currentGroup = null;
+    for (const e of filtered) {
+      const label = dateLabel(e.ts);
+      if (label !== currentLabel) {
+        currentLabel = label;
+        currentGroup = { label, entries: [] };
+        groups.push(currentGroup);
+      }
+      currentGroup.entries.push(e);
+    }
+
+    feed.innerHTML = groups.map(g => `
+      <div class="glow-date-heading">${escapeHtml(g.label)}</div>
+      <div class="glow-date-group">
+        ${g.entries.map(e => `
+          <div class="glow-card">
+            <div class="glow-card-top">
+              <div class="glow-card-name">for ${escapeHtml(e.name)}</div>
+              <div class="glow-card-time">${relativeTime(e.ts)}</div>
+            </div>
+            <div class="glow-card-msg">${escapeHtml(e.message)}</div>
+          </div>`).join('')}
+      </div>`).join('');
   }
 
   onValue(glowQuery, (snap) => {
@@ -222,6 +512,12 @@
   document.addEventListener('DOMContentLoaded', () => {
     const searchEl = document.getElementById('glow-search');
     if (searchEl) searchEl.addEventListener('input', renderGlowFeed);
+
+    const msgEl = document.getElementById('glow-message');
+    if (msgEl) msgEl.addEventListener('input', updateCounter);
+    updateCounter();
+
+    setInterval(renderGlowFeed, 60000);
   });
 </script>
 </body>
