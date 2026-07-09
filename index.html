@@ -1,0 +1,2843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Glass Closet</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#d49bb1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Glass Closet">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Anton&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;700&family=Caveat:wght@500;600&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  
+  :root {
+    --bg: #f7f4f0;
+    --ink: #1a1612;
+    --muted: #9a9390;
+    --rail: #e8e4df;
+    --drawer-bg: #201319;
+    --drawer-border: #3a3530;
+    --drawer-muted: #6a6460;
+    --drawer-active: #f0ede8;
+    
+    /* ── THANK U, NEXT DUSTY PINK ── */
+    --accent: #d49bb1; 
+    --tag-bg: rgba(212, 155, 177, 0.15);
+  }
+
+  html, body { height: 100%; }
+  body {
+    background: var(--bg);
+    font-family: 'DM Sans', sans-serif;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* ── GLASS SHATTER OVERLAY ── */
+  #mirror-canvas {
+    position: fixed; inset: 0; z-index: 99999;
+    width: 100%; height: 100%;
+    pointer-events: auto;
+    backdrop-filter: blur(10px) brightness(1.1);
+    -webkit-backdrop-filter: blur(10px) brightness(1.1);
+  }
+
+  #tap-overlay {
+    position: fixed; inset: 0; z-index: 100000;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(10, 8, 6, 0.35);
+    color: #fff; font-family: 'DM Sans', sans-serif; font-weight: 500;
+    font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.2em;
+    cursor: pointer; transition: opacity 0.4s ease;
+  }
+
+  /* ── TOP BAR ── */
+  #topbar {
+    display: flex; flex-direction: column;
+    padding: 0.85rem 1.2rem 0.7rem;
+    /* Muted dusty pink gradient */
+    background: linear-gradient(135deg, #edc3cf 0%, #d49bb1 55%, #bb7f97 100%);
+    border-bottom: 1px solid rgba(0,0,0,0.08); flex-shrink: 0; z-index: 10000;
+    position: relative;
+  }
+  #topbar-row1 { display: flex; align-items: center; justify-content: space-between; }
+
+  #topbar-row2 { margin-top: 0.4rem; }
+  #topbar-gossip-link {
+    font-family: 'DM Sans', sans-serif; font-weight: 500; font-size: 0.62rem;
+    color: rgba(26,20,20,0.55); text-decoration: underline; text-underline-offset: 3px;
+    cursor: pointer; width: fit-content; letter-spacing: 0.01em;
+  }
+  #topbar-gossip-link:hover { color: rgba(26,20,20,0.8); }
+
+  #topbar-title-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .kiss-print {
+    width: 30px;
+    height: auto;
+    position: relative;
+    top: -4px;
+    transform: rotate(-8deg);
+    opacity: 0.95;
+    pointer-events: none;
+    flex-shrink: 0;
+  }
+
+  #verdict-btn {
+    font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 0.68rem;
+    text-transform: uppercase; letter-spacing: 0.12em; background: #1a1414;
+    color: #fff; border: none; padding: 0.5rem 1rem; border-radius: 2px;
+    cursor: pointer; transition: opacity 0.15s;
+    box-shadow: 1px 2px 4px rgba(0,0,0,0.2);
+  }
+  #verdict-btn:hover { opacity: 0.75; }
+
+  #topbar-icon-row {
+    display: flex; justify-content: flex-end; gap: 0.5rem;
+    margin-top: 0.45rem;
+  }
+  #lookbook-btn, #shake-btn, #request-btn {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: rgba(26,20,20,0.14); border: none;
+    color: rgba(26,20,20,0.75);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: background 0.15s, transform 0.1s;
+  }
+  #lookbook-btn svg, #shake-btn svg, #request-btn svg { width: 16px; height: 16px; }
+  #lookbook-btn:active, #shake-btn:active, #request-btn:active { transform: scale(0.9); background: rgba(26,20,20,0.24); }
+
+  /* ── CANVAS ── */
+  #canvas { flex: 1; position: relative; overflow: hidden; background: #ffffff; touch-action: none; transition: height 0.3s ease; }
+  #canvas::before {
+    content: ''; position: absolute; inset: 0; z-index: 0; pointer-events: none;
+    background-image: radial-gradient(rgba(26,22,18,0.05) 1px, transparent 1px);
+    background-size: 3px 3px;
+    opacity: 0.6;
+  }
+  #canvas-empty { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -60%); text-align: center; pointer-events: none; opacity: 0.4; z-index: 1; }
+  #canvas-empty .big-label { font-family: 'Anton', sans-serif; text-transform: uppercase; letter-spacing: 0.02em; font-size: 1.5rem; color: var(--ink); margin-bottom: 0.4rem; }
+  #canvas-empty p { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.18em; color: var(--muted); }
+
+  /* ── BREAKING NEWS TICKER ── */
+  #news-ticker {
+    position: absolute; left: 0; right: 0; bottom: 0; z-index: 5;
+    height: 26px; overflow: hidden;
+    background: #1a1414;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    display: flex; align-items: center;
+  }
+  #news-ticker-track {
+    display: inline-flex; align-items: center; white-space: nowrap;
+    will-change: transform;
+    animation: ticker-scroll 22s linear infinite;
+    font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 0.6rem;
+    letter-spacing: 0.09em; text-transform: uppercase; color: #f0ede8;
+    padding-left: 100%;
+  }
+  #news-ticker-track .ticker-tag {
+    color: var(--accent); margin-right: 0.5rem; flex-shrink: 0;
+  }
+  #news-ticker-track .ticker-sep { margin: 0 1.8rem; opacity: 0.3; flex-shrink: 0; }
+  @keyframes ticker-scroll {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-100%); }
+  }
+
+  /* ── TABLOID HEADLINE CLIPPINGS (decorative, thank u next moodboard nod) ── */
+  .headline-clip {
+    position: absolute; white-space: nowrap; color: var(--ink);
+    background: rgba(255,255,255,0.7); padding: 2px 8px; border: 1px solid rgba(26,22,18,0.15);
+  }
+  .clip-1 { font-family: 'Anton', sans-serif; text-transform: uppercase; font-size: 0.6rem; letter-spacing: 0.05em; top: -46px; left: -92px; transform: rotate(-7deg); }
+  .clip-2 { font-family: 'Playfair Display', serif; font-style: italic; font-size: 0.85rem; top: -14px; right: -104px; transform: rotate(5deg); background: none; border: none; color: var(--muted); }
+  .clip-3 { font-family: 'Anton', sans-serif; text-transform: uppercase; font-size: 0.55rem; letter-spacing: 0.08em; bottom: -38px; left: -58px; transform: rotate(4deg); background: var(--accent); color: #fff; border: none; border-radius: 2px; }
+
+  /* ── GLITCH EFFECT (nod to the distorted TMZ clipping) ── */
+  .glitch { position: relative; display: inline-block; }
+  .glitch::before, .glitch::after {
+    content: attr(data-text); position: absolute; left: 0; top: 0; width: 100%; height: 100%;
+    overflow: hidden; background: inherit;
+  }
+  .glitch::before {
+    color: #ff2d6b; left: 2px; clip-path: inset(0 0 0 0);
+    animation: glitch-1 2.6s infinite linear alternate-reverse;
+  }
+  .glitch::after {
+    color: #4de8ff; left: -2px; clip-path: inset(0 0 0 0);
+    animation: glitch-2 3.1s infinite linear alternate-reverse;
+  }
+  @keyframes glitch-1 {
+    0%   { clip-path: inset(10% 0 82% 0); transform: translate(-1px,-1px); }
+    20%  { clip-path: inset(55% 0 12% 0); transform: translate(1px, 1px); }
+    40%  { clip-path: inset(2% 0 88% 0);  transform: translate(-1px, 1px); }
+    60%  { clip-path: inset(70% 0 5% 0);  transform: translate(1px,-1px); }
+    80%  { clip-path: inset(30% 0 50% 0); transform: translate(-1px,0); }
+    100% { clip-path: inset(45% 0 40% 0); transform: translate(1px,1px); }
+  }
+  @keyframes glitch-2 {
+    0%   { clip-path: inset(60% 0 15% 0); transform: translate(1px, 0); }
+    20%  { clip-path: inset(5% 0 80% 0);  transform: translate(-1px,-1px); }
+    40%  { clip-path: inset(35% 0 45% 0); transform: translate(1px, 1px); }
+    60%  { clip-path: inset(15% 0 70% 0); transform: translate(-1px, 0); }
+    80%  { clip-path: inset(75% 0 8% 0);  transform: translate(1px,-1px); }
+    100% { clip-path: inset(20% 0 60% 0); transform: translate(-1px, 1px); }
+  }
+  
+  #imessage-notification {
+    position: fixed; top: 75px; left: 50%;
+    width: min(92vw, 380px);
+    transform: translateX(-50%) translateY(-150%);
+    opacity: 0;
+    background: rgba(255,255,255,0.65);
+    -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px);
+    border-radius: 20px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.25), 0 0 0 0.5px rgba(0,0,0,0.08);
+    padding: 0.7rem 0.85rem;
+    z-index: 10001;
+    transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.35s ease;
+    touch-action: none;
+  }
+  #imessage-notification.visible { transform: translateX(-50%) translateY(0); opacity: 1; }
+  #imessage-notification.dragging { transition: none; }
+  #imessage-notification .message-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.3rem; }
+  #imessage-notification .message-avatar {
+    width: 30px; height: 30px; border-radius: 50%; object-fit: cover;
+    background: #1a1414; flex-shrink: 0;
+  }
+  #imessage-notification .message-info { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+  #imessage-notification .sender-name {
+    font-family: 'DM Sans', sans-serif; font-weight: 700;
+    font-size: 0.7rem; color: #1a1414;
+  }
+  #imessage-notification .message-time {
+    font-family: 'DM Sans', sans-serif; font-weight: 400;
+    font-size: 0.6rem; color: rgba(26,22,18,0.5);
+  }
+  #imessage-notification .message-body {
+    font-family: 'DM Sans', sans-serif; font-weight: 500;
+    font-size: 0.66rem; line-height: 1.35; color: rgba(26,22,18,0.9);
+    display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+  }
+  #imessage-notification .gossip-next-btn {
+    flex-shrink: 0;
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(26,22,18,0.08);
+    color: rgba(26,22,18,0.65);
+    font-size: 1.1rem;
+    line-height: 1;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+  }
+  #imessage-notification .gossip-next-btn:active { transform: scale(0.9); background: rgba(26,22,18,0.16); }
+  #imessage-notification .swipe-indicator {
+    width: 32px; height: 4px; border-radius: 2px; background: rgba(26,22,18,0.15);
+    margin: 0.5rem auto 0;
+  }
+  #imessage-notification.hidden { display: none; }
+
+  /* ── ORIGIN STORY TOAST (styled like the iMessage notification) ── */
+  #origin-toast {
+    position: fixed; top: 75px; left: 50%;
+    width: min(92vw, 380px);
+    transform: translateX(-50%) translateY(-150%);
+    opacity: 0;
+    background: rgba(255,255,255,0.65);
+    -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px);
+    border-radius: 20px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.25), 0 0 0 0.5px rgba(0,0,0,0.08);
+    padding: 0.7rem 0.85rem;
+    z-index: 10001;
+    transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.35s ease;
+    pointer-events: none;
+  }
+  #origin-toast.visible { transform: translateX(-50%) translateY(0); opacity: 1; }
+  #origin-toast .message-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.3rem; }
+  #origin-toast .avatar-initials {
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 0.82rem;
+    color: #fff; flex-shrink: 0;
+  }
+  #origin-toast .message-avatar {
+    width: 30px; height: 30px; border-radius: 50%; object-fit: cover;
+    background: #1a1414; flex-shrink: 0;
+  }
+  #origin-toast .message-info { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+  #origin-toast .sender-name {
+    font-family: 'DM Sans', sans-serif; font-weight: 700;
+    font-size: 0.7rem; color: #1a1414;
+  }
+  #origin-toast .message-time {
+    font-family: 'DM Sans', sans-serif; font-weight: 400;
+    font-size: 0.6rem; color: rgba(26,22,18,0.5);
+  }
+  #origin-toast .message-body {
+    font-family: 'DM Sans', sans-serif; font-weight: 500;
+    font-size: 0.66rem; line-height: 1.35; color: rgba(26,22,18,0.9);
+    display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+  }
+
+  .on-canvas { position: absolute; cursor: grab; user-select: none; touch-action: none; }
+  .on-canvas:active { cursor: grabbing; }
+  .on-canvas .oc-spin { position: relative; width: 100%; height: 100%; transform-origin: 50% 50%; }
+  .on-canvas .oc-visual { position: relative; width: 100%; height: 100%; }
+  .on-canvas .oc-visual img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; pointer-events: none; display: block; }
+  .on-canvas .remove-btn, .on-canvas .resize-handle, .on-canvas .rotate-handle, .on-canvas .rotate-stem { display: none; }
+  .on-canvas.active-item .remove-btn { position: absolute; top: -8px; right: -8px; width: 20px; height: 20px; background: var(--ink); color: var(--bg); border: none; border-radius: 50%; font-size: 0.6rem; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 5; }
+  .on-canvas.active-item .resize-handle { position: absolute; bottom: -9px; right: -9px; width: 20px; height: 20px; background: var(--bg); border: 1.5px solid var(--ink); border-radius: 50%; cursor: nwse-resize; z-index: 6; display: flex; align-items: center; justify-content: center; touch-action: none; }
+  .on-canvas.active-item .resize-handle::before { content: ''; width: 7px; height: 7px; border-right: 1.5px solid var(--ink); border-bottom: 1.5px solid var(--ink); }
+  .on-canvas.active-item .rotate-stem { position: absolute; top: -28px; left: 50%; width: 1.5px; height: 20px; background: var(--muted); transform: translateX(-50%); z-index: 5; display: block; }
+  .on-canvas.active-item .rotate-handle { position: absolute; top: -42px; left: 50%; width: 22px; height: 22px; transform: translateX(-50%); background: var(--bg); border: 1.5px solid var(--ink); border-radius: 50%; cursor: grab; z-index: 6; display: flex; align-items: center; justify-content: center; font-size: 0.62rem; touch-action: none; }
+
+  /* ── SPARKLE BURST (plays when an item is added to canvas) ── */
+  .sparkle-burst { position: absolute; pointer-events: none; z-index: 9000; width: 0; height: 0; }
+  .sparkle-particle {
+    position: absolute; top: 0; left: 0;
+    width: var(--sp-size, 8px); height: var(--sp-size, 8px);
+    background: var(--accent);
+    clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+    opacity: 1;
+    animation: sparkle-fly var(--sp-dur, 0.6s) ease-out forwards;
+  }
+  @keyframes sparkle-fly {
+    0%   { transform: translate(0, 0) scale(0.3) rotate(0deg); opacity: 1; }
+    60%  { opacity: 1; }
+    100% { transform: translate(var(--sp-x), var(--sp-y)) scale(1) rotate(var(--sp-rot)); opacity: 0; }
+  }
+
+  /* Temporarily hide UI clutter during html2canvas capture */
+  .capturing #canvas-empty,
+  .capturing .remove-btn,
+  .capturing .resize-handle,
+  .capturing .rotate-handle,
+  .capturing .rotate-stem {
+    display: none !important;
+  }
+
+  /* ── DRAWER ── */
+  #drawer {
+    flex-shrink: 0; background: var(--drawer-bg); 
+    border-top: 1px solid var(--drawer-border);
+    display: flex; flex-direction: column; 
+    max-height: 55dvh; 
+    box-shadow: 0 -8px 30px rgba(0,0,0,0.5); 
+    z-index: 100;
+    position: relative;
+  }
+  #drawer.collapsed { max-height: 42px; }
+  #drawer-handle { display: flex; align-items: center; justify-content: space-between; padding: 0.65rem 1.2rem; cursor: pointer; flex-shrink: 0; }
+  #drawer-handle span { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.18em; color: #a8a09b; }
+  #drawer-toggle { color: #a8a09b; font-size: 0.75rem; transition: transform 0.2s; }
+  #drawer.collapsed #drawer-toggle { transform: rotate(180deg); }
+
+  #search-row { padding: 0 1rem 0.5rem; flex-shrink: 0; }
+  #search-input { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--drawer-border); border-radius: 3px; padding: 0.4rem 0.8rem; font-family: 'DM Sans', sans-serif; font-size: 0.7rem; color: #ccc; outline: none; }
+  #search-input:focus { border-color: var(--accent); }
+
+  #cat-tabs { display: flex; overflow-x: auto; padding: 0 1rem 0.5rem; gap: 2rem; scrollbar-width: none; flex-shrink: 0; }
+  #cat-tabs::-webkit-scrollbar { display: none; }
+  
+  .super-group { display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 0.5rem; }
+  .super-header { 
+    font-family: 'Anton', sans-serif; 
+    text-transform: uppercase;
+    letter-spacing: 0.015em;
+    color: #f7f4f0; 
+    font-size: 1.15rem; 
+    padding-left: 0.2rem; 
+    border-bottom: 1px solid rgba(212, 155, 177, 0.3);
+    padding-bottom: 0.3rem;
+  }
+  .sub-tabs-row { display: flex; gap: 0.5rem; }
+
+  .cat-tab {
+    flex: 0 0 auto; padding: 0.4rem 0.9rem; border: 1px solid var(--drawer-border);
+    border-radius: 20px; font-size: 0.6rem; text-transform: uppercase;
+    letter-spacing: 0.1em; color: var(--drawer-muted); cursor: pointer;
+    white-space: nowrap; transition: all 0.15s; background: rgba(255,255,255,0.03);
+  }
+  .cat-tab.active {
+    background: linear-gradient(160deg, #f2c9d6 0%, var(--accent) 55%, #bb7f97 100%);
+    color: var(--ink); border-color: var(--accent); font-weight: 700;
+    box-shadow: inset 0 1px 1px rgba(255,255,255,0.6), 0 2px 5px rgba(0,0,0,0.25);
+  }
+
+  #item-grid { display: flex; overflow-x: auto; padding: 0.4rem 1rem 1.5rem; gap: 0.6rem; scrollbar-width: none; align-items: flex-start; flex-shrink: 0; flex-wrap: nowrap; }
+  #item-grid::-webkit-scrollbar { display: none; }
+
+  .grid-item { flex: 0 0 auto; width: 76px; background: #252118; border: 1px solid var(--drawer-border); border-radius: 5px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; cursor: pointer; transition: border-color 0.15s; padding: 6px 4px 6px; position: relative; }
+  .grid-item:active { transform: scale(0.96); }
+  .grid-item.on-board { border-color: var(--accent); background: #2a2418; }
+  .grid-item .gi-visual { position: relative; width: 100%; height: 54px; }
+  .grid-item .gi-visual img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+  .grid-item .gi-name { font-size: 0.44rem; text-transform: uppercase; letter-spacing: 0.05em; color: #ccc; margin-top: 6px; text-align: center; line-height: 1.3; width: 100%; }
+  .grid-item .gi-vibe { font-size: 0.38rem; text-transform: uppercase; letter-spacing: 0.05em; color: #6a6460; margin-top: 2px; text-align: center; line-height: 1.2; width: 100%; }
+  .grid-item.on-board .gi-name, .grid-item.on-board .gi-vibe { color: var(--accent); }
+  .grid-item .gi-color-dot { width: 6px; height: 6px; border-radius: 50%; position: absolute; top: 4px; right: 4px; opacity: 0.7; }
+
+  /* ── THURSDAY DROPS: locked/mystery items ── */
+  .grid-item.locked-item { cursor: pointer; opacity: 0.85; }
+  .gi-visual.gi-locked {
+    display: flex; align-items: center; justify-content: center;
+    border: 1px dashed var(--drawer-muted); border-radius: 4px;
+    background: rgba(255,255,255,0.02);
+  }
+  .gi-locked .lock-mark {
+    font-family: 'Anton', sans-serif; font-size: 1.1rem; color: var(--drawer-muted);
+  }
+  .grid-item .gi-release {
+    font-size: 0.36rem; text-transform: uppercase; letter-spacing: 0.05em;
+    color: var(--accent); margin-top: 2px; text-align: center; line-height: 1.2; width: 100%;
+  }
+
+  /* ── LOOKBOOK ── */
+  #lookbook-overlay {
+    display: none; position: fixed; inset: 0;
+    background: #100d0a; z-index: 20000 !important;
+    flex-direction: column; padding: 1.2rem 1rem 2rem;
+    overflow-y: auto;
+  }
+  #lookbook-overlay.show { display: flex; }
+  #lookbook-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 1.2rem; flex-shrink: 0;
+  }
+  #lookbook-title {
+    font-family: 'Anton', sans-serif; text-transform: uppercase; letter-spacing: 0.04em;
+    font-size: 1.3rem; color: #f7f4f0;
+  }
+  #lookbook-close {
+    width: 34px; height: 34px; border-radius: 50%;
+    background: rgba(255,255,255,0.1); border: none; color: #f7f4f0;
+    font-size: 1rem; cursor: pointer;
+  }
+  #lookbook-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.9rem;
+  }
+  #lookbook-empty {
+    grid-column: 1 / -1; color: #9a9390; font-size: 0.85rem; text-align: center;
+    padding: 3rem 1rem; font-family: 'DM Sans', sans-serif;
+  }
+  .lookbook-card {
+    background: #1a1414; border-radius: 6px; overflow: hidden;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.4);
+    position: relative;
+  }
+  /* object-fit: contain (not cover) so the whole outfit shows — cover was
+     cropping polaroids that didn't exactly match the 3/4 box ratio. */
+  .lookbook-card img {
+    width: 100%; aspect-ratio: 3/4; object-fit: contain; display: block;
+    background: #100d0a;
+  }
+  .lookbook-caption {
+    font-family: 'DM Sans', sans-serif; font-weight: 500; font-size: 0.62rem;
+    text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent);
+    padding: 0.5rem 0.6rem; display: flex; justify-content: space-between; align-items: center;
+    gap: 0.4rem;
+  }
+  .lookbook-caption .lb-aesthetic { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .lookbook-caption span.lb-date { color: #6a6460; font-weight: 400; letter-spacing: 0.02em; flex-shrink: 0; }
+  .lookbook-actions {
+    position: absolute; top: 0.4rem; right: 0.4rem;
+    display: flex; gap: 0.35rem; z-index: 2;
+  }
+  .lb-edit-btn, .lb-delete-btn {
+    width: 26px; height: 26px; border-radius: 50%; border: none;
+    background: rgba(16,13,10,0.65); backdrop-filter: blur(4px);
+    color: #f7f4f0; font-size: 0.72rem; display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: background 0.15s, transform 0.1s;
+  }
+  .lb-edit-btn:active, .lb-delete-btn:active { transform: scale(0.9); }
+  .lb-delete-btn:hover { background: rgba(139,0,0,0.75); }
+  .lb-edit-btn:hover { background: rgba(212,155,177,0.75); }
+  /* ── ANONYMOUS REQUEST FORM ── */
+  #request-overlay {
+    display: none; position: fixed; inset: 0; z-index: 20000 !important;
+    background: rgba(16,13,10,0.88); backdrop-filter: blur(6px);
+    align-items: center; justify-content: center; padding: 1.2rem;
+  }
+  #request-overlay.show { display: flex; }
+  #request-panel {
+    background: #1a1414; border-radius: 12px; padding: 1.4rem 1.2rem;
+    width: 100%; max-width: 380px; box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+  }
+  #request-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem; }
+  #request-title {
+    font-family: 'Anton', sans-serif; text-transform: uppercase; letter-spacing: 0.04em;
+    font-size: 1.05rem; color: #f7f4f0;
+  }
+  #request-close {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: rgba(255,255,255,0.1); border: none; color: #f7f4f0;
+    font-size: 0.9rem; cursor: pointer; flex-shrink: 0;
+  }
+  #request-subtitle {
+    font-family: 'DM Sans', sans-serif; font-size: 0.68rem; color: #9a9390;
+    line-height: 1.4; margin-bottom: 1rem;
+  }
+  #request-text {
+    width: 100%; background: #100d0a; border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 8px; color: #f7f4f0; font-family: 'DM Sans', sans-serif;
+    font-size: 0.78rem; padding: 0.7rem 0.8rem; resize: vertical;
+    outline: none; transition: border-color 0.15s;
+  }
+  #request-text:focus { border-color: var(--accent); }
+  #request-submit-btn {
+    margin-top: 0.7rem; width: 100%;
+    font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 0.7rem;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    background: var(--accent); color: #1a1414; border: none;
+    padding: 0.65rem; border-radius: 6px; cursor: pointer; transition: opacity 0.15s;
+  }
+  #request-submit-btn:disabled { opacity: 0.6; cursor: default; }
+  #request-status {
+    font-family: 'DM Sans', sans-serif; font-size: 0.68rem; margin-top: 0.6rem;
+    text-align: center; min-height: 1em;
+  }
+  #request-status.success { color: #8fd19e; }
+  #request-status.error { color: #e08080; }
+
+  .lookbook-caption input.lb-edit-input {
+    font-family: 'DM Sans', sans-serif; font-weight: 500; font-size: 0.62rem;
+    text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink);
+    background: #f7f4f0; border: none; border-radius: 3px; padding: 0.2rem 0.4rem;
+    width: 100%; outline: 2px solid var(--accent);
+  }
+
+
+  #verdict-overlay {
+    display: none; position: fixed; inset: 0; 
+    background: #100d0a;
+    z-index: 20000 !important; flex-direction: column; align-items: center;
+    justify-content: flex-start; padding: 3rem 1.5rem 2.5rem; text-align: center; 
+    overflow-y: auto;
+  }
+  #verdict-overlay.show { display: flex; }
+  
+  #verdict-top, #verdict-bottom {
+    display: flex; flex-direction: column; align-items: center; width: 100%;
+  }
+
+  #translate-btn {
+    position: absolute; top: 1.5rem; right: 1.5rem; background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15); color: #d8d4cf;
+    width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;
+    border-radius: 50%; cursor: pointer; transition: background 0.2s; z-index: 2;
+  }
+  #translate-btn:hover { background: rgba(255,255,255,0.15); }
+  #translate-btn svg { width: 20px; height: 20px; stroke: currentColor; }
+
+  #verdict-eyebrow { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.3em; color: #9a9390; margin-bottom: 0.5rem; }
+  #verdict-aesthetic { font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--accent); margin-bottom: 1.5rem; }
+  #verdict-text { font-family: 'Anton', sans-serif; text-transform: uppercase; letter-spacing: 0.01em; font-size: clamp(2rem, 9vw, 3rem); line-height: 1.05; color: #f7f4f0; margin-bottom: 0.8rem; }
+  #verdict-sub { font-family: 'Playfair Display', serif; font-style: italic; font-size: 1.1rem; color: #a8a09b; line-height: 1.5; max-width: 320px; }
+
+  #verdict-photo-frame {
+    width: min(78vw, 280px); margin: 2rem auto 1.6rem;
+    background: #fdfbf7; padding: 12px 12px 32px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.5), 0 2px 6px rgba(0,0,0,0.3);
+    transform: rotate(-2deg); flex-shrink: 0;
+    position: relative;
+  }
+  #verdict-outfit-preview {
+    position: relative; width: 100%;
+    background: #fdfbf7; border-radius: 1px; overflow: hidden;
+    filter: sepia(0.05) contrast(1.02) saturate(1.05);
+  }
+  /* subtle vignette so it reads as a photo, not a flat render */
+  #verdict-outfit-preview::after {
+    content: ''; position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(ellipse at center, rgba(0,0,0,0) 60%, rgba(20,15,10,0.15) 100%);
+  }
+  }
+
+  #download-outfit-btn {
+    position: absolute; bottom: 10px; right: 18px;
+    width: 26px; height: 26px; border-radius: 50%;
+    background: rgba(26, 22, 18, 0.55);
+    border: none; color: #f7f4f0;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; opacity: 0.7; transition: opacity 0.15s, background 0.15s;
+    z-index: 5;
+  }
+  #download-outfit-btn:hover, #download-outfit-btn:active { opacity: 1; background: rgba(26, 22, 18, 0.8); }
+  #download-outfit-btn svg { width: 13px; height: 13px; stroke: currentColor; fill: none; }
+  #download-outfit-btn.saved svg { display: none; }
+  #download-outfit-btn.saved::after { content: '✓'; font-size: 0.7rem; line-height: 1; }
+
+  #verdict-bottom { gap: 0.5rem; max-width: 400px; margin: 0.5rem auto 0; }
+
+  #verdict-links { display: flex; gap: 0.6rem; margin: 0 auto 0.4rem; flex-shrink: 0; }
+  .verdict-link-btn {
+    display: flex; align-items: center; gap: 0.4rem;
+    background: rgba(212, 155, 177, 0.1); border: 1px solid var(--accent);
+    color: var(--accent); font-family: 'DM Sans', sans-serif; font-weight: 500;
+    font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.08em;
+    padding: 0.5rem 0.85rem; border-radius: 20px; text-decoration: none;
+    cursor: pointer; transition: background 0.15s;
+  }
+  .verdict-link-btn:hover { background: rgba(212, 155, 177, 0.2); }
+  .verdict-link-btn svg { width: 14px; height: 14px; stroke: currentColor; flex-shrink: 0; }
+  
+  #verdict-close {
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.05rem;
+    font-family: 'DM Sans', sans-serif; font-weight: 500; font-size: 0.55rem; text-transform: uppercase; letter-spacing: 0.1em;
+    background: none; border: none; color: #a8a09b; padding: 0.5rem; cursor: pointer; width: 100%; line-height: 1.3;
+    opacity: 0.85; text-decoration: none;
+  }
+  #verdict-close .tun-signature {
+    font-family: 'Anton', sans-serif; text-transform: uppercase; letter-spacing: -0.01em;
+    font-size: 0.9rem; line-height: 1; color: #e182f7;
+    display: inline-flex; align-items: baseline;
+  }
+  #verdict-close .tun-signature .tun-thin {
+    font-family: 'DM Sans', sans-serif; font-weight: 400; text-transform: none; color: #ffffff;
+  }
+  #verdict-close .verdict-close-label { line-height: 1.3; text-decoration: underline; text-underline-offset: 3px; }
+
+  #verdict-join {
+    font-family: 'DM Sans', sans-serif; font-weight: 500; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em;
+    background: linear-gradient(160deg, #f2c9d6 0%, var(--accent) 55%, #bb7f97 100%);
+    color: var(--ink); border: none; padding: 0.9rem 1.4rem; border-radius: 2px; cursor: pointer; width: 100%; line-height: 1.5;
+    box-shadow: inset 0 1px 1px rgba(255,255,255,0.6), 0 4px 12px rgba(0,0,0,0.4); text-decoration: none;
+  }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+
+<body>
+
+<canvas id="mirror-canvas"></canvas>
+<div id="tap-overlay">
+  <div style="text-align: center; line-height: 1.6; text-shadow: 0 2px 10px rgba(0,0,0,0.85), 0 0 25px rgba(0,0,0,0.5);">
+    The closet was made of glass.<br>
+    <span style="font-weight: 700; font-size: 1.2rem; letter-spacing: 0.15em;">SHATTER IT.</span>
+  </div>
+</div>
+
+<div id="topbar">
+  <div id="topbar-row1">
+    <div id="topbar-title-container">
+      <img src="glasscloset.png" alt="Glass Closet" style="max-height: 25px; width: auto;" onerror="this.style.display='none'">
+      <img src="kissprint.png" alt="" class="kiss-print">
+    </div>
+    <button id="verdict-btn" onclick="showVerdict()">Get my verdict</button>
+  </div>
+  <div id="topbar-icon-row">
+    <button id="request-btn" onclick="openRequestForm()" aria-label="Request an item" title="Request an item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+    </button>
+    <button id="lookbook-btn" onclick="openLookbook()" aria-label="Your lookbook" title="Your lookbook">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 5.5C4 4.67 4.67 4 5.5 4H11v16H5.5C4.67 20 4 19.33 4 18.5V5.5Z"></path>
+        <path d="M20 5.5C20 4.67 19.33 4 18.5 4H13v16h5.5c.83 0 1.5-.67 1.5-1.5V5.5Z"></path>
+      </svg>
+    </button>
+    <button id="shake-btn" onclick="enableShakeDetection(); triggerRandomFit();" aria-label="Shake for a fit" title="Shake for a fit">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 6h3.5c1.5 0 2.4 1 3.2 2.2L15 16.8c.8 1.2 1.7 2.2 3.2 2.2H21"></path>
+        <path d="M18 4l3 3-3 3"></path>
+        <path d="M4 18h3.5c1.5 0 2.4-1 3.2-2.2l.8-1.2"></path>
+        <path d="M18 20l3-3-3-3"></path>
+      </svg>
+    </button>
+  </div>
+  <div id="topbar-row2">
+    <span id="topbar-gossip-link" onclick="spillTea()">See latest gossip on Sasha</span>
+  </div>
+</div>
+
+<div id="imessage-notification" class="hidden">
+  <div class="message-header">
+    <img src="gossip-icon.png" class="message-avatar" alt="" onerror="this.style.display='none'">
+    <div class="message-info">
+      <span class="sender-name">Gossip Girl</span>
+      <span class="message-time">now</span>
+    </div>
+    <button id="gossip-next-btn" class="gossip-next-btn" aria-label="Next bit of gossip" onclick="window.skipGossip && window.skipGossip(event)">&rsaquo;</button>
+  </div>
+  <div class="message-body" id="imessage-text"></div>
+  <div class="swipe-indicator"></div>
+</div>
+
+<div id="origin-toast">
+  <div class="message-header">
+    <div id="origin-avatar" class="message-avatar avatar-initials">M</div>
+    <div class="message-info">
+      <span class="sender-name" id="origin-sender-name">Mom</span>
+      <span class="message-time">now</span>
+    </div>
+  </div>
+  <div class="message-body" id="origin-line-text"></div>
+</div>
+
+<div id="canvas">
+  <div id="canvas-empty">
+    <span class="headline-clip clip-1">"Iconic"</span>
+    <span class="headline-clip clip-2">I want it, I got it</span>
+    <span class="headline-clip clip-3 glitch" data-text="thank u, next">thank u, next</span>
+    <div class="big-label">Your look, your rules.</div>
+    <p>Tap anything below to start.</p>
+  </div>
+  <div id="news-ticker"><div id="news-ticker-track"></div></div>
+</div>
+
+<div id="drawer">
+  <div id="drawer-handle" onclick="toggleDrawer()">
+    <span>The Closet</span>
+    <span id="drawer-toggle">▲</span>
+  </div>
+  <div id="search-row">
+    <input type="text" id="search-input" placeholder="Search..." oninput="handleSearch(this.value)">
+  </div>
+  <div id="cat-tabs"></div>
+  <div id="item-grid"></div>
+</div>
+
+<div id="lookbook-overlay">
+  <div id="lookbook-header">
+    <span id="lookbook-title">Your Lookbook</span>
+    <button id="lookbook-close" onclick="closeLookbook()" aria-label="Close">✕</button>
+  </div>
+  <div id="lookbook-grid"></div>
+</div>
+
+<div id="request-overlay">
+  <div id="request-panel">
+    <div id="request-header">
+      <span id="request-title">Request an Item</span>
+      <button id="request-close" onclick="closeRequestForm()" aria-label="Close">✕</button>
+    </div>
+    <p id="request-subtitle">Anonymous — no name, no email. Just tell us what belongs in the closet.</p>
+    <form id="request-form" onsubmit="submitItemRequest(event)">
+      <input type="hidden" name="_subject" value="New Glass Closet item request">
+      <textarea id="request-text" name="item" rows="4" maxlength="300" placeholder="e.g. Cher's yellow plaid blazer, or a specific look from a show/movie..." required></textarea>
+      <button type="submit" id="request-submit-btn">Send request</button>
+      <div id="request-status"></div>
+    </form>
+  </div>
+</div>
+
+<div id="verdict-overlay">
+  <button id="translate-btn" onclick="toggleLanguage()" aria-label="Translate">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10"></circle>
+      <line x1="2" y1="12" x2="22" y2="12"></line>
+      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+    </svg>
+  </button>
+  
+  <div id="verdict-top">
+    <div id="verdict-eyebrow">Your style, decoded</div>
+    <div id="verdict-aesthetic"></div>
+    <div id="verdict-text"></div>
+    <div id="verdict-sub"></div>
+  </div>
+  
+  <div id="verdict-photo-frame">
+    <div id="verdict-outfit-preview"></div>
+    <button id="download-outfit-btn" onclick="downloadOutfitImage()" aria-label="Download">
+      <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 3v12"></path>
+        <path d="M7 10l5 5 5-5"></path>
+        <path d="M5 21h14"></path>
+      </svg>
+    </button>
+  </div>
+  
+  <div id="verdict-links">
+    <a id="verdict-song-link" class="verdict-link-btn" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M8 15c2.5-1.2 5.5-1.2 8 0M7.5 11.5c3-1.5 6-1.5 9 0M9 8c2-1 4-1 6 0"></path></svg>
+      <span id="verdict-song-label">Listen</span>
+    </a>
+    <a id="verdict-scene-link" class="verdict-link-btn" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+      <span id="verdict-scene-label">Watch the scene</span>
+    </a>
+  </div>
+  
+  <div id="verdict-bottom">
+    <button id="verdict-join" onclick="shareToTelegram()">Join groupchat</button>
+    <button id="verdict-close" onclick="closeVerdict()">
+      <span class="tun-signature">THANK<span class="tun-thin">U</span><span class="tun-thin">,</span>NEXT</span>
+      <span class="verdict-close-label" id="verdict-close-label">Go back to the closet (no pun intended)</span>
+    </button>
+  </div>
+</div>
+
+<script>
+// ── SOUND FX ──
+const GOSSIP_BEAT_SRC = 'item-select.mp3';
+const TRUE_ITEM_SELECT_SRC = 'true-item-select.mp3';
+const SHUTTER_SRC = 'shutter.mp3';
+let itemAddCount = 0; 
+
+function preloadSoundCheck(src, label) {
+  const probe = new Audio(src);
+  probe.addEventListener('error', () => {
+    console.warn(`[sound fx] "${src}" for ${label} failed to load — check the file exists next to index.html and is a valid mp3.`);
+  });
+  probe.addEventListener('canplaythrough', () => {
+    console.log(`[sound fx] "${src}" for ${label} loaded OK.`);
+  }, { once: true });
+  probe.load();
+  return probe;
+}
+preloadSoundCheck(GOSSIP_BEAT_SRC, 'gossip beat track');
+preloadSoundCheck(TRUE_ITEM_SELECT_SRC, 'item-add sound');
+preloadSoundCheck(SHUTTER_SRC, 'shutter sound');
+
+const gossipBeatAudio = new Audio(GOSSIP_BEAT_SRC);
+gossipBeatAudio.volume = 0.28; 
+
+// Continues playing without cutting off.
+function playGossipBeatSnippet() {
+  try {
+    if (gossipBeatAudio.duration && gossipBeatAudio.currentTime >= gossipBeatAudio.duration - 0.1) {
+      gossipBeatAudio.currentTime = 0;
+    }
+    if (gossipBeatAudio.paused) {
+      const p = gossipBeatAudio.play();
+      if (p && p.catch) {
+        p.catch(err => console.warn('[sound fx] gossip-beat playback blocked/failed:', err.message));
+      }
+    }
+  } catch (e) {
+    console.warn('[sound fx] gossip-beat playback threw:', e.message);
+  }
+}
+
+function playTrueItemSelectSound() {
+  try {
+    const a = new Audio(TRUE_ITEM_SELECT_SRC);
+    a.volume = 0.5;
+    const p = a.play();
+    if (p && p.catch) {
+      p.catch(err => console.warn('[sound fx] item-select playback blocked/failed:', err.message));
+    }
+  } catch (e) {
+    console.warn('[sound fx] item-select playback threw:', e.message);
+  }
+}
+
+const shutterAudio = new Audio(SHUTTER_SRC);
+shutterAudio.volume = 0.6;
+function playShutterSound() {
+  try {
+    shutterAudio.pause();
+    shutterAudio.currentTime = 0;
+    const p = shutterAudio.play();
+    if (p && p.catch) {
+      p.catch(err => console.warn('[sound fx] shutter playback blocked/failed:', err.message));
+    }
+  } catch (e) {
+    console.warn('[sound fx] shutter playback threw:', e.message);
+  }
+}
+
+// ── SPARKLE BURST ──
+function spawnSparkleBurst(x, y, count = 10) {
+  const container = document.body;
+  const burst = document.createElement('div');
+  burst.className = 'sparkle-burst';
+  burst.style.left = x + 'px';
+  burst.style.top = y + 'px';
+  container.appendChild(burst);
+
+  for (let i = 0; i < count; i++) {
+    const p = document.createElement('div');
+    p.className = 'sparkle-particle';
+    const angle = Math.random() * Math.PI * 2;
+    const dist = 30 + Math.random() * 55;
+    const dx = Math.cos(angle) * dist;
+    const dy = Math.sin(angle) * dist - 10;
+    const size = 5 + Math.random() * 7;
+    const dur = 0.45 + Math.random() * 0.35;
+    const rot = (Math.random() > 0.5 ? 1 : -1) * (90 + Math.random() * 180);
+    p.style.setProperty('--sp-x', dx + 'px');
+    p.style.setProperty('--sp-y', dy + 'px');
+    p.style.setProperty('--sp-size', size + 'px');
+    p.style.setProperty('--sp-dur', dur + 's');
+    p.style.setProperty('--sp-rot', rot + 'deg');
+    p.style.animationDelay = (Math.random() * 0.08) + 's';
+    burst.appendChild(p);
+  }
+  setTimeout(() => burst.remove(), 900);
+}
+
+// ── WARDROBE DATA ──
+const categories = [
+  {
+    id: 'iconic-club', label: 'Club',
+    items: [
+      { name: "Sasha's bow", color: '#111', vibe: 'yes, and?', w: 80, h: 70 },
+      { name: 'I ❤ Insight shirt', color: '#1a1a1a', vibe: 'club kid', w: 105, h: 105 },
+      { name: 'Mystery Drop', color: '#e8e4df', vibe: 'coming soon', w: 100, h: 100, releaseDate: '2026-07-16', unlockAtOutfits: 3 }
+    ]
+  },
+  {
+    id: 'iconic-tun', label: 'thank u, next',
+    items: [
+      { name: 'Burn book', color: '#d89eb7', vibe: 'iconic villain era', w: 90, h: 110 },
+      { name: '"A little bit needy" shirt', color: '#f0ede8', vibe: 'thank u, next', w: 105, h: 105 },
+      { name: 'Elle’s courtroom pen', color: '#ff69b4', vibe: 'what like its hard', w: 90, h: 25 },
+      { name: '13 Going on 30 wrapping paper dress', color: '#f7c9dc', vibe: 'thirty flirty and thriving', w: 100, h: 145 },
+      { name: 'Toros cheer uniform', color: '#c8102e', vibe: 'spirit fingers', w: 105, h: 120 },
+      { name: "Ariana's Positions robe", color: '#e8c8d4', vibe: "switchin' the positions", w: 110, h: 145, releaseDate: '2026-09-03' },
+      { name: "Regina's burn book cardigan", color: '#d89eb7', vibe: "that's so fetch", w: 105, h: 115, releaseDate: '2026-09-03' },
+      { name: "Cady's mathlete jacket", color: '#2a4a2a', vibe: 'boo, you whore', w: 110, h: 120, releaseDate: '2026-09-03' }
+    ]
+  },
+  {
+    id: 'iconic-movies-tv', label: 'Movies & TV',
+    items: [
+      { name: 'Cher’s yellow plaid blazer', color: '#ffd700', vibe: 'as if', w: 118, h: 132 },
+      { name: 'Blair’s red headband', color: '#8b0000', vibe: 'queen bee', w: 85, h: 45 },
+      { name: 'Serena’s undone school tie', color: '#1a2a4a', vibe: 'it-girl immunity', w: 45, h: 115 },
+      { name: 'Carrie’s nameplate necklace', color: '#d4a017', vibe: 'couldnt help but wonder', w: 75, h: 40 },
+      { name: 'Cerulean blue sweater', color: '#2a52be', vibe: 'cerulean', w: 110, h: 115 },
+      { name: '"A little bit dramatic" shirt', color: '#f0b8c0', vibe: 'a little bit dramatic', w: 105, h: 105 },
+      { name: "Jennifer's pink heart top", color: '#f4a3c0', vibe: 'i go both ways', w: 100, h: 95 },
+      { name: "Regina George's pink Wednesday top", color: '#ff8fc4', vibe: 'on Wednesdays we wear pink', w: 105, h: 100, releaseDate: '2026-08-06', unlockAtOutfits: 5 },
+      { name: "Elle Woods' graduation dress", color: '#ffb6d9', vibe: "what, like it's hard?", w: 110, h: 140, releaseDate: '2026-08-06', unlockAtOutfits: 8 },
+      { name: "Andy's Chanel boots", color: '#1a1a1a', vibe: "that's all", w: 95, h: 130, releaseDate: '2026-08-06' },
+      { name: "Effie Trinket's reaping coat", color: '#e8b923', vibe: 'may the odds', w: 115, h: 150, releaseDate: '2026-08-13' },
+      { name: "Rachel Green's \"The Rachel\" blazer", color: '#c9a876', vibe: 'could I BE any more iconic', w: 115, h: 120, releaseDate: '2026-08-13' }
+    ]
+  },
+  {
+    id: 'iconic-music', label: 'Music',
+    items: [
+      { name: 'Bunny ears', color: '#111', vibe: 'dangerous woman', w: 85, h: 65 },
+      { name: 'Sabrina’s platform boots', color: '#111', vibe: 'taste maker', w: 110, h: 125 },
+      { name: 'Ariana’s oversized pastel hoodie', color: '#ffc0cb', vibe: 'sweetener', w: 125, h: 130 },
+      { name: 'Brat green mini dress', color: '#8bce00', vibe: 'bumpin that', w: 100, h: 140 },
+      { name: 'Ariana’s thigh-high boots', color: '#111', vibe: 'dangerous woman', w: 105, h: 155 },
+      { name: 'Ariana’s no tears left to cry dress', color: '#1a1a1a', vibe: 'no tears left to cry', w: 105, h: 150 },
+      { name: "Britney's schoolgirl outfit", color: '#d63a4a', vibe: 'hit me one more time', w: 100, h: 120, releaseDate: '2026-08-13', unlockAtOutfits: 12 },
+      { name: "Rihanna's umbrella-era trench", color: '#2a2a2a', vibe: 'ella ella', w: 115, h: 150, releaseDate: '2026-08-20' },
+      { name: "Beyoncé's Single Ladies leotard", color: '#111111', vibe: 'put a ring on it', w: 100, h: 105, releaseDate: '2026-08-20' },
+      { name: "Doja Cat's Say So disco set", color: '#c9a2e8', vibe: 'start off slow', w: 105, h: 120, releaseDate: '2026-08-20' },
+      { name: "Olivia Rodrigo's Sour cardigan", color: '#8ea3d9', vibe: "driver's license energy", w: 110, h: 130, releaseDate: '2026-08-27' }
+    ]
+  },
+  {
+    id: 'iconic-cartoons', label: 'Cartoons',
+    items: [
+      { name: "Rarity's cutie mark", color: '#9b6fc7', vibe: 'generosity era', w: 65, h: 60 },
+      { name: "Flora's Harmonix dress", color: '#b6e08a', vibe: 'nature\'s touch', w: 105, h: 155 },
+      { name: "Bloom's boots", color: '#3ba9dc', vibe: 'magic winx', w: 105, h: 150 },
+      { name: "Musa's top", color: '#c81249', vibe: 'tune it out', w: 95, h: 90 },
+      { name: "Kim Possible's crop top & cargos", color: '#3a7a3a', vibe: 'call me, beep me', w: 110, h: 120, releaseDate: '2026-08-27' },
+      { name: "Mulan's reflection armor", color: '#8b1a1a', vibe: 'honor to us all', w: 115, h: 140, releaseDate: '2026-08-27' },
+      { name: "Sailor Moon's fuku", color: '#3a5fc9', vibe: 'moon prism power', w: 105, h: 115, releaseDate: '2026-09-03' }
+    ]
+  },
+  {
+    id: 'tops-basic', label: 'Basics',
+    items: [
+      { name: 'White tee', color: '#f0ede8', vibe: 'classic', w: 110, h: 105 },
+      { name: 'Black tee', color: '#1a1a1a', vibe: 'classic', w: 110, h: 105 },
+      { name: 'Grey tee', color: '#888', vibe: 'quiet luxury', w: 110, h: 105 },
+      { name: 'White tank', color: '#f0ede8', vibe: 'effortless', w: 95, h: 100 },
+      { name: 'Black tank', color: '#1a1a1a', vibe: 'effortless', w: 95, h: 100 },
+      { name: 'Ribbed white tank', color: '#f5f2ed', vibe: 'minimalist', w: 90, h: 105 },
+      { name: 'Ribbed black tank', color: '#111', vibe: 'minimalist', w: 90, h: 105 },
+      { name: 'Grey sweatshirt', color: '#aaa', vibe: 'soft butch', w: 120, h: 110 },
+      { name: 'Black sweatshirt', color: '#111', vibe: 'downtown', w: 120, h: 110 },
+      { name: 'White long sleeve', color: '#f0ede8', vibe: 'quiet', w: 110, h: 110 },
+      { name: 'Striped marinière', color: '#fff', vibe: 'french girl', w: 110, h: 105 },
+    ]
+  },
+  {
+    id: 'tops-shirts', label: 'Shirts',
+    items: [
+      { name: 'White button-up', color: '#f0ede8', vibe: 'androgynous', w: 105, h: 115 },
+      { name: 'Black button-up', color: '#111', vibe: 'power', w: 105, h: 115 },
+      { name: 'Blue oxford shirt', color: '#4a6fa5', vibe: 'preppy subverted', w: 105, h: 115 },
+      { name: 'Ivory linen shirt', color: '#f2ead8', vibe: 'quiet luxury', w: 110, h: 115 },
+      { name: 'Oversized white shirt', color: '#f0ede8', vibe: 'effortless chic', w: 120, h: 120 },
+      { name: 'Sheer organza blouse', color: '#f0e8e8', vibe: 'feminine danger', w: 105, h: 110 },
+      { name: 'Silk slip blouse cream', color: '#f5efdf', vibe: 'old money', w: 100, h: 105 },
+      { name: 'Silk slip blouse black', color: '#1a1a1a', vibe: 'nocturnal', w: 100, h: 105 },
+      { name: 'Asymmetric wrap top', color: '#c8a07a', vibe: 'editorial', w: 100, h: 100 },
+      { name: 'Cowl neck top white', color: '#f0ede8', vibe: 'sculptural', w: 100, h: 105 },
+      { name: 'Cowl neck top black', color: '#111', vibe: 'sculptural', w: 100, h: 105 },
+    ]
+  },
+  {
+    id: 'tops-knitwear', label: 'Knitwear',
+    items: [
+      { name: 'Black turtleneck', color: '#111', vibe: 'intellectual', w: 110, h: 118 },
+      { name: 'Cream turtleneck', color: '#f5efdf', vibe: 'quiet luxury', w: 110, h: 118 },
+      { name: 'Camel turtleneck', color: '#c2903a', vibe: 'old money', w: 110, h: 118 },
+      { name: 'Blue knit sweater', color: '#4a6fa5', vibe: 'soft', w: 115, h: 115 },
+      { name: 'Pink mohair sweater', color: '#f0b8c0', vibe: 'weaponised femininity', w: 120, h: 115 },
+      { name: 'Chocolate brown knit', color: '#6b4226', vibe: 'autumn rich', w: 115, h: 115 },
+      { name: 'Burgundy knit', color: '#7a1e2e', vibe: 'romantic intellectual', w: 115, h: 115 },
+      { name: 'Oversized chunky knit', color: '#d4c5a9', vibe: 'cosy editorial', w: 125, h: 120 },
+      { name: 'Crochet crop top', color: '#c8a07a', vibe: 'seventies', w: 95, h: 90 },
+      { name: 'Fisherman knit cream', color: '#f5efdf', vibe: 'literary weekend', w: 120, h: 120 },
+      { name: 'V-neck grey marl', color: '#999', vibe: 'effortless', w: 110, h: 110 },
+    ]
+  },
+  {
+    id: 'tops-statement', label: 'Statement Tops',
+    items: [
+      { name: 'Feather trim top', color: '#111', vibe: 'theatrical maximalist', w: 112, h: 110 },
+      { name: 'Black waistcoat', color: '#111', vibe: 'power', w: 95, h: 120 },
+      { name: 'White waistcoat', color: '#f0ede8', vibe: 'androgynous', w: 95, h: 120 },
+      { name: 'Satin corset black', color: '#111', vibe: 'weaponised femininity', w: 90, h: 100 },
+      { name: 'Satin corset ivory', color: '#f5efdf', vibe: 'regency romantic', w: 90, h: 100 },
+      { name: 'Red lace bodysuit', color: '#8b1a1a', vibe: 'bold femme', w: 90, h: 108 },
+      { name: 'Black lace bodysuit', color: '#111', vibe: 'dark romantic', w: 90, h: 108 },
+      { name: 'Band tee vintage', color: '#1a1a1a', vibe: 'riot grrrl', w: 120, h: 112 },
+      { name: 'Graphic tee white', color: '#f0ede8', vibe: 'downtown art', w: 115, h: 108 },
+      { name: 'Velvet blazer crop black', color: '#1a0a2a', vibe: 'theatrical', w: 110, h: 115 },
+      { name: 'Chain detail top', color: '#111', vibe: 'fashion-forward', w: 95, h: 100 },
+      { name: 'Bustier black', color: '#111', vibe: 'power femme', w: 90, h: 85 },
+      { name: 'Halterneck white', color: '#f0ede8', vibe: 'seventies', w: 90, h: 95 },
+    ]
+  },
+  {
+    id: 'bottoms-trousers', label: 'Trousers',
+    items: [
+      { name: 'Black wide-leg trousers', color: '#111', vibe: 'power androgyny', w: 105, h: 145 },
+      { name: 'White wide-leg trousers', color: '#f0ede8', vibe: 'minimalist power', w: 105, h: 145 },
+      { name: 'Camel wide-leg trousers', color: '#c2903a', vibe: 'quiet luxury', w: 105, h: 145 },
+      { name: 'Black tailored trousers', color: '#111', vibe: 'power', w: 100, h: 145 },
+      { name: 'Beige tailored trousers', color: '#d4c5a9', vibe: 'old money', w: 100, h: 145 },
+      { name: 'Grey flannel trousers', color: '#888', vibe: 'intellectual', w: 100, h: 145 },
+      { name: 'Navy trousers', color: '#1a2a4a', vibe: 'classic', w: 100, h: 145 },
+      { name: 'Pinstripe trousers', color: '#333', vibe: 'boss', w: 100, h: 145 },
+      { name: 'Plaid trousers', color: '#8b6914', vibe: 'academic', w: 100, h: 145 },
+      { name: 'Leather trousers', color: '#1a1410', vibe: 'dangerous', w: 100, h: 145 },
+      { name: 'Satin trousers ivory', color: '#f5efdf', vibe: 'evening editorial', w: 100, h: 145 },
+    ]
+  },
+  {
+    id: 'bottoms-jeans', label: 'Jeans & Casual',
+    items: [
+      { name: 'Baggy jeans light', color: '#a0b8d4', vibe: 'downtown', w: 112, h: 145 },
+      { name: 'Baggy jeans dark', color: '#2a3a4a', vibe: 'cool', w: 112, h: 145 },
+      { name: 'Straight jeans blue', color: '#3a5a8a', vibe: 'classic dyke', w: 105, h: 145 },
+      { name: 'Straight jeans black', color: '#111', vibe: 'rock', w: 105, h: 145 },
+      { name: 'Cropped jeans white', color: '#e8e4df', vibe: 'french girl', w: 100, h: 130 },
+      { name: 'Low-rise jeans', color: '#5a7aaa', vibe: 'Y2K revival', w: 105, h: 135 },
+      { name: 'Boyfriend jeans', color: '#7a90a8', vibe: 'borrowed from the boys', w: 115, h: 145 },
+      { name: 'Straight khakis', color: '#7a7a50', vibe: 'utilitarian chic', w: 100, h: 145 },
+    ]
+  },
+  {
+    id: 'bottoms-skirts', label: 'Skirts',
+    items: [
+      { name: 'Leather mini black', color: '#111', vibe: 'dangerous', w: 95, h: 88 },
+      { name: 'Denim mini', color: '#5a7aaa', vibe: 'effortless', w: 95, h: 85 },
+      { name: 'Pleated midi ivory', color: '#f5efdf', vibe: 'soft elegance', w: 105, h: 132 },
+      { name: 'Pleated midi black', color: '#111', vibe: 'editorial', w: 105, h: 132 },
+      { name: 'Satin bias skirt black', color: '#111', vibe: 'nocturnal glamour', w: 100, h: 138 },
+      { name: 'Satin bias skirt ivory', color: '#f5efdf', vibe: 'old Hollywood', w: 100, h: 138 },
+      { name: 'Tulle skirt black', color: '#111', vibe: 'theatrical goth', w: 120, h: 110 },
+      { name: 'Tulle skirt white', color: '#f0ede8', vibe: 'theatrical soft', w: 120, h: 110 },
+      { name: 'Tulle skirt blush', color: '#f0c8c0', vibe: 'princess energy', w: 120, h: 110 },
+      { name: 'Pencil skirt black', color: '#111', vibe: 'power femme', w: 95, h: 130 },
+      { name: 'Midi wrap skirt', color: '#c8a07a', vibe: 'effortlessly sexy', w: 105, h: 130 },
+      { name: 'Tartan mini', color: '#8b1a1a', vibe: 'punk adjacent', w: 95, h: 88 },
+    ]
+  },
+  {
+    id: 'dresses', label: 'Dresses',
+    items: [
+      { name: 'Sequin mini dress', color: '#c8c860', vibe: 'all eyes on you', w: 105, h: 130 },
+      { name: 'Jumpsuit all-black', color: '#111', vibe: 'effortlessly powerful', w: 105, h: 165 },
+      { name: 'Slip dress black', color: '#111', vibe: 'nineties', w: 105, h: 160 },
+      { name: 'Slip dress ivory', color: '#f5efdf', vibe: 'quiet luxury', w: 105, h: 160 },
+      { name: 'Slip dress red', color: '#8b1a1a', vibe: 'dangerous', w: 105, h: 160 },
+      { name: 'Little black dress', color: '#111', vibe: 'perennial chic', w: 100, h: 155 },
+      { name: 'White midi dress', color: '#f0ede8', vibe: 'summertime', w: 105, h: 158 },
+      { name: 'Wrap dress floral', color: '#c87878', vibe: 'femme confident', w: 108, h: 158 },
+      { name: 'Maxi dress black', color: '#111', vibe: 'dramatic', w: 110, h: 175 },
+      { name: 'Column dress white', color: '#f0ede8', vibe: 'sculptural minimalism', w: 95, h: 168 },
+      { name: 'Ruched mini dress', color: '#6a3a8a', vibe: 'going out', w: 100, h: 130 },
+      { name: 'Sweater dress grey', color: '#888', vibe: 'cosy editorial', w: 108, h: 158 },
+      { name: 'Oversized shirt dress', color: '#4a6fa5', vibe: 'borrowed from the boys', w: 115, h: 162 },
+    ]
+  },
+  {
+    id: 'shoes-flat', label: 'Flat Shoes',
+    items: [
+      { name: 'Black ballet flats', color: '#111', vibe: 'soft danger', w: 100, h: 68 },
+      { name: 'White ballet flats', color: '#f0ede8', vibe: 'french girl', w: 100, h: 68 },
+      { name: 'Square-toe loafers black', color: '#111', vibe: 'quietly powerful', w: 108, h: 80 },
+      { name: 'Square-toe loafers tan', color: '#b8864e', vibe: 'old money', w: 108, h: 80 },
+      { name: 'Loafers with chain', color: '#111', vibe: 'power dressing', w: 110, h: 82 },
+      { name: 'White trainers', color: '#f0ede8', vibe: 'effortless', w: 112, h: 78 },
+      { name: 'Chunky trainers', color: '#888', vibe: 'Y2K downtown', w: 115, h: 82 },
+      { name: 'Mary-janes black', color: '#111', vibe: 'school-to-stage', w: 100, h: 72 },
+      { name: 'Pointed flats', color: '#111', vibe: 'sharp', w: 105, h: 65 },
+      { name: 'Slip-on mules', color: '#c2a882', vibe: 'off-duty', w: 105, h: 72 },
+      { name: 'Leather sandals flat', color: '#b8864e', vibe: 'summer minimalist', w: 100, h: 72 },
+    ]
+  },
+  {
+    id: 'shoes-heels', label: 'Heels & Boots',
+    items: [
+      { name: 'Chelsea boots black', color: '#111', vibe: 'classic dyke', w: 110, h: 105 },
+      { name: 'Chelsea boots tan', color: '#b8864e', vibe: 'off-duty editorial', w: 110, h: 105 },
+      { name: 'Platform boots black', color: '#111', vibe: 'riot grrrl', w: 120, h: 115 },
+      { name: 'Knee-high boots black', color: '#111', vibe: 'powerful', w: 105, h: 135 },
+      { name: 'Over-the-knee boots', color: '#111', vibe: 'extremely online', w: 105, h: 155 },
+      { name: 'Western boots tan', color: '#b8864e', vibe: 'camp cowgirl', w: 110, h: 120 },
+      { name: 'Western boots black', color: '#111', vibe: 'dark cowgirl', w: 110, h: 120 },
+      { name: 'Strappy heels black', color: '#111', vibe: 'femme', w: 105, h: 95 },
+      { name: 'Block heel mules', color: '#c2a882', vibe: 'power dressing', w: 108, h: 90 },
+      { name: 'Kitten heels', color: '#f5efdf', vibe: 'quiet subversion', w: 100, h: 88 },
+      { name: 'Platform heels', color: '#111', vibe: 'theatrical', w: 105, h: 105 },
+      { name: 'Lug-sole boots', color: '#4a3020', vibe: 'soft butch', w: 112, h: 115 },
+    ]
+  },
+  {
+    id: 'jackets', label: 'Jackets',
+    items: [
+      { name: 'Cape black', color: '#111', vibe: 'dramatic entrance', w: 140, h: 155 },
+      { name: 'Tartan blazer', color: '#8b1a1a', vibe: 'punk heritage', w: 118, h: 132 },
+      { name: 'Power shoulders blazer', color: '#111', vibe: 'eighties revival', w: 125, h: 132 },
+      { name: 'Trench mac cropped', color: '#c2903a', vibe: 'off-duty luxury', w: 115, h: 130 },
+      { name: 'Black leather jacket', color: '#111', vibe: 'classic dyke', w: 120, h: 122 },
+      { name: 'Brown leather jacket', color: '#5a3018', vibe: 'seventies', w: 120, h: 122 },
+      { name: 'Long black trench', color: '#111', vibe: 'mysterious', w: 112, h: 172 },
+      { name: 'Camel trench', color: '#c2903a', vibe: 'french intellectual', w: 112, h: 172 },
+      { name: 'Sharply tailored blazer black', color: '#111', vibe: 'power', w: 118, h: 132 },
+      { name: 'Oversize blazer grey', color: '#888', vibe: 'borrowed genius', w: 125, h: 135 },
+      { name: 'Blazer cream', color: '#f5efdf', vibe: 'quiet luxury', w: 118, h: 132 },
+      { name: 'Blazer plaid', color: '#8b6914', vibe: 'literary', w: 118, h: 132 },
+      { name: 'Faux fur coat black', color: '#1a1a1a', vibe: 'maximalist villain', w: 130, h: 162 },
+      { name: 'Faux fur coat cream', color: '#f5efdf', vibe: 'maximalist angel', w: 130, h: 162 },
+      { name: 'Teddy coat camel', color: '#c2903a', vibe: 'cosy rich', w: 128, h: 158 },
+      { name: 'Denim jacket', color: '#5a7aaa', vibe: 'effortless', w: 118, h: 118 },
+      { name: 'Shearling jacket', color: '#d4c5a9', vibe: 'cool Americana', w: 122, h: 120 },
+      { name: 'Bomber jacket black', color: '#111', vibe: 'sporty-chic', w: 118, h: 112 },
+      { name: 'Cropped leather jacket', color: '#111', vibe: 'nineties cool', w: 112, h: 100 },
+    ]
+  },
+  {
+    id: 'hats', label: 'Hats',
+    items: [
+      { name: 'Black beret', color: '#111', vibe: 'arty', w: 95, h: 70 },
+      { name: 'Camel beret', color: '#c2903a', vibe: 'parisian', w: 95, h: 70 },
+      { name: 'Cowboy hat black', color: '#111', vibe: 'dark cowgirl', w: 115, h: 82 },
+      { name: 'Cowboy hat tan', color: '#c2903a', vibe: 'camp cowgirl', w: 115, h: 82 },
+      { name: 'Wide brim felt black', color: '#111', vibe: 'witchy', w: 120, h: 82 },
+      { name: 'Wide brim felt camel', color: '#c2903a', vibe: 'autumn witchy', w: 120, h: 82 },
+      { name: 'Bucket hat black', color: '#111', vibe: 'downtown', w: 92, h: 72 },
+      { name: 'Bucket hat cream', color: '#f5efdf', vibe: 'off-duty cool', w: 92, h: 72 },
+      { name: 'Black beanie', color: '#111', vibe: 'soft butch', w: 82, h: 68 },
+      { name: 'Grey beanie', color: '#888', vibe: 'effortless', w: 82, h: 68 },
+      { name: 'Baseball cap', color: '#1a2a4a', vibe: 'tomboy', w: 90, h: 70 },
+      { name: 'Fascinator black', color: '#111', vibe: 'theatrical femme', w: 80, h: 55 },
+    ]
+  },
+  {
+    id: 'neck', label: 'Neckwear',
+    items: [
+      { name: 'Black ribbon', color: '#111', vibe: 'dark romantic', w: 45, h: 130 },
+      { name: 'Red ribbon', color: '#8b1a1a', vibe: 'dangerous romantic', w: 45, h: 130 },
+      { name: 'White ribbon', color: '#f0ede8', vibe: 'soft romantic', w: 45, h: 130 },
+      { name: 'Pearl necklace', color: '#f0ede8', vibe: 'weaponised femininity', w: 85, h: 50 },
+      { name: 'Layered gold chains', color: '#d4a017', vibe: 'italian summer', w: 85, h: 55 },
+      { name: 'Chunky silver chain', color: '#c8c8c8', vibe: 'power', w: 85, h: 50 },
+      { name: 'Chunky gold chain', color: '#d4a017', vibe: 'boss', w: 85, h: 50 },
+      { name: 'Choker black velvet', color: '#111', vibe: 'nineties goth', w: 82, h: 30 },
+      { name: 'Diamond choker', color: '#c8c8c8', vibe: 'old Hollywood glam', w: 82, h: 28 },
+      { name: 'Silk scarf neck black', color: '#111', vibe: 'parisian', w: 85, h: 95 },
+      { name: 'Silk scarf neck printed', color: '#c87878', vibe: 'retro glam', w: 85, h: 95 },
+      { name: 'Statement necklace', color: '#c8c8c8', vibe: 'maximalist', w: 95, h: 60 },
+      { name: 'Pendant necklace gold', color: '#d4a017', vibe: 'delicate', w: 75, h: 70 },
+    ]
+  },
+  {
+    id: 'bags', label: 'Bags',
+    items: [
+      { name: 'Birkin-style bag tan', color: '#b8864e', vibe: 'quiet luxury peak', w: 108, h: 95 },
+      { name: 'Mini shoulder bag black', color: '#111', vibe: 'polished', w: 80, h: 80 },
+      { name: 'Mini shoulder bag tan', color: '#b8864e', vibe: 'classic', w: 80, h: 80 },
+      { name: 'Tote bag black', color: '#111', vibe: 'practical chic', w: 92, h: 100 },
+      { name: 'Tote bag canvas', color: '#d4c5a9', vibe: 'downtown intellectual', w: 92, h: 100 },
+      { name: 'Clutch black satin', color: '#111', vibe: 'evening', w: 95, h: 58 },
+      { name: 'Clutch gold', color: '#d4a017', vibe: 'maximalist evening', w: 95, h: 58 },
+      { name: 'Belt bag black', color: '#111', vibe: 'ready for anything', w: 82, h: 68 },
+      { name: 'Structured bag black', color: '#111', vibe: 'boss', w: 100, h: 80 },
+      { name: 'Bucket bag tan', color: '#b8864e', vibe: 'off-duty', w: 85, h: 92 },
+      { name: 'Half-moon bag', color: '#8b1a1a', vibe: 'artsy', w: 90, h: 72 },
+      { name: 'Chain bag mini', color: '#111', vibe: 'rock evening', w: 78, h: 72 },
+      { name: 'Backpack mini leather', color: '#111', vibe: 'practical cool', w: 80, h: 90 },
+      { name: 'Oversized tote leather', color: '#111', vibe: 'city power', w: 100, h: 105 },
+    ]
+  },
+  {
+    id: 'glasses', label: 'Eyewear',
+    items: [
+      { name: 'Cat-eye sunnies black', color: '#111', vibe: 'glamour', w: 95, h: 40 },
+      { name: 'Cat-eye sunnies tortoise', color: '#5a3018', vibe: 'retro glamour', w: 95, h: 40 },
+      { name: 'Round tinted brown', color: '#5a3018', vibe: 'intellectual', w: 82, h: 40 },
+      { name: 'Round tinted yellow', color: '#d4a017', vibe: 'downtown artist', w: 82, h: 40 },
+      { name: 'Oversized square sunnies', color: '#111', vibe: 'seventies cool', w: 100, h: 42 },
+      { name: 'Thin rimless glasses', color: '#c8c8c8', vibe: 'cerebral', w: 82, h: 35 },
+      { name: 'Thick square frames', color: '#111', vibe: 'director', w: 88, h: 40 },
+      { name: 'Blue-light glasses', color: '#4a6fa5', vibe: 'intellectually productive', w: 85, h: 38 },
+    ]
+  },
+  {
+    id: 'belts', label: 'Belts',
+    items: [
+      { name: 'Logo belt', color: '#111', vibe: 'fashion insider', w: 118, h: 32 },
+      { name: 'Black leather belt thin', color: '#111', vibe: 'classic', w: 120, h: 28 },
+      { name: 'Black leather belt thin wide', color: '#111', vibe: 'powerful', w: 120, h: 38 },
+      { name: 'Gold buckle belt', color: '#b8864e', vibe: 'old money', w: 120, h: 32 },
+      { name: 'Corset belt black', color: '#111', vibe: 'victorian goth', w: 110, h: 60 },
+      { name: 'Chain belt silver', color: '#c8c8c8', vibe: 'nineties revival', w: 115, h: 32 },
+      { name: 'Cargo belt', color: '#7a7a50', vibe: 'utility', w: 115, h: 30 },
+    ]
+  },
+  {
+    id: 'gloves', label: 'Gloves',
+    items: [
+      { name: 'Opera gloves black', color: '#111', vibe: 'old Hollywood', w: 55, h: 175 },
+      { name: 'Opera gloves ivory', color: '#f5efdf', vibe: 'old Hollywood glam', w: 55, h: 175 },
+      { name: 'Leather driving gloves black', color: '#111', vibe: 'quietly powerful', w: 50, h: 90 },
+      { name: 'Fingerless lace gloves', color: '#111', vibe: 'dark romantic', w: 48, h: 85 },
+    ]
+  },
+  {
+    id: 'jewellery', label: 'Jewellery',
+    items: [
+      { name: 'Hoop earrings gold small', color: '#d4a017', vibe: 'classic chic', w: 45, h: 45 },
+      { name: 'Hoop earrings gold large', color: '#d4a017', vibe: 'power jewellery', w: 55, h: 55 },
+      { name: 'Hoop earrings silver', color: '#c8c8c8', vibe: 'downtown', w: 50, h: 50 },
+      { name: 'Stud earrings pearl', color: '#f0ede8', vibe: 'quiet luxury', w: 35, h: 35 },
+      { name: 'Drop earrings crystal', color: '#c8e8f0', vibe: 'evening femme', w: 35, h: 55 },
+      { name: 'Ear cuff silver', color: '#c8c8c8', vibe: 'edgy', w: 30, h: 38 },
+      { name: 'Statement earrings gold', color: '#d4a017', vibe: 'maximalist', w: 40, h: 60 },
+      { name: 'Gold ring stacked', color: '#d4a017', vibe: 'rich girl', w: 38, h: 38 },
+      { name: 'Signet ring gold', color: '#d4a017', vibe: 'old money', w: 35, h: 35 },
+      { name: 'Chunky silver rings', color: '#c8c8c8', vibe: 'art student', w: 38, h: 38 },
+      { name: 'Tennis bracelet', color: '#c8c8c8', vibe: 'quiet luxury', w: 60, h: 28 },
+      { name: 'Gold bangle', color: '#d4a017', vibe: 'seventies', w: 55, h: 32 },
+      { name: 'Watch black', color: '#111', vibe: 'sporty chic', w: 50, h: 42 },
+      { name: 'Watch gold', color: '#d4a017', vibe: 'old money', w: 50, h: 42 },
+    ]
+  },
+  {
+    id: 'scarves', label: 'Scarves',
+    items: [
+      { name: 'Monogram scarf', color: '#d4a017', vibe: 'fashion literate', w: 105, h: 75 },
+      { name: 'Wool scarf black', color: '#111', vibe: 'winter intellectual', w: 120, h: 45 },
+      { name: 'Plaid wool scarf', color: '#8b6914', vibe: 'literary', w: 120, h: 45 },
+      { name: 'Silk headscarf printed', color: '#c87878', vibe: 'retro glam', w: 105, h: 105 },
+      { name: 'Silk headscarf black', color: '#111', vibe: 'mysterious', w: 105, h: 105 },
+      { name: 'Oversized blanket scarf', color: '#c2a882', vibe: 'cosy editorial', w: 130, h: 55 },
+      { name: 'Satin hair ribbon', color: '#111', vibe: 'feminine touch', w: 80, h: 45 },
+    ]
+  }
+];
+
+const supercategories = [
+  { name: "Iconic Pieces", cats: ["iconic-club", "iconic-tun", "iconic-movies-tv", "iconic-music", "iconic-cartoons"] },
+  { name: "Tops", cats: ["tops-basic", "tops-shirts", "tops-knitwear", "tops-statement"] },
+  { name: "Bottoms", cats: ["bottoms-trousers", "bottoms-jeans", "bottoms-skirts"] },
+  { name: "Dresses & Jumpsuits", cats: ["dresses"] },
+  { name: "Outerwear", cats: ["jackets"] },
+  { name: "Shoes", cats: ["shoes-flat", "shoes-heels"] },
+  { name: "Accessories", cats: ["bags", "belts", "neck", "scarves", "jewellery", "glasses", "hats", "gloves"] }
+];
+
+const verdicts = {
+  'yes, and?': { line: "Yes, and?", sub: "You did that. No further questions, no follow-up needed." },
+  'club kid': { line: "Out past the point of explaining yourself.", sub: "The shirt already said everything you needed it to." },
+  'iconic villain era': { line: "Irresistible sabotage.", sub: "You turned a Burn Book prank into a school-wide trend. Everyone is cutting holes in their shirts tomorrow." },
+  'what like its hard': { line: "Whoever said orange was the new pink was seriously disturbed.", sub: "Law school, but make it high fashion." },
+  'thirty flirty and thriving': { line: "Thirty, flirty, and thriving.", sub: "Wished on the dust, woke up in the dream. Wrapping paper never looked so good." },
+  'spirit fingers': { line: "Spirit fingers, full commitment.", sub: "Captain energy, cheer squad choreography, and zero room for second place." },
+  'taste maker': { line: "Heartbreak is the motif.", sub: "Platform boots high enough to look down on your ex's new era. Short n' sweet, but completely lethal." },
+  'sweetener': { line: "God is a woman, and she's wearing pastels.", sub: "Oversized silhouette, high ponytail energy, and zero tolerance for anyone else's drama." },
+  'as if': { line: "A totally important designer.", sub: "You don't rely on mirrors, you rely on Polaroids. Flawlessly curated." },
+  'queen bee': { line: "You can go now.", sub: "Dictator of taste. Tights are not pants, and this cafeteria is not a democracy. Bow down." },
+  'a little bit dramatic': { line: "She doesn't even go here.", sub: "You wore the tee. You get to say the line. That's the whole deal." },
+  'thank u, next': { line: "One taught me love, one taught me patience, and this fit taught me closure.", sub: "Grateful, unbothered, dressed for the plot twist." },
+  'i go both ways': { line: "I go both ways.", sub: "Sweet on the surface, something feral underneath. You knew exactly what this top does." },
+  'it-girl immunity': { line: "I have to go.", sub: "You completely ignored the dress code, missed curfew, and somehow still made the front page." },
+  'couldnt help but wonder': { line: "Looking for love and vintage labels.", sub: "Your shoes cost more than your rent, you think in monologues, and you're entirely fine with that." },
+  'bumpin that': { line: "360 party girl.", sub: "Smudged eyeliner, a dead phone battery, and an absolutely unapologetic attitude. Very that." },
+  'are you wearing the': { line: "The Chanel boots? Yeah, you are.", sub: "You sold your soul to the runway, and honestly? It was a great trade." },
+  'cerulean': { line: "It's not just blue.", sub: "It's not lapis, it's actually cerulean. And you know exactly how many millions of dollars it represents." },
+  'Y2K downtown': { line: "Low-rise and unbothered.", sub: "You skipped the revival and went straight to the source." },
+  'Y2K revival': { line: "You time-traveled and packed light.", sub: "Butterfly clips optional, attitude mandatory." },
+  'academic': { line: "Tenure-track, never tenured.", sub: "You dress like the footnotes are more interesting than the essay." },
+  'all eyes on you': { line: "The room has one focal point.", sub: "And it isn't the chandelier." },
+  'androgynous': { line: "Neither box fits, so you built your own.", sub: "Tailoring with zero interest in your expectations." },
+  'art student': { line: "Critique-proof and self-aware about it.", sub: "Looks like a concept. Reads like confidence." },
+  'artsy': { line: "Gallery-opening energy, every day of the week.", sub: "You accessorize like everything's a found object." },
+  'arty': { line: "A little unfinished, completely on purpose.", sub: "The kind of look that gets explained in a statement." },
+  'autumn rich': { line: "Cashmere weather, old-money posture.", sub: "You dress like the leaves changed just for you." },
+  'autumn witchy': { line: "Spell work, but make it tailored.", sub: "Equal parts harvest and hex." },
+  'bold femme': { line: "Soft is not the same as quiet.", sub: "This look has opinions, and isn't whispering them." },
+  'borrowed from the boys': { line: "Stole the silhouette, kept the upper hand.", sub: "Menswear, translated without permission." },
+  'borrowed genius': { line: "Dressed like the smartest person left the building first.", sub: "Oversized on purpose, undersold never." },
+  'boss': { line: "Nobody's checking your badge twice.", sub: "The blazer already had the final say." },
+  'camp cowgirl': { line: "Rodeo, but the runway kind.", sub: "You committed to the bit, and the bit won." },
+  'cerebral': { line: "Reads like a thesis, looks like a vibe.", sub: "Quiet, sharp, slightly unreachable." },
+  'city power': { line: "The skyline agrees with your outfit.", sub: "Built for boardrooms and the commute after." },
+  'classic': { line: "Timelessly, defiantly yourself.", sub: "Trends will catch up eventually. You won't notice." },
+  'classic chic': { line: "The kind of look that never has to explain itself.", sub: "Polished, simple, correct." },
+  'classic dyke': { line: "A walking archive of the aesthetic.", sub: "Decades of style history just nodded in approval." },
+  'cool': { line: "Unbothered and somehow still on time.", sub: "You make minimal effort look like a whole philosophy." },
+  'cool Americana': { line: "Open road, denim, zero apologies.", sub: "Built for a truck you may not even own." },
+  'cosy editorial': { line: "Soft enough for the couch, sharp enough for the shoot.", sub: "Comfort with a stylist attached." },
+  'cosy rich': { line: "Expensive blankets, quietly bigger feelings.", sub: "Warm color, warmer bank balance." },
+  'dangerous': { line: "Looks like trouble. Reads like intention.", sub: "Nothing about this outfit is an accident." },
+  'dangerous romantic': { line: "Love letters written in something sharper than ink.", sub: "Beautiful, and a little bit of a warning." },
+  'dangerous woman': { line: "You came, you saw, you left with the album.", sub: "Soft on the surface. A whole era underneath." },
+  'dark cowgirl': { line: "The frontier, after dark.", sub: "Boots that have clearly seen things." },
+  'dark romantic': { line: "Beautiful and faintly ominous.", sub: "This is journal-entry dressing, and the entry is very good." },
+  'delicate': { line: "Small details doing enormous work.", sub: "Subtlety as a flex." },
+  'director': { line: "You're not in the scene. You're framing it.", sub: "Glasses on, opinions louder than the dialogue." },
+  'downtown': { line: "Cool without trying, which took a lot of trying.", sub: "Looks like 2am and a good decision." },
+  'downtown art': { line: "Studio-visit dressing, gallery-opening confidence.", sub: "Paint-splatter energy without the paint." },
+  'downtown artist': { line: "Tinted glasses, untinted opinions.", sub: "Looks like you make something nobody's seen yet." },
+  'downtown intellectual': { line: "Canvas tote, sharper argument inside.", sub: "Looks like you read the whole article, not just the headline." },
+  'dramatic': { line: "Subtle was never the assignment.", sub: "Every seam here is doing a monologue." },
+  'dramatic entrance': { line: "The door opened, and so did the conversation.", sub: "You don't walk into rooms. You announce them." },
+  'edgy': { line: "A little sharp around the edges, on purpose.", sub: "Smooth would have been boring." },
+  'editorial': { line: "You've clearly been shot by someone whose name I should know.", sub: "This look belongs in print, not just in public." },
+  'effortless': { line: "Looks like you didn't think about it.", sub: "We both know you did. It worked." },
+  'effortless chic': { line: "Carelessly perfect, which took real work.", sub: "The most elusive look there is." },
+  'effortlessly powerful': { line: "Power dressing without the dressing-up part.", sub: "Authority that never had to raise its voice." },
+  'effortlessly sexy': { line: "Confidence doing most of the heavy lifting.", sub: "The clothes are just along for the ride." },
+  'eighties revival': { line: "Shoulders first, questions later.", sub: "Power dressing's most dramatic decade, reissued." },
+  'evening': { line: "Daylight was never going to be enough for this.", sub: "Built for rooms with better lighting." },
+  'evening editorial': { line: "Shot at midnight, printed in gloss.", sub: "This isn't an outfit, it's a spread." },
+  'evening femme': { line: "Soft lighting was made for exactly this.", sub: "Glamour with somewhere to be." },
+  'extremely online': { line: "This fit has a whole fandom.", sub: "Built for screenshots, not just sidewalks." },
+  'fashion insider': { line: "You knew before the campaign even dropped.", sub: "Logo recognized only by people who'd know." },
+  'fashion literate': { line: "You read fashion the way some people read novels.", sub: "Footnotes included, references intentional." },
+  'fashion-forward': { line: "Six months ahead and not waiting for company.", sub: "Everyone else will catch up eventually." },
+  'feminine danger': { line: "Pretty is doing a lot of the threatening here.", sub: "Sheer, soft, and not to be underestimated." },
+  'feminine touch': { line: "One small detail, doing all the talking.", sub: "Restraint as its own kind of statement." },
+  'femme': { line: "Femme as a weapon, a language, a stance.", sub: "You know exactly what youre doing with it." },
+  'femme confident': { line: "No performance. Just presence.", sub: "This look doesn't need an audience to work." },
+  'french girl': { line: "Classically, maddeningly cool.", sub: "The stripes were always going to be the right call." },
+  'french intellectual': { line: "Reads philosophy on the metro, looks incredible doing it.", sub: "Effortless, and charmingly a little condescending." },
+  'glamour': { line: "Old-school shine, no apology for it.", sub: "Built to catch light and hold a room." },
+  'going out': { line: "This outfit has somewhere to be at 11pm.", sub: "Daylight has no use for it." },
+  'intellectual': { line: "You dress like you have opinions about architecture.", sub: "Smart, deliberate, a little intimidating." },
+  'intellectually productive': { line: "Dressed for the deep-focus playlist.", sub: "Looks like four tabs open and a finished thesis." },
+  'italian summer': { line: "Linen, gold, and zero urgency.", sub: "Built for a coastline you haven't found yet." },
+  'literary': { line: "Your outfit is basically a first edition.", sub: "Well-read, well-dressed, slightly unavailable." },
+  'literary weekend': { line: "Cabin, book, sweater, repeat.", sub: "Looks like the plot thickens slowly, and on purpose." },
+  'maximalist': { line: "More is more is more is more.", sub: "You are the look. The look is you." },
+  'maximalist angel': { line: "Soft chaos with very good lighting.", sub: "Too much, in exactly the right direction." },
+  'maximalist evening': { line: "Subtlety took the night off.", sub: "Built to be seen from across the room." },
+  'maximalist villain': { line: "A coat, a plan, a cinematic entrance.", sub: "Villain arc, but make it fashion." },
+  'minimalist': { line: "Everything unnecessary already got edited out.", sub: "What's left is doing all the work." },
+  'minimalist power': { line: "Quiet lines, loud results.", sub: "No embellishment needed when the cut is correct." },
+  'mysterious': { line: "No one knows you, and you like it that way.", sub: "Long coat, no explanation, perfect." },
+  'nineties': { line: "The nineties were right about almost everything.", sub: "Slip, silver, and cool air." },
+  'nineties cool': { line: "Slouchy on purpose, sharp underneath.", sub: "Looks borrowed. Definitely isn't." },
+  'nineties goth': { line: "Velvet choker, permanent eye-roll.", sub: "Dark, a little bored, completely correct." },
+  'nineties revival': { line: "You brought the decade back without the disclaimer.", sub: "Chrome, low-rise, no notes." },
+  'nocturnal': { line: "Daylight just isn't your jurisdiction.", sub: "This look only really exists after dark." },
+  'nocturnal glamour': { line: "You were made for after dark.", sub: "Daytime hasn't earned this outfit yet." },
+  'off-duty': { line: "Technically not working. Visibly still winning.", sub: "The good kind of low effort." },
+  'off-duty cool': { line: "Looks thrown on. Wasn't.", sub: "The laziest-looking outfit took the most thought." },
+  'off-duty editorial': { line: "Looks like a candid. Was fully styled.", sub: "Off the clock, on the record." },
+  'off-duty luxury': { line: "Resting, but in cashmere.", sub: "Even doing nothing, this outfit is working." },
+  'old Hollywood': { line: "You arrived. Everyone turned.", sub: "A different, glossier era recognizes you." },
+  'old Hollywood glam': { line: "Studio lighting, even outdoors.", sub: "This look has its own publicist." },
+  'old money': { line: "Inherited taste, or an impeccable fake.", sub: "Either way, nobody's asking which." },
+  'parisian': { line: "Effortlessly Parisian, in the best possible cliché.", sub: "We mean it as a compliment, and you know it." },
+  'perennial chic': { line: "This won't date. It already decided not to.", sub: "A look with no expiration." },
+  'polished': { line: "Every edge accounted for.", sub: "Looks easy. Took a mirror and a plan." },
+  'power': { line: "The room recalibrates when you walk in.", sub: "This outfit has a seven-point agenda, and it's winning." },
+  'power androgyny': { line: "Neither — and therefore everything.", sub: "Shoulders, fluidity, the confidence of someone who picked their own rules." },
+  'power dressing': { line: "Dressed for a negotiation you're going to win.", sub: "Every line in this outfit means business." },
+  'power femme': { line: "Femininity here isn't softness. It's precision.", sub: "Every detail is a choice, and you made them all." },
+  'power jewellery': { line: "Small pieces, outsized authority.", sub: "Metal doing the talking your face doesn't have to." },
+  'powerful': { line: "This outfit doesn't ask for the room. It takes it.", sub: "Quietly, completely, no discussion." },
+  'practical chic': { line: "Built to survive the day and still look deliberate.", sub: "Function first. But style never left the building." },
+  'practical cool': { line: "Built to actually do something.", sub: "Looks effortless because it has to be." },
+  'preppy subverted': { line: "A uniform with a small rebellion stitched in.", sub: "Old rules, new owner." },
+  'princess energy': { line: "Tulle entered the chat.", sub: "Soft, a little extra, entirely unbothered by 'too much.'" },
+  'punk adjacent': { line: "Close enough to the riot to feel it.", sub: "Not a full uprising. But you're definitely on the flyer." },
+  'punk heritage': { line: "This plaid remembers where it came from.", sub: "Tailored rebellion with a long memory." },
+  'quiet': { line: "Says almost nothing, but means every detail.", sub: "Restraint, deployed correctly." },
+  'quiet luxury': { line: "Expensive, but without the announcement.", sub: "The most intimidating kind of wealth." },
+  'quiet luxury peak': { line: "The version people try to copy and can't.", sub: "No logos needed. None of this needs a logo." },
+  'quiet subversion': { line: "Looks correct. But not quite.", sub: "The rules were followed just enough to break one cleanly." },
+  'quietly powerful': { line: "Doesn't raise its voice. Doesn't need to.", sub: "The kind of power that never explains itself." },
+  'ready for anything': { line: "Equipped for a plan that hasn't happened yet.", sub: "Practical, prepared, weirdly stylish about it." },
+  'regency romantic': { line: "Empire waist, modern audacity.", sub: "Looks like a period drama that knows it's a period drama." },
+  'retro glam': { line: "Borrowed the era and improved it.", sub: "Vintage shine, modern nerve." },
+  'retro glamour': { line: "Old film, new leading role.", sub: "This look has its own opening credits." },
+  'rich girl': { line: "Looks expensive. And couldn't care less.", sub: "Gold doesn't need a signature." },
+  'riot grrrl': { line: "Loud, proud, a little threatening.", sub: "You dress like the patriarchy owes you money." },
+  'rock': { line: "Leather, attitude, a soundtrack only you can hear.", sub: "Volume at max before you've even spoken." },
+  'rock evening': { line: "Backstage energy, front-row look.", sub: "Built for a night that's going to be loud." },
+  'romantic intellectual': { line: "Poetry, but perfectly tailored.", sub: "Feelings with footnotes." },
+  'school-to-stage': { line: "Uniform on the outside, performance underneath.", sub: "Looks like detention. Reads like a debut." },
+  'sculptural': { line: "Less an outfit, more a structure you're wearing.", sub: "Architecture got dressed and went outside." },
+  'sculptural minimalism': { line: "The shape did all the work. The color stayed quiet.", sub: "Looks carved, not sewn." },
+  'seventies': { line: "The right decade, finally.", sub: "Brown, camel, and absolute confidence." },
+  'seventies cool': { line: "Sun-bleached and somehow still sharp.", sub: "Looks like it was borrowed from an album cover." },
+  'sharp': { line: "Every line on this outfit has something to say.", sub: "Crisp, precise, a little dangerous." },
+  'soft': { line: "Gentle, but never accidental.", sub: "Comfort, dressed up exactly as much as needed." },
+  'soft butch': { line: "Comfortable and completely calculated.", sub: "You make ease look like a whole lifestyle." },
+  'soft danger': { line: "Sweet until you look twice.", sub: "Beauty doing quiet, serious work here." },
+  'soft elegance': { line: "Nothing here is shouting, and everything is right.", sub: "Elegance that doesn't need volume." },
+  'soft romantic': { line: "Looks like a love letter, reads like restraint.", sub: "Romance, deliberately left gentle." },
+  'sporty chic': { line: "Athletic cut, zero intention of running anywhere.", sub: "Built for the bench, not the track." },
+  'sporty-chic': { line: "Athletic fabric, everyday pace.", sub: "Looks fast. Moves at brunch speed." },
+  'summer icon': { line: "This look is the season's highlight.", sub: "White, bright, and not going anywhere." },
+  'summer minimalist': { line: "Less fabric, same amount of intention.", sub: "Heat-proof and still thought through." },
+  'summertime': { line: "Warm-weather's favorite outfit.", sub: "Built for long days and even longer light." },
+  'theatrical': { line: "You didn't come here to blend in with the crowd.", sub: "The exit is a look. The look is the exit." },
+  'theatrical femme': { line: "Soft, but staged.", sub: "Every detail here has its own blocking." },
+  'theatrical goth': { line: "Tragedy, but make it tulle.", sub: "Looks like act three." },
+  'theatrical maximalist': { line: "Feathers, drama, a full production.", sub: "This look needs a curtain call." },
+  'theatrical soft': { line: "Gentle, but still wants an audience.", sub: "Softness here doesn't mean restraint." },
+  'tomboy': { line: "Borrowed the cap, kept the edge.", sub: "Comfortable in every sense of the word." },
+  'utilitarian chic': { line: "Function with very good taste.", sub: "Pockets you actually use, looks you didn't expect." },
+  'utility': { line: "Built like it's about to get dirty.", sub: "Every strap and buckle earned its place." },
+  'victorian goth': { line: "Mourning dress, modern grudge.", sub: "High collar, higher standards." },
+  'weaponised femininity': { line: "Soft on the outside. Absolute menace within.", sub: "Pretty in a way that makes people reconsider their choices." },
+  'winter intellectual': { line: "Cold weather, warmer opinions.", sub: "Looks like you read in front of a fireplace, on purpose." },
+  'witchy': { line: "Spellbound, intentionally.", sub: "This look knows something you don't." },
+  'generosity era': { line: "Generosity is a lifestyle, darling.", sub: "You'd give someone the dress off your back — after a full alterations pass, obviously." },
+  'nature\'s touch': { line: "Grown, not manufactured.", sub: "Petals, ribbon, and a little bit of forest magic. Effortless in the way that takes real effort." },
+  'magic winx': { line: "Believix achieved.", sub: "You didn't just get dressed. You transformed." },
+  'tune it out': { line: "Main character, headphones in.", sub: "Sparkly, sharp-edged, and completely unbothered by the noise." },
+  'no tears left to cry': { line: "Right off the earth, dust myself off.", sub: "You already survived the hard part. Now you're just twirling." },
+  'default': { line: "Unmistakably, unrepeatably you.", sub: "This combination doesn't have a name yet. It will." },
+};
+
+const verdictsUK = {
+  'yes, and?': { line: "Так, і що?", sub: "Ти це зробила. Більше питань немає." },
+  'club kid': { line: "Уже за межею пояснень.", sub: "Футболка вже сказала все, що треба." },
+  'iconic villain era': { line: "Невстояти перед саботажем.", sub: "Ти перетворила розіграш із Регіною Джордж на масовий тренд. Завтра всі прийдуть із вирізами на топах." },
+  'what like its hard': { line: "Той, хто сказав, що рожевий — це несмак, помилявся.", sub: "Гарвардський юридичний, але зроби це фЕШОН." },
+  'thirty flirty and thriving': { line: "Тридцять, кокетливо і на висоті.", sub: "Загадала бажання на золотий пил і прокинулась у мрії. Обгортковий папір ще ніколи не мав такого вигляду." },
+  'spirit fingers': { line: "Пальчики-іскорки, повна віддача.", sub: "Енергія капітанки, хореографія черлідингу, і жодного місця для другого місця." },
+  'taste maker': { line: "Мотив образу — розбите серце.", sub: "Чоботи на платформі достатньо високі, щоб дивитися згори вниз на твого колишнього. Коротко, солодко, смертельно." },
+  'sweetener': { line: "God is a woman, і вона носить пастель.", sub: "Оверсайз силует, енергія високого хвоста і нуль толерантності до чужої драми." },
+  'as if': { line: "Дуже важливий дизайнер.", sub: "Ти не довіряєш дзеркалам, ти довіряєш полароїдам. Бездоганно підібрано." },
+  'queen bee': { line: "Тепер можеш іти.", sub: "Диктаторка смаку. Колготки — це не штани, а ця їдальня — не демократія. Схиліть голови." },
+  'a little bit dramatic': { line: "Вона взагалі тут не вчиться.", sub: "Ти вдягнула футболку. Тепер маєш право сказати цю фразу. Ось і вся угода." },
+  'thank u, next': { line: "Один навчив мене любові, інший — терпінню, а цей образ навчив мене відпускати.", sub: "Вдячна, незворушна, вдягнена для несподіваного повороту сюжету." },
+  'i go both ways': { line: "Я і туди, і сюди.", sub: "Солодка на вигляд, дещо хижа всередині. Ти точно знала, що робить цей топ." },
+  'it-girl immunity': { line: "Мені треба йти.", sub: "Ти повністю проігнорувала дрес-код, пропустила дедлайн і все одно опинилася на головній сторінці." },
+  'couldnt help but wonder': { line: "У пошуках кохання та вінтажних брендів.", sub: "Твої туфлі коштують дорожче за оренду, ти мислиш монологами, і тебе це влаштовує." },
+  'bumpin that': { line: "Енергія 360 party girl.", sub: "Розмазана підводка, розряджений телефон і абсолютно безкомпромісне ставлення до життя." },
+  'are you wearing the': { line: "Ті самі чоботи від Chanel? Так.", sub: "Ти продала душу подіуму, і, чесно кажучи? Це був чудовий обмін." },
+  'cerulean': { line: "Це не просто синій.", sub: "Це справжній лазуровий. І ти точно знаєш, скільки мільйонів доларів він представляє." },
+  'Y2K downtown': { line: "Низька посадка і нуль турбот.", sub: "Ти пропустила відродження тренду і звернулася прямо до першоджерела." },
+  'Y2K revival': { line: "Подорож у часі без зайвого багажу.", sub: "Шпильки-метелики за бажанням, впевненість — обов'язкова." },
+  'academic': { line: "Шлях до професури, але без посади.", sub: "Ти одягаєшся так, ніби виноски цікавіші за сам есей." },
+  'all eyes on you': { line: "У кімнаті лише один фокус.", sub: "І це далеко не люстра." },
+  'androgynous': { line: "Жодні рамки не підходять, тому ти створила свої.", sub: "Крій, якому абсолютно байдуже на чужі очікування." },
+  'art student': { line: "Захищена від критики та свідома цього.", sub: "Виглядає як концепт. Читається як впевненість." },
+  'artsy': { line: "Енергія відкриття галереї на кожен день.", sub: "Ти носиш аксесуари так, ніби це знайдені арт-об'єкти." },
+  'arty': { line: "Трохи незавершено, і це абсолютно навмисно.", sub: "Такий образ зазвичай потребує кураторського тексту-пояснення." },
+  'autumn rich': { line: "Погода для кашеміру, постава старих грошей.", sub: "Ти одягаєшся так, ніби листя змінило колір спеціально для тебе." },
+  'autumn witchy': { line: "Магія, але з ідеальним кроєм.", sub: "Рівні пропорції врожаю та прокляття." },
+  'bold femme': { line: "М'якість не означає тишу.", sub: "Цей образ має власну думку і не збирається її приховувати." },
+  'borrowed from the boys': { line: "Вкрала силует, залишила за собою перевагу.", sub: "Чоловічий одяг, перекладений без дозволу." },
+  'borrowed genius': { line: "Виглядаєш так, ніби найрозумніша людина щойно вийшла.", sub: "Оверсайз навмисно, недооцінка ніколи." },
+  'boss': { line: "Ніхто не буде перевіряти твою перепустку двічі.", sub: "Твій піджак вже сказав останнє слово." },
+  'camp cowgirl': { line: "Родео, але на подіумі.", sub: "Ти повірила в образ, і він переміг." },
+  'cerebral': { line: "Читається як дисертація, виглядає як вайб.", sub: "Тиха, гостра, трохи недосяжна." },
+  'city power': { line: "Лінія горизонту погоджується з твоїм вбранням.", sub: "Створено для залів засідань і маршрутів після них." },
+  'classic': { line: "Поза часом, зухвало справжня.", sub: "Тренди колись наздоженуть. Ти навіть не помітиш." },
+  'classic chic': { line: "Образ, якому ніколи не потрібно нічого пояснювати.", sub: "Відполіровано, просто, правильно." },
+  'classic dyke': { line: "Живий архів естетики.", sub: "Десятиліття історії стилю щойно схвально кивнули." },
+  'cool': { line: "Непохитна і якимось чином все ще вчасно.", sub: "Ти робиш так, щоб мінімальні зусилля виглядали як ціла філософія." },
+  'cool Americana': { line: "Відкрита дорога, денім і жодних вибачень.", sub: "Створено для пікапа, якого в тебе, можливо, навіть немає." },
+  'cosy editorial': { line: "Достатньо м'яко для дивана, достатньо гостро для зйомки.", sub: "Комфорт із власним стилістом." },
+  'cosy rich': { line: "Дорогі ковдри, тихо великі почуття.", sub: "Теплі кольори, ще тепліший банківський рахунок." },
+  'dangerous': { line: "Виглядає як проблема. Читається як намір.", sub: "Нічого в цьому образі не є випадковістю." },
+  'dangerous romantic': { line: "Любовні листи, написані чимось гострішим за чорнило.", sub: "Красиво, але це вже попередження." },
+  'dangerous woman': { line: "Ти прийшла, побачила, пішла з альбомом.", sub: "М'яка на поверхні. Ціла епоха всередині." },
+  'dark cowgirl': { line: "Дикий Захід після настання темряви.", sub: "Чоботи, які явно бачили багато." },
+  'dark romantic': { line: "Прекрасна і злегка зловісна.", sub: "Це одяг для щоденника, і запис дуже гарний." },
+  'delicate': { line: "Дрібні деталі роблять величезну роботу.", sub: "Витонченість як демонстрація сили." },
+  'director': { line: "Ти не в сцені. Ти її вибудовуєш.", sub: "Окуляри на місці, погляди гучніші за діалог." },
+  'downtown': { line: "Крута без зусиль, на що пішло багато зусиль.", sub: "Виглядає як друга ночі і хороше рішення." },
+  'downtown art': { line: "Одяг для студії, впевненість для галереї.", sub: "Енергія бризок фарби без самої фарби." },
+  'downtown artist': { line: "Тоновані окуляри, нетоновані думки.", sub: "Виглядаєш так, ніби створюєш те, чого ще ніхто не бачив." },
+  'downtown intellectual': { line: "Полотняний шопер, гостріший аргумент всередині.", sub: "Виглядаєш так, ніби читаєш статтю повністю, а не лише заголовок." },
+  'dramatic': { line: "Тонкість ніколи не була в завданні.", sub: "Кожен шов тут веде монолог." },
+  'dramatic entrance': { line: "Двері відчинилися, і розмова теж.", sub: "Ти не заходиш у кімнати. Ти проголошуєш свою присутність." },
+  'edgy': { line: "Трохи гостро на краях, навмисно.", sub: "Гладко було б просто нудно." },
+  'editorial': { line: "Тебе явно знімав хтось, чиє ім'я я повинна знати.", sub: "Цей образ належить глянцю, а не просто вулиці." },
+  'effortless': { line: "Виглядає так, ніби ти навіть не думала.", sub: "Ми обидві знаємо, що думала. Це спрацювало." },
+  'effortless chic': { line: "Безтурботно ідеально, що вимагало реальної роботи.", sub: "Найбільш невловимий образ з усіх існуючих." },
+  'effortlessly powerful': { line: "Владний стиль без фази одягання.", sub: "Авторитет, якому ніколи не доводилося підвищувати голос." },
+  'effortlessly sexy': { line: "Впевненість робить більшу частину роботи.", sub: "Одяг просто йде поруч." },
+  'eighties revival': { line: "Спочатку плечі, запитання потім.", sub: "Найдраматичніше десятиліття power dressing повертається." },
+  'evening': { line: "Денного світла ніколи б не вистачило для цього.", sub: "Створено для кімнат з кращим освітленням." },
+  'evening editorial': { line: "Знято опівночі, надруковано в глянці.", sub: "Це не просто вбрання, це розворот." },
+  'evening femme': { line: "М'яке освітлення було створено саме для цього.", sub: "Гламур, якому є куди піти." },
+  'extremely online': { line: "У цього лука є цілий фандом.", sub: "Створено для скріншотів, а не просто тротуарів." },
+  'fashion insider': { line: "Ти знала ще до виходу кампейну.", sub: "Логотип, який розпізнають лише свої." },
+  'fashion literate': { line: "Ти читаєш моду так, як деякі читають романи.", sub: "Виноски включені, відсилання навмисні." },
+  'fashion-forward': { line: "На шість місяців попереду і не чекаєш на компанію.", sub: "Всі інші колись наздоженуть." },
+  'feminine danger': { line: "Краса тут робить багато тихої погрози.", sub: "Прозоро, ніжно і точно не для недооцінки." },
+  'feminine touch': { line: "Одна маленька деталь робить усю роботу.", sub: "Стриманість як власний стейтмент." },
+  'femme': { line: "Жіночність як зброя, мова та позиція.", sub: "Ти точно знаєш, що з нею робиш." },
+  'femme confident': { line: "Жодної гри. Просто присутність.", sub: "Цьому образу не потрібна аудиторія, щоб працювати." },
+  'french girl': { line: "Класично, до божевілля круто.", sub: "Смужка завжди була правильним рішенням." },
+  'french intellectual': { line: "Читає філософію в метро, виглядає при цьому неймовірно.", sub: "Легко і чарівно трохи зверхньо." },
+  'glamour': { line: "Олдскульний блиск, жодних вибачень.", sub: "Створено, щоб ловити світло і тримати кімнату." },
+  'going out': { line: "Цьому вбранню є куди піти об 11 вечора.", sub: "Денне світло йому не потрібне." },
+  'intellectual': { line: "Ти одягаєшся так, ніби маєш думку про архітектуру.", sub: "Розумна, виважена, трохи лякає." },
+  'intellectually productive': { line: "Одягнена для плейлиста глибокого фокусу.", sub: "Виглядає як чотири відкриті вкладки і завершена дисертація." },
+  'italian summer': { line: "Льон, золото і жодного поспіху.", sub: "Створено для узбережжя, яке ти ще не знайшла." },
+  'literary': { line: "Твій образ – це буквально перше видання.", sub: "Начитана, добре вдягнена, трохи недоступна." },
+  'literary weekend': { line: "Будиночок, книга, светр, повторити.", sub: "Виглядає так, ніби сюжет закручується повільно і навмисно." },
+  'maximalist': { line: "Більше – це більше, і більше, і більше.", sub: "Ти і є образ. Образ і є ти." },
+  'maximalist angel': { line: "М'який хаос із дуже хорошим освітленням.", sub: "Занадто багато, але в абсолютно правильному напрямку." },
+  'maximalist evening': { line: "Стриманість взяла вихідний.", sub: "Створено, щоб тебе побачили з іншого кінця кімнати." },
+  'maximalist villain': { line: "Пальто, план і кінематографічний вихід.", sub: "Арка лиходійки, але фЕШОН." },
+  'minimalist': { line: "Усе зайве вже було вирізано.", sub: "Те, що залишилося, робить усю роботу." },
+  'minimalist power': { line: "Тихі лінії, гучні результати.", sub: "Не потрібні прикраси, коли крій правильний." },
+  'mysterious': { line: "Ніхто тебе не знає, і тобі це подобається.", sub: "Довге пальто, жодних пояснень, ідеально." },
+  'nineties': { line: "Дев'яності мали рацію майже в усьому.", sub: "Сліп, срібло і прохолодне повітря." },
+  'nineties cool': { line: "Спеціально недбало, гостро всередині.", sub: "Виглядає як позичене. Точно ні." },
+  'nineties goth': { line: "Оксамитовий чокер, перманентний закот очей.", sub: "Темна, трохи знуджена, абсолютно ідеальна." },
+  'nineties revival': { line: "Ти повернула десятиліття без жодних 'але'.", sub: "Хром, низька посадка, ніяких зауважень." },
+  'nocturnal': { line: "Денне світло просто не твоя юрисдикція.", sub: "Цей образ насправді існує лише після настання темряви." },
+  'nocturnal glamour': { line: "Ти була створена для пізньої ночі.", sub: "День ще не заслужив на цей образ." },
+  'off-duty': { line: "Технічно не працюєш. Але візуально перемагаєш.", sub: "Той правильний тип мінімальних зусиль." },
+  'off-duty cool': { line: "Виглядає так, ніби просто накинуто. Це не так.", sub: "На найбільш лінивий образ пішло найбільше думок." },
+  'off-duty editorial': { line: "Виглядає як випадкове фото. Було повністю стилізовано.", sub: "Поза роботою, але під запис." },
+  'off-duty luxury': { line: "Відпочиває, але в кашемірі.", sub: "Навіть нічого не роблячи, це вбрання працює." },
+  'old Hollywood': { line: "Ти прийшла. Усі обернулися.", sub: "Інша, більш глянцева епоха впізнає тебе." },
+  'old Hollywood glam': { line: "Студійне освітлення, навіть на вулиці.", sub: "У цього образу є власний піарник." },
+  'old money': { line: "Успадкований смак, або бездоганна підробка.", sub: "У будь-якому разі, ніхто не питає, що саме." },
+  'parisian': { line: "Легко паризька, в найкращому значенні кліше.", sub: "Ми вважаємо це компліментом, і ти це знаєш." },
+  'perennial chic': { line: "Це не застаріє. Воно вже вирішило цього не робити.", sub: "Образ без терміну придатності." },
+  'polished': { line: "Кожен край на своєму місці.", sub: "Виглядає просто. Потребувало дзеркала і плану." },
+  'power': { line: "Кімната перекалібровується, коли ти заходиш.", sub: "У цього образу є план із семи пунктів, і він перемагає." },
+  'power androgyny': { line: "Ні те, ні інше — а отже, все.", sub: "Плечі, плинність, впевненість того, хто вибирає власні правила." },
+  'power dressing': { line: "Одягнена для переговорів, які ти виграєш.", sub: "Кожна лінія тут — це бізнес." },
+  'power femme': { line: "Тут жіночність — це не м'якість. Це точність.", sub: "Кожна деталь — це вибір, і ти зробила їх усі." },
+  'power jewellery': { line: "Small pieces, outsized authority.", sub: "Метал говорить те, що не повинно говорити твоє обличчя." },
+  'powerful': { line: "Це вбрання не просить кімнату. Воно її забирає.", sub: "Тихо, повністю, без обговорень." },
+  'practical chic': { line: "Створено, щоб пережити день і все одно виглядати свідомо.", sub: "Функція на першому місці. Але стиль нікуди не зникав." },
+  'practical cool': { line: "Створено для того, щоб насправді щось робити.", sub: "Виглядає легким, бо так має бути." },
+  'preppy subverted': { line: "Уніформа з вшитим маленьким бунтом.", sub: "Старі правила, новий власник." },
+  'princess energy': { line: "Фатин увійшов у чат.", sub: "М'яка, трохи екстра, абсолютно не хвилюється через 'занадто багато'." },
+  'punk adjacent': { line: "Досить близько до бунту, щоб відчути його.", sub: "Не повноцінне повстання. Але ти точно є на флаєрі." },
+  'punk heritage': { line: "Ця клітинка пам'ятає, звідки вона взялася.", sub: "Скроєний бунт із довгою пам'яттю." },
+  'quiet': { line: "Майже нічого не каже, але має на увазі кожну деталь.", sub: "Стриманість, розгорнута правильно." },
+  'quiet luxury': { line: "Дорого, але без оголошень.", sub: "Найбільш лякаючий вид багатства." },
+  'quiet luxury peak': { line: "Це та версія, яку люди намагаються скопіювати і не можуть.", sub: "Логотипи не потрібні. Нічому з цього не потрібен логотип." },
+  'quiet subversion': { line: "Виглядає правильно. Але не зовсім.", sub: "Правила дотримані достатньо, щоб чисто порушити одне з них." },
+  'quietly powerful': { line: "Не підвищує голос. Не потребує цього.", sub: "Тип влади, який ніколи не пояснює себе." },
+  'ready for anything': { line: "Екіпірована для плану, який ще не відбувся.", sub: "Практична, готова, якось дивно стильна при цьому." },
+  'regency romantic': { line: "Завищена талія, сучасна зухвалість.", sub: "Виглядає як історична драма, яка знає, що вона історична драма." },
+  'retro glam': { line: "Запозичила епоху і покращила її.", sub: "Вінтажний блиск, сучасний нерв." },
+  'retro glamour': { line: "Стара плівка, нова головна роль.", sub: "У цього образу є власні початкові титри." },
+  'rich girl': { line: "Виглядає дорого. І абсолютно не переймається цим.", sub: "Золоту не потрібен підпис." },
+  'riot grrrl': { line: "Гучно, гордо, трохи загрозливо.", sub: "Ти одягаєшся так, ніби патріархат винен тобі гроші." },
+  'rock': { line: "Шкіра, ставлення, саундтрек, який чуєш лише ти.", sub: "Гучність на максимум ще до того, як ти заговорила." },
+  'rock evening': { line: "Енергія бекстейджу, образ для першого ряду.", sub: "Створено для ночі, яка буде гучною." },
+  'romantic intellectual': { line: "Поезія, але ідеально скроєна.", sub: "Почуття з виносками." },
+  'school-to-stage': { line: "Уніформа зовні, перфоманс всередині.", sub: "Виглядає як покарання. Читається як дебют." },
+  'sculptural': { line: "Це не стільки одяг, скільки структура, яку ти носиш.", sub: "Архітектура одяглася і вийшла на вулицю." },
+  'sculptural minimalism': { line: "Форма зробила всю роботу. Колір залишився тихим.", sub: "Виглядає так, ніби це вирізьблено, а не зшито." },
+  'seventies': { line: "Правильне десятиліття, нарешті.", sub: "Коричневий, кемел і абсолютна впевненість." },
+  'seventies cool': { line: "Вигоріла на сонці і якимось чином все ще гостра.", sub: "Виглядає так, ніби запозичена з обкладинки платівки." },
+  'sharp': { line: "Кожна лінія на цьому одязі має що сказати.", sub: "Чітко, точно, трохи небезпечно." },
+  'soft': { line: "Ніжна, але ніколи не випадкова.", sub: "Комфорт, нарядний рівно настільки, наскільки треба." },
+  'soft butch': { line: "Зручно і абсолютно вивірено.", sub: "Ти змушуєш легкість виглядати як цілий стиль життя." },
+  'soft danger': { line: "Мила, поки не подивишся двічі.", sub: "Тут краса робить тиху, але серйозну роботу." },
+  'soft elegance': { line: "Тут нічого не кричить, і все правильно.", sub: "Елегантність, якій не потрібна гучність." },
+  'soft romantic': { line: "Виглядає як любовний лист, читається як стриманість.", sub: "Романтика, навмисно залишена ніжною." },
+  'sporty chic': { line: "Спортивний крій, нуль намірів кудись бігти.", sub: "Створено для лавки запасних, а не для треку." },
+  'sporty-chic': { line: "Спортивна тканина, життєвий темп.", sub: "Виглядає швидко. Рухається зі швидкістю бранчу." },
+  'summer icon': { line: "Цей образ – це хайлайт всього сезону.", sub: "Білий, яскравий і нікуди не зникне." },
+  'summer minimalist': { line: "Менше тканини, та сама кількість намірів.", sub: "Термостійка і все ще продумана." },
+  'summertime': { line: "Улюблений одяг теплої погоди.", sub: "Створено для довгих днів і ще довшого світла." },
+  'theatrical': { line: "Ти прийшла сюди не для того, щоб злитися з натовпом.", sub: "Вихід – це образ. Образ – це вихід." },
+  'theatrical femme': { line: "М'яка, але постановочна.", sub: "Кожна деталь тут має свої мізансцени." },
+  'theatrical goth': { line: "Трагедія, але нехай це буде фатин.", sub: "Виглядає як третій акт." },
+  'theatrical maximalist': { line: "Пір'я, драма, повноцінна постановка.", sub: "Цьому образу потрібен вихід на уклін." },
+  'theatrical soft': { line: "Ніжна, але все ще хоче аудиторію.", sub: "М'якість тут не означає стриманість." },
+  'tomboy': { line: "Позичила кепку, залишила перевагу.", sub: "Комфортна в кожному сенсі цього слова." },
+  'utilitarian chic': { line: "Функція з дуже хорошим смаком.", sub: "Кишені, якими ти дійсно користуєшся, образи, яких ти не очікувала." },
+  'utility': { line: "Створено так, ніби має побувати в бруді.", sub: "Кожен ремінець і пряжка заслужили своє місце." },
+  'victorian goth': { line: "Траурна сукня, сучасна образа.", sub: "Високий комір, ще вищі стандарти." },
+  'weaponised femininity': { line: "М'яка ззовні. Абсолютна загроза всередині.", sub: "Гарна настільки, що змушує людей переглянути власні рішення." },
+  'winter intellectual': { line: "Холодна погода, гарячіші думки.", sub: "Виглядає так, ніби ти читаєш перед каміном навмисно." },
+  'witchy': { line: "Зачарована навмисно.", sub: "Цей образ знає щось, чого не знаєш ти." },
+  'generosity era': { line: "Щедрість — це стиль життя, любий.", sub: "Ти б віддала комусь плаття зі своєї спини — але тільки після ідеальної підгонки." },
+  'nature\'s touch': { line: "Вирощено, а не виготовлено.", sub: "Пелюстки, стрічки й трохи лісової магії. Легкість, що коштувала справжніх зусиль." },
+  'magic winx': { line: "Believix досягнуто.", sub: "Ти не просто вдягнулась. Ти трансформувалась." },
+  'tune it out': { line: "Головна героїня, навушники в вухах.", sub: "Блискуча, гостра й абсолютно незворушна шумом навколо." },
+  'no tears left to cry': { line: "Впала, обтрусилась, пішла далі.", sub: "Найважче вже позаду. Тепер ти просто кружляєш." },
+  'default': { line: "Безпомилково, неповторно ти.", sub: "Ця комбінація ще не має назви. Але матиме." },
+};
+
+let activeCategory = 'iconic-club';
+const onCanvas = {};
+let zCounter = 10;
+let searchMode = false;
+let currentVerdict = null;
+let currentVerdictKey = '';
+
+// Ensure translation starts strictly in English
+let currentLang = 'en';
+
+// ── SONG / SCENE LINKS ──
+const verdictLinks = {
+  'dangerous woman':         { sceneUrl: 'https://music.youtube.com/watch?v=9WbCfHutDSE&si=3KnVbsFeRgSKaTnQ' },
+  'thank u, next':           { scene: 'thank u next Ariana Grande official video' },
+  'sweetener':               { scene: 'God is a woman Ariana Grande' },
+  'bumpin that':             { scene: '360 Charli XCX' },
+  'queen bee':               { sceneUrl: 'https://youtu.be/e8_Z7-97mIw' },
+  'iconic villain era':      { scene: 'Mean Girls burn book scene' },
+  'a little bit dramatic':   { scene: 'Mean Girls a little bit dramatic scene' },
+  'what like its hard':      { songUrl: 'https://music.youtube.com/watch?v=Iak0RqGn5B8&si=Pk5IEgSux1fcvnhA', scene: 'Legally Blonde courtroom scene' },
+  'thirty flirty and thriving': { scene: '13 Going on 30 Thriller dance scene' },
+  'spirit fingers':          { scene: 'Bring It On spirit fingers cheer routine' },
+  'as if':                   { scene: 'Clueless as if closet scene' },
+  'it-girl immunity':        { scene: 'Gossip Girl Serena pilot entrance' },
+  'couldnt help but wonder': { scene: 'Sex and the City opening credits' },
+  'cerulean':                { scene: "Devil Wears Prada cerulean sweater monologue" },
+  'i go both ways':          { scene: "Jennifer's Body I go both ways scene" },
+  'taste maker':             { scene: 'Sabrina Carpenter live concert' },
+  'generosity era':          { scene: 'My Little Pony Rarity generosity moment' },
+  'yes, and?':               { scene: 'Ariana Grande yes and official video' },
+  'no tears left to cry':    { scene: 'Ariana Grande no tears left to cry official video' },
+  'nature\'s touch':         { scene: 'Winx Club Flora Harmonix transformation' },
+  'magic winx':              { scene: 'Winx Club Bloom Harmonix transformation' },
+  'tune it out':             { scene: 'Winx Club Musa Bloomix transformation' },
+};
+
+function spotifySearchUrl(q) { return 'https://open.spotify.com/search/' + encodeURIComponent(q); }
+function youtubeSearchUrl(q) { return 'https://www.youtube.com/results?search_query=' + encodeURIComponent(q); }
+
+function getVerdictLinks(key) {
+  const entry = verdictLinks[key] || {};
+  const songUrl = key === "yes, and?" 
+    ? "https://open.spotify.com/playlist/0YBMWmwqM5DrQMIzCj0qRm?si=otVQpm1ATCOy2ePWQ4M8oQ&utm_source=copy-link" 
+    : (entry.songUrl || spotifySearchUrl(entry.song || (key + ' aesthetic playlist')));
+  
+  const sceneUrl = entry.sceneUrl || youtubeSearchUrl(entry.scene || (key + ' aesthetic edit'));
+  
+  return { songUrl, sceneUrl };
+}
+
+const translations = {
+  en: {
+    eyebrow: "Your style, decoded",
+    back: "Go back to the closet (no pun intended)",
+    join: "Join groupchat",
+    listen: "Listen",
+    watch: "Watch the scene",
+    aestheticPrefix: "",
+    aestheticSuffix: ""
+  },
+  uk: {
+    eyebrow: "Ваш стиль, розшифровано",
+    back: "Повернутися до шафи (без каламбурів)",
+    join: "Приєднатися до групового чату",
+    listen: "Слухати",
+    watch: "Дивитись сцену",
+    aestheticPrefix: "Естетика ",
+    aestheticSuffix: ""
+  }
+};
+
+const IMG_DIR = '';
+const IMG_EXTENSIONS = ['png', 'jpg', 'jpeg', 'webp', 'PNG', 'JPG'];
+
+function slugify(name) { return name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim().replace(/'/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, ''); }
+function imgPathCandidates(name) { const slug = slugify(name); return IMG_EXTENSIONS.map(ext => IMG_DIR + slug + '.' + ext); }
+function setupImgFallback(imgEl, name, eager) {
+  imgEl.loading = eager ? 'eager' : 'lazy';
+  imgEl.decoding = 'async';
+  if ('fetchPriority' in imgEl) imgEl.fetchPriority = eager ? 'high' : 'low';
+  const candidates = imgPathCandidates(name); let i = 0; imgEl.src = candidates[i]; imgEl.onerror = function() { i++; if (i < candidates.length) { imgEl.src = candidates[i]; } else { imgEl.src = `https://placehold.co/200x200/e8e4df/9a9390.png?text=${encodeURIComponent(name)}`; imgEl.onerror = null; } }; }
+
+const verdictMap = {};
+categories.forEach(cat => cat.items.forEach(item => { verdictMap[cat.id + '_' + item.name.replace(/\s+/g, '_')] = item.vibe; }));
+
+const itemLookup = {};
+categories.forEach(cat => cat.items.forEach(item => { itemLookup[cat.id + '_' + item.name.replace(/\s+/g, '_')] = { item, catId: cat.id }; }));
+
+document.getElementById('canvas').addEventListener('mousedown', function(e) { if (e.target === this || e.target.id === 'canvas-empty') setActive(null); });
+document.getElementById('canvas').addEventListener('touchstart', function(e) { if (e.target === this || e.target.id === 'canvas-empty') setActive(null); }, {passive: true});
+
+const ORIGIN_SEEN_KEY = 'dreamCloset_originSeen';
+let originSeenSet = null;
+let originToastTimer = null;
+
+function loadOriginSeenSet() {
+  if (originSeenSet) return originSeenSet;
+  try {
+    const raw = localStorage.getItem(ORIGIN_SEEN_KEY);
+    originSeenSet = new Set(raw ? JSON.parse(raw) : []);
+  } catch (e) { originSeenSet = new Set(); }
+  return originSeenSet;
+}
+
+const RELATIONS = [
+  {
+    key: 'mom', name: 'Mom', initial: 'M', color: '#d49bb1',
+    lines: [
+      "why do you need {name}? you have three just like it at home. ...okay it does look good though",
+      "is this the {vibe} phase now? last week it was minimalist. I can't keep up but I love it on you",
+      "{name}? absolutely not — okay fine, wear it, but text me the second you get there",
+      "I saw {name} and thought of the thing I told you not to buy in 2019. anyway, it looks great"
+    ]
+  },
+  {
+    key: 'dad', name: 'Dad', initial: 'D', color: '#6a8caf',
+    lines: [
+      "how much did {name} cost. actually — don't tell me. looks good though, kid",
+      "{name}? bold choice. very {vibe} of you",
+      "back in my day we just wore whatever was clean. respect the {name} though",
+      "not gonna lie, {name} kind of slaps. don't tell your mother I said 'slaps'"
+    ]
+  },
+  {
+    key: 'ex', name: 'Your Ex', initial: 'X', color: '#8b3a3a',
+    lines: [
+      "of course you'd pick {name}. so on brand for you. so was I, once",
+      "{name}, huh. bet you're not even thinking about me right now. ...are you",
+      "{vibe}? you were always {vibe}. that was kind of the problem",
+      "wow, {name}. anyway I'm doing great, thanks for asking (you didn't ask)"
+    ]
+  },
+  {
+    key: 'bestie', name: 'Bestie', initial: 'B', color: '#c98a94',
+    lines: [
+      "{name}?? okay QUEEN. this is so {vibe} of you and I'm obsessed",
+      "say less. {name} was MADE for you. sending this to the groupchat right now",
+      "{vibe} energy detected. I need to steal {name} the second you're done with it",
+      "okay {name} is unfairly good on you, can you not"
+    ]
+  },
+  {
+    key: 'enemy', name: 'That One Girl From School', initial: '?', color: '#4a4a4a',
+    lines: [
+      "{name}? interesting choice. bold of you to try {vibe} again",
+      "oh, you're wearing {name} now? I have the same one. mine looks better but okay",
+      "{vibe}? if you say so. it's giving trying-too-hard but you do you",
+      "cute that you think {name} is going to work. anyway, good luck with that"
+    ]
+  }
+];
+
+function generateLoreLine(item) {
+  const relation = RELATIONS[Math.floor(Math.random() * RELATIONS.length)];
+  const template = relation.lines[Math.floor(Math.random() * relation.lines.length)];
+  const line = template.replace(/\{name\}/g, item.name).replace(/\{vibe\}/g, item.vibe);
+  return { relation, line };
+}
+
+let bulkAddMode = false;
+let bulkAddToastShown = false;
+
+function maybeShowOrigin(uid, item) {
+  const seen = loadOriginSeenSet();
+  if (seen.has(uid)) return;
+  seen.add(uid);
+  try { localStorage.setItem(ORIGIN_SEEN_KEY, JSON.stringify([...seen])); } catch (e) {}
+
+  if (bulkAddMode) {
+    if (bulkAddToastShown) return; // avoid stacking toasts during multi-item random fit
+    bulkAddToastShown = true;
+  }
+
+  const toast = document.getElementById('origin-toast');
+  const textEl = document.getElementById('origin-line-text');
+  const nameEl = document.getElementById('origin-sender-name');
+  const avatarEl = document.getElementById('origin-avatar');
+  if (!toast || !textEl) return;
+
+  const { relation, line } = generateLoreLine(item);
+  textEl.textContent = line;
+  if (nameEl) nameEl.textContent = relation.name;
+  if (avatarEl) {
+    avatarEl.textContent = relation.initial;
+    avatarEl.style.background = relation.color;
+  }
+
+  clearTimeout(originToastTimer);
+  toast.classList.add('visible');
+  // stretched from 4.2s so there's actually time to read it
+  originToastTimer = setTimeout(() => toast.classList.remove('visible'), 7000);
+}
+
+const NEWS_TEMPLATES = [
+  "SOURCES CONFIRM: SHE'S WEARING {NAME} AGAIN",
+  "BREAKING: {NAME} SPOTTED ON THE SCENE",
+  "EXCLUSIVE: INSIDERS SAY THE {VIBE} ERA HAS OFFICIALLY BEGUN",
+  "DEVELOPING STORY: {NAME} MAKES A COMEBACK",
+  "JUST IN: THE {VIBE} LOOK IS BACK, AND WE HAVE THOUGHTS",
+  "WITNESSES REPORT SEEING {NAME} ON THE STREETS TODAY",
+  "ALLEGED SIGHTING OF {NAME}, CONFIRMED BY MULTIPLE SOURCES"
+];
+let tickerHeadlines = ["WELCOME TO GLASS CLOSET — BUILD YOUR LOOK TO MAKE HEADLINES"];
+
+function pushNewsHeadline(item) {
+  const template = NEWS_TEMPLATES[Math.floor(Math.random() * NEWS_TEMPLATES.length)];
+  const headline = template.replace(/\{NAME\}/g, item.name.toUpperCase()).replace(/\{VIBE\}/g, item.vibe.toUpperCase());
+  tickerHeadlines.unshift(headline);
+  if (tickerHeadlines.length > 5) tickerHeadlines.pop();
+  renderNewsTicker();
+}
+
+function renderNewsTicker() {
+  const track = document.getElementById('news-ticker-track');
+  if (!track) return;
+  track.innerHTML = tickerHeadlines
+    .map(h => `<span class="ticker-tag">🔴 Breaking</span>${h}<span class="ticker-sep">◆</span>`)
+    .join('');
+}
+
+function init() {
+  renderTabs(); 
+  renderGrid(activeCategory); 
+  applyTranslations(); // Enforce English on startup
+  initTeaTicker();
+  renderNewsTicker();
+  restoreInProgressOutfit();
+}
+
+const INPROGRESS_KEY = 'dreamCloset_inProgress';
+
+function saveInProgressOutfit() {
+  try {
+    const data = {};
+    Object.keys(onCanvas).forEach(uid => {
+      const entry = onCanvas[uid];
+      data[uid] = {
+        left: parseFloat(entry.el.style.left) || 0,
+        top: parseFloat(entry.el.style.top) || 0,
+        rotation: entry.state.rotation,
+        scale: entry.state.scale
+      };
+    });
+    localStorage.setItem(INPROGRESS_KEY, JSON.stringify(data));
+  } catch (e) { console.warn('[autosave] failed:', e); }
+}
+
+function restoreInProgressOutfit() {
+  let saved;
+  try {
+    const raw = localStorage.getItem(INPROGRESS_KEY);
+    if (!raw) return;
+    saved = JSON.parse(raw);
+  } catch (e) { return; }
+
+  const uids = Object.keys(saved);
+  if (uids.length === 0) return;
+
+  uids.forEach(uid => {
+    const lookup = itemLookup[uid];
+    if (!lookup) return; // item no longer exists in the catalog
+    addToCanvas(uid, lookup.item, lookup.catId, saved[uid]);
+  });
+}
+
+const TEA_LINES = [
+  "One time, on Telegram, I heard Sasha was dropping out to move to Paris, so I dropped out, so we could be in Paris at the same time. Turns out it was just a rumor.",
+  "Sasha told me my hair looks sexy pushed back. He's not wrong.",
+  "Sasha ghosted a guy. So I found a guy to text me and I ghosted a guy.",
+  "I heard Sasha's gay now and dating some guy named Ricky. It's fucking sick. 💅🏿",
+  "I heard that if you record him snoring and play it backwards, it sounds like Brandy.",
+  "Sasha says 'thank u, next' to homophobes, so I decided to curse out his professor. ...It was awesome."
+];
+
+function initTeaTicker() {
+  const el = document.getElementById('imessage-notification');
+  const textEl = document.getElementById('imessage-text');
+  if (!el || !textEl) return;
+
+  let dismissTimer = null;
+  let nextTimer = null;
+  let i = 0;
+
+  function dismiss() {
+    el.classList.remove('visible');
+    clearTimeout(dismissTimer);
+    setTimeout(() => el.classList.add('hidden'), 450);
+  }
+
+  function show(line, force) {
+    if (!force && Object.keys(onCanvas).length > 0) return false; // don't interrupt someone mid-outfit
+    textEl.textContent = line;
+    el.classList.remove('hidden');
+    el.style.transform = '';
+    void el.offsetWidth; // force reflow so the slide-in transition plays
+    el.classList.add('visible');
+    clearTimeout(dismissTimer);
+    dismissTimer = setTimeout(dismiss, 9000); /* gives enough time to read before fading out */
+    return true;
+  }
+
+  function next(force) {
+    if (i >= TEA_LINES.length) { dismiss(); return; } // shown all 6, done for the session
+    const shown = show(TEA_LINES[i], force);
+    i++;
+    const delay = 5000 + Math.random() * 5000; /* MODIFIED TO 5-10 SECONDS */
+    // if it got skipped (mid-outfit), retry the same line a bit sooner
+    clearTimeout(nextTimer);
+    nextTimer = setTimeout(() => next(false), shown ? delay : 4000);
+    if (!shown) i--; // don't burn this line if we skipped it
+  }
+
+  function spill() {
+    clearTimeout(nextTimer);
+    clearTimeout(dismissTimer);
+    i = 0;
+    
+    // Play the beat once, right when the gossip starts
+    playGossipBeatSnippet();
+    
+    next(true);
+  }
+  window.spillTea = spill;
+
+  // Manual "next" arrow — lets you click through gossip at your own pace
+  // instead of waiting for the auto-advance timer. No repeat sound here;
+  // the beat only plays once, when gossip is first opened via spill().
+  function skipGossip(e) {
+    if (e) e.stopPropagation();
+    clearTimeout(nextTimer);
+    clearTimeout(dismissTimer);
+    next(true);
+  }
+  window.skipGossip = skipGossip;
+
+
+  // --- swipe-up-to-dismiss ---
+  let startY = null, currentY = 0, dragging = false;
+  el.addEventListener('touchstart', e => {
+    startY = e.touches[0].clientY;
+    dragging = true;
+    el.classList.add('dragging');
+    clearTimeout(dismissTimer);
+  }, { passive: true });
+
+  el.addEventListener('touchmove', e => {
+    if (!dragging || startY === null) return;
+    currentY = e.touches[0].clientY - startY;
+    if (currentY < 0) el.style.transform = `translateX(-50%) translateY(${currentY}px)`;
+  }, { passive: true });
+
+  el.addEventListener('touchend', () => {
+    dragging = false;
+    el.classList.remove('dragging');
+    if (currentY < -30) {
+      dismiss();
+    } else {
+      el.style.transform = '';
+      dismissTimer = setTimeout(dismiss, 9000); /* gives enough time to read before fading out */
+    }
+    startY = null; currentY = 0;
+  });
+
+  el.addEventListener('click', dismiss); // tap to dismiss, e.g. on desktop
+}
+
+function renderTabs() {
+  const el = document.getElementById('cat-tabs');
+  el.innerHTML = '';
+  supercategories.forEach(group => {
+    const groupDiv = document.createElement('div'); groupDiv.className = 'super-group';
+    const header = document.createElement('div'); header.className = 'super-header'; header.textContent = group.name; groupDiv.appendChild(header);
+    const rowDiv = document.createElement('div'); rowDiv.className = 'sub-tabs-row';
+    group.cats.forEach(catId => {
+      const cat = categories.find(c => c.id === catId);
+      if (!cat) return;
+      const tab = document.createElement('div');
+      tab.className = 'cat-tab' + (cat.id === activeCategory ? ' active' : '');
+      tab.textContent = cat.label; tab.id = 'tab-' + cat.id;
+      tab.onclick = () => {
+        if (searchMode) clearSearch();
+        activeCategory = cat.id; document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active'); renderGrid(cat.id);
+      };
+      rowDiv.appendChild(tab);
+    });
+    groupDiv.appendChild(rowDiv); el.appendChild(groupDiv);
+  });
+}
+
+function ordinal(n) {
+  const s = ['th', 'st', 'nd', 'rd'], v = n % 100;
+  return n + (s[(v - 20) % 10] || s[v] || s[0]);
+}
+
+function formatReleaseLabel(dateStr) {
+  const d = new Date(dateStr + 'T00:00:00');
+  return `Thursday, the ${ordinal(d.getDate())}`;
+}
+
+const OUTFIT_COUNT_KEY = 'dreamCloset_outfitCount';
+
+function getOutfitCount() {
+  const n = parseInt(localStorage.getItem(OUTFIT_COUNT_KEY) || '0', 10);
+  return isNaN(n) ? 0 : n;
+}
+
+function incrementOutfitCount() {
+  const n = getOutfitCount() + 1;
+  try { localStorage.setItem(OUTFIT_COUNT_KEY, String(n)); } catch (e) {}
+  return n;
+}
+
+function isLocked(item) {
+  const hasDate = !!item.releaseDate;
+  const hasMilestone = typeof item.unlockAtOutfits === 'number';
+  if (!hasDate && !hasMilestone) return false;
+
+  const dateUnlocked = hasDate && Date.now() >= new Date(item.releaseDate + 'T00:00:00').getTime();
+  const milestoneUnlocked = hasMilestone && getOutfitCount() >= item.unlockAtOutfits;
+
+  // if an item has both conditions, either one unlocks it — whichever comes first
+  if (hasDate && hasMilestone) return !(dateUnlocked || milestoneUnlocked);
+  return hasDate ? !dateUnlocked : !milestoneUnlocked;
+}
+
+function gridLockCaption(item) {
+  if (typeof item.unlockAtOutfits === 'number') {
+    const remaining = Math.max(0, item.unlockAtOutfits - getOutfitCount());
+    if (remaining <= 0) return 'Unlocking...';
+    return `${remaining} outfit${remaining === 1 ? '' : 's'} to go`;
+  }
+  return `Releases ${formatReleaseLabel(item.releaseDate)}`;
+}
+
+function lockedToastMessage(item) {
+  const hasDate = !!item.releaseDate;
+  const hasMilestone = typeof item.unlockAtOutfits === 'number';
+  if (hasMilestone) {
+    const have = getOutfitCount();
+    const remaining = Math.max(0, item.unlockAtOutfits - have);
+    if (remaining > 0) {
+      let msg = `Build ${remaining} more outfit${remaining === 1 ? '' : 's'} to unlock this — you're at ${have}/${item.unlockAtOutfits}.`;
+      if (hasDate) msg += ` Or just wait for ${formatReleaseLabel(item.releaseDate)}.`;
+      return msg;
+    }
+  }
+  if (hasDate) return `This piece isn't in stores yet. Drops ${formatReleaseLabel(item.releaseDate)} — patience, icon.`;
+  return `This piece isn't unlocked yet.`;
+}
+
+function showLockedToast(message) {
+  const toast = document.getElementById('origin-toast');
+  const textEl = document.getElementById('origin-line-text');
+  const nameEl = document.getElementById('origin-sender-name');
+  const avatarEl = document.getElementById('origin-avatar');
+  if (!toast || !textEl) return;
+  textEl.textContent = message;
+  if (nameEl) nameEl.textContent = 'Glass Closet';
+  if (avatarEl) { avatarEl.textContent = 'GC'; avatarEl.style.background = '#3a3530'; }
+  clearTimeout(originToastTimer);
+  toast.classList.add('visible');
+  originToastTimer = setTimeout(() => toast.classList.remove('visible'), 4500);
+}
+
+function checkForNewlyUnlockedItems(newCount) {
+  const unlocked = [];
+  categories.forEach(cat => cat.items.forEach(item => {
+    if (typeof item.unlockAtOutfits === 'number' && item.unlockAtOutfits === newCount) unlocked.push(item);
+  }));
+  if (unlocked.length === 0) return;
+  const names = unlocked.map(i => i.name).join(', ');
+  showLockedToast(`🔓 You just unlocked: ${names}! Go check the closet.`);
+}
+
+function renderGrid(catId, items) {
+  const cat = categories.find(c => c.id === catId);
+  const src = items || (cat ? cat.items : []);
+  const grid = document.getElementById('item-grid'); grid.innerHTML = '';
+  src.forEach(item => {
+    const uid = (item._catId || catId) + '_' + item.name.replace(/\s+/g, '_');
+    const card = document.createElement('div');
+    card.id = 'gi-' + uid;
+
+    if (isLocked(item)) {
+      card.className = 'grid-item locked-item';
+      card.innerHTML = `<div class="gi-visual gi-locked"><span class="lock-mark">?</span></div><div class="gi-name">${item.name}</div><div class="gi-release">${gridLockCaption(item)}</div>`;
+      card.onclick = () => showLockedToast(lockedToastMessage(item));
+      grid.appendChild(card);
+      return;
+    }
+
+    card.className = 'grid-item' + (onCanvas[uid] ? ' on-board' : '');
+    const isSashaBow = item.name === "Sasha's bow";
+    const vibeCaption = isSashaBow ? "yes, and?" : '';
+    card.innerHTML = `<div class="gi-visual"><img alt="${item.name}" title="Vibe: ${item.vibe}"></div><div class="gi-name">${item.name}</div>${vibeCaption ? `<div class="gi-vibe">${vibeCaption}</div>` : ''}`;
+    setupImgFallback(card.querySelector('img'), item.name);
+    if (item.color) { const dot = document.createElement('div'); dot.className = 'gi-color-dot'; dot.style.background = item.color; card.appendChild(dot); }
+    card.onclick = () => toggleItem(uid, item, item._catId || catId);
+    grid.appendChild(card);
+  });
+}
+
+function handleSearch(query) {
+  if (!query.trim()) { clearSearch(); return; }
+  searchMode = true; const q = query.toLowerCase(); const results = [];
+  categories.forEach(cat => { cat.items.forEach(item => { if (item.name.toLowerCase().includes(q) || item.vibe.toLowerCase().includes(q)) results.push({ ...item, _catId: cat.id }); });});
+  document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
+  renderGrid(null, results);
+}
+
+function clearSearch() { searchMode = false; document.getElementById('search-input').value = ''; const activeTab = document.getElementById('tab-' + activeCategory); if (activeTab) activeTab.classList.add('active'); renderGrid(activeCategory); }
+
+function setActive(uid) { document.querySelectorAll('.on-canvas').forEach(el => el.classList.remove('active-item')); if (uid && onCanvas[uid]) { onCanvas[uid].el.classList.add('active-item'); onCanvas[uid].el.style.zIndex = zCounter++; } }
+
+function toggleItem(uid, item, catId) { if (onCanvas[uid]) removeFromCanvas(uid); else addToCanvas(uid, item, catId); }
+
+function addToCanvas(uid, item, catId, restoreData) {
+  const canvas = document.getElementById('canvas');
+  document.getElementById('canvas-empty').style.display = 'none';
+  if (!restoreData) pushNewsHeadline(item); // don't spam headlines on page-load restore
+  const el = document.createElement('div'); el.className = 'on-canvas'; el.id = 'oc-' + uid;
+  el.style.width = item.w + 'px'; el.style.height = item.h + 'px'; el.style.zIndex = zCounter++;
+  let cx, cy, state;
+  if (restoreData) {
+    cx = restoreData.left; cy = restoreData.top;
+    state = { rotation: restoreData.rotation || 0, scale: restoreData.scale || 1 };
+  } else {
+    cx = canvas.offsetWidth / 2 - item.w / 2 + (Math.random() - 0.5) * 80;
+    cy = canvas.offsetHeight / 2 - item.h / 2 + (Math.random() - 0.5) * 60;
+    cx = Math.max(0, cx); cy = Math.max(0, cy);
+    state = { rotation: 0, scale: 1 };
+  }
+  el.style.left = cx + 'px'; el.style.top = cy + 'px';
+  const spin = document.createElement('div'); spin.className = 'oc-spin';
+  applySpinTransform(spin, state);
+  const inner = document.createElement('div'); inner.className = 'oc-visual';
+  inner.innerHTML = `<img alt="${item.name}" title="Vibe: ${item.vibe}" style="width:100%;height:100%;object-fit:contain;">`;
+  setupImgFallback(inner.querySelector('img'), item.name, true);
+  spin.appendChild(inner); el.appendChild(spin);
+  const rm = document.createElement('button'); rm.className = 'remove-btn'; rm.textContent = '✕';
+  rm.onclick = (e) => { e.stopPropagation(); removeFromCanvas(uid); }; el.appendChild(rm);
+  const stem = document.createElement('div'); stem.className = 'rotate-stem'; el.appendChild(stem);
+  const rotateHandle = document.createElement('div'); rotateHandle.className = 'rotate-handle'; rotateHandle.textContent = '↻'; el.appendChild(rotateHandle);
+  const resizeHandle = document.createElement('div'); resizeHandle.className = 'resize-handle'; el.appendChild(resizeHandle);
+  canvas.appendChild(el); setupTransforms(el, spin, rotateHandle, resizeHandle, state, uid);
+  onCanvas[uid] = { el, item, state }; updateGridCard(uid, true); setActive(uid);
+
+  if (!restoreData) {
+    // sparkle + sound on drop
+    const canvasRect = canvas.getBoundingClientRect();
+    const burstX = canvasRect.left + parseFloat(el.style.left) + item.w / 2;
+    const burstY = canvasRect.top + parseFloat(el.style.top) + item.h / 2;
+    spawnSparkleBurst(burstX, burstY);
+    itemAddCount++;
+    if (itemAddCount % 3 === 1) playTrueItemSelectSound(); // plays on add #1, #4, #7, ...
+    maybeShowOrigin(uid, item);
+  }
+  saveInProgressOutfit();
+}
+
+function removeFromCanvas(uid) {
+  if (!onCanvas[uid]) return;
+  onCanvas[uid].el.remove(); delete onCanvas[uid]; updateGridCard(uid, false);
+  if (Object.keys(onCanvas).length === 0) {
+    document.getElementById('canvas-empty').style.display = 'block';
+  }
+  saveInProgressOutfit();
+}
+
+function updateGridCard(uid, active) { const card = document.getElementById('gi-' + uid); if (card) card.classList.toggle('on-board', active); }
+
+const MIN_SCALE = 0.4, MAX_SCALE = 2.5;
+function applySpinTransform(spin, state) { spin.style.transform = `rotate(${state.rotation}deg) scale(${state.scale})`; }
+
+function setupTransforms(el, spin, rotateHandle, resizeHandle, state, uid) {
+  let mode = null, startX, startY, origLeft, origTop;
+  let centerX, centerY, startAngle, startRotation, startDist, startScale;
+
+  function getCenter() { const rect = el.getBoundingClientRect(); return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 }; }
+  function onDragStart(x, y) { setActive(uid); mode = 'drag'; startX = x; startY = y; origLeft = parseInt(el.style.left)||0; origTop = parseInt(el.style.top)||0; el.style.zIndex = zCounter++; }
+  function onRotateStart(x, y) { setActive(uid); mode = 'rotate'; el.style.zIndex = zCounter++; const c = getCenter(); centerX = c.x; centerY = c.y; startAngle = Math.atan2(y-centerY, x-centerX)*180/Math.PI; startRotation = state.rotation; }
+  function onResizeStart(x, y) { setActive(uid); mode = 'resize'; el.style.zIndex = zCounter++; const c = getCenter(); centerX = c.x; centerY = c.y; startDist = Math.hypot(x-centerX, y-centerY); startScale = state.scale; }
+  function onMove(x, y) {
+    if (mode === 'drag') { el.style.left = (origLeft+x-startX)+'px'; el.style.top = (origTop+y-startY)+'px'; }
+    else if (mode === 'rotate') { const angle = Math.atan2(y-centerY, x-centerX)*180/Math.PI; state.rotation = startRotation+(angle-startAngle); applySpinTransform(spin, state); }
+    else if (mode === 'resize') { const dist = Math.hypot(x-centerX, y-centerY); state.scale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, startScale*dist/(startDist||1))); applySpinTransform(spin, state); }
+  }
+  function onEnd() { if (mode) saveInProgressOutfit(); mode = null; }
+
+  el.addEventListener('touchstart', e => { if (e.target===rotateHandle||e.target===resizeHandle||e.target.classList.contains('remove-btn')) return; const t=e.touches[0]; onDragStart(t.clientX,t.clientY); }, {passive:true});
+  el.addEventListener('mousedown', e => { if (e.target===rotateHandle||e.target===resizeHandle||e.target.classList.contains('remove-btn')) return; onDragStart(e.clientX,e.clientY); });
+  rotateHandle.addEventListener('touchstart', e => { e.stopPropagation(); const t=e.touches[0]; onRotateStart(t.clientX,t.clientY); }, {passive:true});
+  rotateHandle.addEventListener('mousedown', e => { e.stopPropagation(); onRotateStart(e.clientX,e.clientY); });
+  resizeHandle.addEventListener('touchstart', e => { e.stopPropagation(); const t=e.touches[0]; onResizeStart(t.clientX,t.clientY); }, {passive:true});
+  resizeHandle.addEventListener('mousedown', e => { e.stopPropagation(); onResizeStart(e.clientX,e.clientY); });
+  el.addEventListener('touchmove', e => { if (!mode) return; e.preventDefault(); const t=e.touches[0]; onMove(t.clientX,t.clientY); }, {passive:false});
+  el.addEventListener('touchend', onEnd); window.addEventListener('mousemove', e => { if (mode) onMove(e.clientX,e.clientY); });
+  window.addEventListener('mouseup', () => { if (mode) onEnd(); });
+}
+
+function clearCanvasOutfit() {
+  Object.keys(onCanvas).forEach(uid => removeFromCanvas(uid));
+}
+
+function pickRandomFrom(catIds) {
+  const pool = [];
+  catIds.forEach(id => {
+    const cat = categories.find(c => c.id === id);
+    if (cat) cat.items.forEach(item => pool.push({ item, catId: cat.id }));
+  });
+  if (pool.length === 0) return null;
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
+function triggerRandomFit() {
+  clearCanvasOutfit();
+
+  const picks = [];
+  const wantsDress = Math.random() < 0.4;
+
+  if (wantsDress) {
+    const dress = pickRandomFrom(['dresses']);
+    if (dress) picks.push(dress);
+  } else {
+    const top = pickRandomFrom(['tops-basic', 'tops-shirts', 'tops-knitwear', 'tops-statement']);
+    const bottom = pickRandomFrom(['bottoms-trousers', 'bottoms-jeans', 'bottoms-skirts']);
+    if (top) picks.push(top);
+    if (bottom) picks.push(bottom);
+  }
+
+  if (Math.random() < 0.75) {
+    const shoes = pickRandomFrom(['shoes-flat', 'shoes-heels']);
+    if (shoes) picks.push(shoes);
+  }
+
+  // sprinkle 1-3 accessories for flair
+  const accessoryCats = ['jackets', 'hats', 'neck', 'bags', 'glasses', 'belts', 'gloves', 'jewellery', 'scarves'];
+  const shuffled = [...accessoryCats].sort(() => Math.random() - 0.5);
+  const numAccessories = 1 + Math.floor(Math.random() * 3);
+  shuffled.slice(0, numAccessories).forEach(catId => {
+    const pick = pickRandomFrom([catId]);
+    if (pick) picks.push(pick);
+  });
+
+  // rare surprise: a fully iconic look instead
+  if (Math.random() < 0.06) {
+    picks.length = 0;
+    const iconicCats = categories.filter(c => c.id.startsWith('iconic-')).map(c => c.id);
+    const p1 = pickRandomFrom(iconicCats);
+    if (p1) picks.push(p1);
+  }
+
+  bulkAddMode = true;
+  bulkAddToastShown = false;
+  picks.forEach(({ item, catId }) => {
+    const uid = catId + '_' + item.name.replace(/\s+/g, '_');
+    addToCanvas(uid, item, catId);
+  });
+  bulkAddMode = false;
+
+  playShutterSound();
+}
+
+// ── SHAKE GESTURE ──
+let shakePermissionGranted = false;
+let lastShakeTime = 0;
+const SHAKE_THRESHOLD = 18; // m/s^2 delta
+const SHAKE_COOLDOWN_MS = 1500;
+
+function handleDeviceMotion(e) {
+  const acc = e.accelerationIncludingGravity;
+  if (!acc) return;
+  const magnitude = Math.abs(acc.x || 0) + Math.abs(acc.y || 0) + Math.abs(acc.z || 0);
+  const now = Date.now();
+  if (magnitude > SHAKE_THRESHOLD * 2.2 && now - lastShakeTime > SHAKE_COOLDOWN_MS) {
+    lastShakeTime = now;
+    triggerRandomFit();
+  }
+}
+
+function enableShakeDetection() {
+  if (shakePermissionGranted) return;
+  if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
+    // iOS 13+ requires an explicit user-gesture permission request
+    DeviceMotionEvent.requestPermission().then(state => {
+      if (state === 'granted') {
+        window.addEventListener('devicemotion', handleDeviceMotion);
+        shakePermissionGranted = true;
+      }
+    }).catch(() => {});
+  } else if (typeof DeviceMotionEvent !== 'undefined') {
+    window.addEventListener('devicemotion', handleDeviceMotion);
+    shakePermissionGranted = true;
+  }
+}
+
+function toggleDrawer() {
+  const drawer = document.getElementById('drawer');
+  const isCol = drawer.classList.toggle('collapsed');
+  ['cat-tabs','item-grid','search-row'].forEach(id => document.getElementById(id).style.display = isCol ? 'none' : '');
+  document.getElementById('drawer-toggle').textContent = isCol ? '▼' : '▲';
+}
+
+function calculateVerdict() {
+  if (Object.keys(onCanvas).some(uid => onCanvas[uid].item.name === "Sasha's bow")) { return { key: "yes, and?", ...verdicts["yes, and?"] }; }
+  const vibes = Object.keys(onCanvas).map(uid => verdictMap[uid]).filter(Boolean);
+  if (vibes.length === 0) return null;
+  const freq = {}; vibes.forEach(v => freq[v] = (freq[v]||0)+1);
+  let maxFreq = 0; for (let v in freq) if (freq[v] > maxFreq) maxFreq = freq[v];
+  const topVibes = Object.keys(freq).filter(v => freq[v] === maxFreq);
+  const top = topVibes[Math.floor(Math.random()*topVibes.length)];
+  return { key: top, ...(verdicts[top] || verdicts['default']) };
+}
+
+function buildOutfitPreview() {
+  const canvas = document.getElementById('canvas');
+  const preview = document.getElementById('verdict-outfit-preview');
+  preview.innerHTML = '';
+  preview.style.position = 'relative';
+
+  const canvasW = canvas.offsetWidth, canvasH = canvas.offsetHeight;
+  if (!canvasW || !canvasH) return;
+
+  preview.style.aspectRatio = `${canvasW} / ${canvasH}`;
+
+  const previewW = preview.offsetWidth;
+  const previewH = previewW * (canvasH / canvasW);
+  const scale = previewW / canvasW;
+
+  const uids = Object.keys(onCanvas).sort((a, b) => (parseInt(onCanvas[a].el.style.zIndex)||0) - (parseInt(onCanvas[b].el.style.zIndex)||0));
+
+  uids.forEach(uid => {
+    const entry = onCanvas[uid];
+    const el = entry.el;
+    const left = parseFloat(el.style.left) || 0;
+    const top = parseFloat(el.style.top) || 0;
+    const w = parseFloat(el.style.width) || 0;
+    const h = parseFloat(el.style.height) || 0;
+    const spin = el.querySelector('.oc-spin');
+    const img = el.querySelector('img');
+    if (!img) return;
+
+    const clone = document.createElement('div');
+    clone.style.position = 'absolute';
+    clone.style.left = (left * scale) + 'px';
+    clone.style.top = (top * scale) + 'px';
+    clone.style.width = (w * scale) + 'px';
+    clone.style.height = (h * scale) + 'px';
+
+    const spinClone = document.createElement('div');
+    spinClone.style.width = '100%';
+    spinClone.style.height = '100%';
+    spinClone.style.transformOrigin = '50% 50%';
+    if (spin) spinClone.style.transform = spin.style.transform;
+
+    const imgClone = document.createElement('img');
+    imgClone.alt = entry.item.name;
+    imgClone.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:contain;';
+    setupImgFallback(imgClone, entry.item.name, true);
+
+    spinClone.appendChild(imgClone);
+    clone.appendChild(spinClone);
+    preview.appendChild(clone);
+  });
+}
+
+function downloadOutfitImage() {
+  const preview = document.getElementById('verdict-outfit-preview');
+  const btn = document.getElementById('download-outfit-btn');
+  if (!preview || typeof html2canvas === 'undefined') return;
+
+  html2canvas(preview, {
+    backgroundColor: '#ffffff',
+    scale: 2,
+    useCORS: true
+  }).then(canvas => {
+    const link = document.createElement('a');
+    link.download = 'glass-closet-look.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+
+    btn.classList.add('saved');
+    setTimeout(() => btn.classList.remove('saved'), 1800);
+  }).catch(err => {
+    console.warn('[download] html2canvas capture failed:', err);
+  });
+}
+
+function showVerdict() {
+  if (Object.keys(onCanvas).length === 0) { alert("The closet's full. Pick something to wear."); return; }
+  currentLang = 'en'; // always start each new verdict in English — don't carry over a previous guest's translate toggle
+  currentVerdict = calculateVerdict();
+  currentVerdictKey = currentVerdict.key;
+  
+  applyTranslations();
+  
+  setActive(null); 
+  document.getElementById('verdict-overlay').classList.add('show');
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    buildOutfitPreview();
+    requestAnimationFrame(() => saveOutfitToHistory());
+  }));
+  playShutterSound();
+}
+
+const HISTORY_KEY = 'dreamCloset_history';
+const HISTORY_MAX = 24;
+
+function saveOutfitToHistory() {
+  const preview = document.getElementById('verdict-outfit-preview');
+  if (!preview || typeof html2canvas === 'undefined') return;
+
+  html2canvas(preview, {
+    backgroundColor: '#ffffff',
+    scale: 1,
+    useCORS: true
+  }).then(canvas => {
+    // downscale + compress so localStorage doesn't fill up fast
+    const thumbCanvas = document.createElement('canvas');
+    const maxDim = 320;
+    const ratio = Math.min(1, maxDim / Math.max(canvas.width, canvas.height));
+    thumbCanvas.width = canvas.width * ratio;
+    thumbCanvas.height = canvas.height * ratio;
+    thumbCanvas.getContext('2d').drawImage(canvas, 0, 0, thumbCanvas.width, thumbCanvas.height);
+    const dataUrl = thumbCanvas.toDataURL('image/jpeg', 0.72);
+
+    let history = [];
+    try { history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); } catch (e) { history = []; }
+
+    history.unshift({
+      img: dataUrl,
+      aesthetic: currentVerdictKey,
+      date: new Date().toISOString()
+    });
+    if (history.length > HISTORY_MAX) history = history.slice(0, HISTORY_MAX);
+
+    try { localStorage.setItem(HISTORY_KEY, JSON.stringify(history)); }
+    catch (e) {
+      // storage full — drop oldest half and retry once
+      history = history.slice(0, Math.floor(history.length / 2));
+      try { localStorage.setItem(HISTORY_KEY, JSON.stringify(history)); } catch (e2) { console.warn('[history] storage full'); }
+    }
+
+    // count this outfit toward milestone-locked items, then refresh the
+    // grid + check if anything just unlocked
+    const newCount = incrementOutfitCount();
+    renderGrid(activeCategory);
+    checkForNewlyUnlockedItems(newCount);
+  }).catch(err => console.warn('[history] capture failed:', err));
+}
+
+function openLookbook() {
+  const overlay = document.getElementById('lookbook-overlay');
+  const grid = document.getElementById('lookbook-grid');
+  let history = [];
+  try { history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); } catch (e) { history = []; }
+
+  grid.innerHTML = '';
+  if (history.length === 0) {
+    grid.innerHTML = '<div id="lookbook-empty">No looks saved yet — hit "Get my verdict" on an outfit to start your lookbook.</div>';
+  } else {
+    history.forEach((entry, idx) => {
+      const card = document.createElement('div');
+      card.className = 'lookbook-card';
+      const dateLabel = new Date(entry.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      card.innerHTML = `
+        <div class="lookbook-actions">
+          <button class="lb-edit-btn" onclick="editLookbookEntry(${idx})" aria-label="Edit look" title="Edit">✎</button>
+          <button class="lb-delete-btn" onclick="deleteLookbookEntry(${idx})" aria-label="Delete look" title="Delete">✕</button>
+        </div>
+        <img src="${entry.img}" alt="${entry.aesthetic}">
+        <div class="lookbook-caption"><span class="lb-aesthetic">${entry.aesthetic}</span><span class="lb-date">${dateLabel}</span></div>`;
+      grid.appendChild(card);
+    });
+  }
+  overlay.classList.add('show');
+}
+
+function closeLookbook() {
+  document.getElementById('lookbook-overlay').classList.remove('show');
+}
+
+function readLookbookHistory() {
+  try { return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); } catch (e) { return []; }
+}
+
+function writeLookbookHistory(history) {
+  try { localStorage.setItem(HISTORY_KEY, JSON.stringify(history)); } catch (e) { console.warn('[lookbook] save failed:', e); }
+}
+
+function deleteLookbookEntry(idx) {
+  const history = readLookbookHistory();
+  if (idx < 0 || idx >= history.length) return;
+  history.splice(idx, 1);
+  writeLookbookHistory(history);
+  openLookbook(); // re-render
+}
+
+function editLookbookEntry(idx) {
+  const history = readLookbookHistory();
+  if (idx < 0 || idx >= history.length) return;
+  const grid = document.getElementById('lookbook-grid');
+  const card = grid.children[idx];
+  if (!card) return;
+  const captionEl = card.querySelector('.lookbook-caption');
+  const currentLabel = history[idx].aesthetic;
+
+  captionEl.innerHTML = `<input type="text" class="lb-edit-input" value="${currentLabel.replace(/"/g, '&quot;')}" maxlength="40">`;
+  const input = captionEl.querySelector('input');
+  input.focus();
+  input.select();
+
+  function commit() {
+    const h = readLookbookHistory();
+    if (h[idx]) {
+      h[idx].aesthetic = input.value.trim() || currentLabel;
+      writeLookbookHistory(h);
+    }
+    openLookbook(); // re-render with saved label
+  }
+  input.addEventListener('blur', commit, { once: true });
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); input.blur(); }
+    if (e.key === 'Escape') { e.preventDefault(); openLookbook(); }
+  });
+}
+
+function openRequestForm() {
+  document.getElementById('request-overlay').classList.add('show');
+  document.getElementById('request-status').textContent = '';
+  document.getElementById('request-status').className = '';
+}
+
+function closeRequestForm() {
+  document.getElementById('request-overlay').classList.remove('show');
+}
+
+async function submitItemRequest(e) {
+  e.preventDefault();
+  const form = document.getElementById('request-form');
+  const textarea = document.getElementById('request-text');
+  const status = document.getElementById('request-status');
+  const btn = document.getElementById('request-submit-btn');
+  if (!textarea.value.trim()) return;
+
+  btn.disabled = true; btn.textContent = 'Sending...';
+  status.textContent = ''; status.className = '';
+
+  try {
+    const res = await fetch('https://formspree.io/f/mzdllkba', {
+      method: 'POST',
+      headers: { 'Accept': 'application/json' },
+      body: new FormData(form)
+    });
+    if (res.ok) {
+      status.textContent = 'Sent — thanks for the suggestion 🖤';
+      status.className = 'success';
+      textarea.value = '';
+      setTimeout(closeRequestForm, 1600);
+    } else {
+      status.textContent = "Something went wrong — try again?";
+      status.className = 'error';
+    }
+  } catch (err) {
+    status.textContent = "Couldn't send — check your connection.";
+    status.className = 'error';
+  } finally {
+    btn.disabled = false; btn.textContent = 'Send request';
+  }
+}
+
+function toggleLanguage() {
+  currentLang = currentLang === 'en' ? 'uk' : 'en';
+  applyTranslations();
+}
+
+function applyTranslations() {
+  const t = translations[currentLang];
+  document.getElementById('verdict-eyebrow').textContent = t.eyebrow;
+  document.getElementById('verdict-close-label').textContent = t.back;
+  document.getElementById('verdict-join').textContent = t.join;
+  document.getElementById('verdict-song-label').textContent = t.listen;
+  document.getElementById('verdict-scene-label').textContent = t.watch;
+  
+  if (currentVerdict) {
+    let sourceDict = currentLang === 'uk' ? verdictsUK : verdicts;
+    let fallbackDict = verdicts;
+    
+    let vLine = sourceDict[currentVerdictKey]?.line || fallbackDict[currentVerdictKey]?.line;
+    let vSub = sourceDict[currentVerdictKey]?.sub || fallbackDict[currentVerdictKey]?.sub;
+    
+    let vAesthetic = currentVerdictKey.toUpperCase();
+    
+    document.getElementById('verdict-aesthetic').textContent = `${t.aestheticPrefix}${vAesthetic}${t.aestheticSuffix}`;
+    document.getElementById('verdict-text').textContent = vLine;
+    document.getElementById('verdict-sub').textContent = vSub;
+
+    const links = getVerdictLinks(currentVerdictKey);
+    
+    const songBtn = document.getElementById('verdict-song-link');
+    const sceneBtn = document.getElementById('verdict-scene-link');
+    
+    // verdictLinks only contains keys for genuine, specifically-curated iconic
+    // moments (a real song or a real named scene). Anything not in that list —
+    // regular wardrobe basics, AND "club kid" (which has no real scene attached) —
+    // gets neither button at all, rather than falling back to a generic search.
+    const linkEntry = verdictLinks[currentVerdictKey];
+
+    if (currentVerdictKey === "yes, and?") {
+      // Sasha's bow — the one verdict with a genuine curated playlist
+      songBtn.style.display = 'flex';
+      songBtn.href = links.songUrl;
+      sceneBtn.style.display = 'none';
+    } else if (linkEntry) {
+      // Any other iconic verdict with a real, specific scene defined
+      songBtn.style.display = 'none';
+      sceneBtn.style.display = 'flex';
+      sceneBtn.href = links.sceneUrl;
+    } else {
+      // Everything else — no buttons at all
+      songBtn.style.display = 'none';
+      sceneBtn.style.display = 'none';
+    }
+  }
+}
+
+function closeVerdict() { 
+  document.getElementById('verdict-overlay').classList.remove('show'); 
+}
+function shareToTelegram() { window.open('https://t.me/+UC1vcZZRBWA0ZDg6', '_blank'); }
+
+init();
+
+// ── GLASS SHATTER SEQUENCE ──
+window.addEventListener('DOMContentLoaded', () => {
+  const canvas = document.getElementById('mirror-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  const W = canvas.width, H = canvas.height;
+
+  const mirrorImg = new Image();
+  let mirrorImgLoaded = false;
+  mirrorImg.onload = () => { mirrorImgLoaded = true; drawMirror(); };
+  mirrorImg.onerror = () => { mirrorImgLoaded = false; };
+  mirrorImg.src = 'mirrorshatter.jpg';
+
+  function drawCoverImage(image, w, h) {
+    const imgRatio = image.width / image.height;
+    const boxRatio = w / h;
+    let sx, sy, sw, sh;
+    if (imgRatio > boxRatio) {
+      sh = image.height; sw = sh * boxRatio; sx = (image.width - sw) / 2; sy = 0;
+    } else {
+      sw = image.width; sh = sw / boxRatio; sx = 0; sy = (image.height - sh) / 2;
+    }
+    ctx.drawImage(image, sx, sy, sw, sh, 0, 0, w, h);
+  }
+
+  function drawMirror() {
+    ctx.clearRect(0, 0, W, H);
+    if (mirrorImgLoaded) {
+      drawCoverImage(mirrorImg, W, H);
+      const sheen = ctx.createLinearGradient(0, 0, W, H);
+      sheen.addColorStop(0, 'rgba(255,255,255,0.08)');
+      sheen.addColorStop(0.5, 'rgba(255,255,255,0.02)');
+      sheen.addColorStop(1, 'rgba(255,255,255,0.08)');
+      ctx.fillStyle = sheen;
+      ctx.fillRect(0, 0, W, H);
+    } else {
+      const streak = ctx.createLinearGradient(0, 0, W, H);
+      streak.addColorStop(0, 'rgba(255,255,255,0.1)');
+      streak.addColorStop(0.45, 'rgba(255,255,255,0)');
+      streak.addColorStop(0.5, 'rgba(255,255,255,0.4)');
+      streak.addColorStop(0.55, 'rgba(255,255,255,0)');
+      streak.addColorStop(1, 'rgba(255,255,255,0.1)');
+      ctx.fillStyle = streak;
+      ctx.fillRect(0, 0, W, H);
+    }
+  }
+
+  let IX, IY;
+
+  function drawCracks() {
+    ctx.strokeStyle = 'rgba(255,255,255,0.85)';
+    ctx.lineWidth = 1.2;
+    const numMain = 10 + Math.floor(Math.random()*5);
+    for (let i = 0; i < numMain; i++) {
+      const angle = (i / numMain) * Math.PI * 2 + (Math.random()-0.5)*0.4;
+      const len = (0.4 + Math.random()*0.6) * Math.max(W,H);
+      let x = IX, y = IY;
+      ctx.beginPath(); ctx.moveTo(x, y);
+      let remainingLen = len;
+      while (remainingLen > 0) {
+        const segLen = 30 + Math.random()*80;
+        const jitter = (Math.random()-0.5)*0.35;
+        x += Math.cos(angle+jitter)*Math.min(segLen, remainingLen);
+        y += Math.sin(angle+jitter)*Math.min(segLen, remainingLen);
+        ctx.lineTo(x, y);
+        if (Math.random() < 0.4 && remainingLen > 80) {
+          const bAngle = angle + (Math.random()-0.5)*1.2;
+          const bLen = remainingLen * (0.2 + Math.random()*0.3);
+          let bx = x, by = y;
+          ctx.moveTo(bx, by);
+          for (let b = 0; b < bLen; b += 40+Math.random()*40) {
+            bx += Math.cos(bAngle+(Math.random()-0.5)*0.3)*40;
+            by += Math.sin(bAngle+(Math.random()-0.5)*0.3)*40;
+            ctx.lineTo(bx, by);
+          }
+          ctx.moveTo(x, y);
+        }
+        remainingLen -= segLen;
+      }
+      ctx.stroke();
+    }
+  }
+
+  function buildShards(numShards) {
+    const points = [[IX, IY]];
+    for (let i = 1; i < numShards; i++) {
+      points.push([Math.random()*W, Math.random()*H]);
+    }
+    return points.map((pt) => {
+      const cx = pt[0], cy = pt[1];
+      const numVerts = 6 + Math.floor(Math.random()*4);
+      const angles = Array.from({length: numVerts}, (_, i) => (i / numVerts) * Math.PI * 2 + (Math.random()-0.5)*0.5);
+      const verts = angles.map(a => {
+        const r = 60 + Math.random() * Math.max(W,H) * 0.18;
+        return [cx + Math.cos(a)*r, cy + Math.sin(a)*r];
+      });
+      return { cx, cy, verts };
+    });
+  }
+
+  let shards = null;
+  let shardStates = [];
+  let offscreen = null;
+
+  function startShatter() {
+    offscreen = document.createElement('canvas');
+    offscreen.width = W;
+    offscreen.height = H;
+    offscreen.getContext('2d').drawImage(canvas, 0, 0);
+
+    shards = buildShards(22);
+    shardStates = shards.map(s => {
+      const dx = s.cx - IX, dy = s.cy - IY;
+      const dist = Math.hypot(dx, dy) || 1;
+      const speed = 4 + Math.random()*8 + (1/(dist/300+0.1))*2;
+      return {
+        vx: (dx/dist)*speed + (Math.random()-0.5)*3,
+        vy: (dy/dist)*speed + (Math.random()-0.5)*3,
+        vr: (Math.random()-0.5)*6,
+        rotation: 0,
+        opacity: 1,
+        tx: 0, ty: 0
+      };
+    });
+    
+    canvas.style.backdropFilter = 'none';
+    canvas.style.webkitBackdropFilter = 'none';
+    
+    requestAnimationFrame(animateShatter);
+  }
+
+  function animateShatter() {
+    ctx.clearRect(0, 0, W, H);
+
+    let allGone = true;
+    shards.forEach((shard, i) => {
+      const st = shardStates[i];
+      st.tx += st.vx; 
+      st.ty += st.vy; 
+      st.vy += 0.4; 
+      st.rotation += st.vr; 
+      st.opacity -= 0.018;
+      
+      if (st.opacity <= 0) return;
+      allGone = false;
+      
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, st.opacity);
+      
+      ctx.translate(shard.cx + st.tx, shard.cy + st.ty);
+      ctx.rotate(st.rotation * Math.PI / 180);
+      ctx.translate(-shard.cx, -shard.cy);
+      
+      ctx.beginPath();
+      ctx.moveTo(shard.verts[0][0], shard.verts[0][1]);
+      shard.verts.forEach(v => ctx.lineTo(v[0], v[1]));
+      ctx.closePath();
+      ctx.clip();
+      
+      ctx.drawImage(offscreen, 0, 0);
+      
+      ctx.fillStyle = 'rgba(255,255,255,0.15)';
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(255,255,255,0.6)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+      
+      ctx.restore();
+    });
+
+    if (allGone) { 
+      canvas.style.display = 'none'; 
+      return; 
+    }
+    requestAnimationFrame(animateShatter);
+  }
+
+  IX = W * 0.48 + (Math.random()-0.5)*80;
+  IY = H * 0.42 + (Math.random()-0.5)*60;
+
+  const tapOverlay = document.getElementById('tap-overlay');
+  const crackAudio = new Audio('crack.mp3');
+  crackAudio.volume = 0.4;
+
+  tapOverlay.addEventListener('click', () => {
+    crackAudio.play().catch(() => {});
+    drawCracks();
+    tapOverlay.style.opacity = '0';
+    setTimeout(() => tapOverlay.style.display = 'none', 400);
+    setTimeout(startShatter, 600);
+  }, { once: true });
+});
+
+// ── PWA: REGISTER SERVICE WORKER ──
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch((err) => {
+      console.warn('Service worker registration failed:', err);
+    });
+  });
+}
+</script>
+</body>
+</html>
