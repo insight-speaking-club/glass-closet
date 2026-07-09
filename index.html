@@ -599,18 +599,6 @@
     margin-top: 0.9rem; letter-spacing: 0.02em;
   }
 
-  #mission-stamp {
-    position: absolute; top: 14px; right: 8px; z-index: 6;
-    font-family: 'Anton', sans-serif; text-transform: uppercase;
-    font-size: 0.85rem; letter-spacing: 0.05em; line-height: 1.1;
-    padding: 0.35rem 0.6rem; border: 3px solid; border-radius: 4px;
-    transform: rotate(10deg); opacity: 0.92; pointer-events: none;
-    display: none; text-align: center;
-  }
-  #mission-stamp.show { display: block; }
-  #mission-stamp.pass { color: #3a7a4a; border-color: #3a7a4a; }
-  #mission-stamp.fail { color: #a33a4a; border-color: #a33a4a; }
-
   .lookbook-caption input.lb-edit-input {
     font-family: 'DM Sans', sans-serif; font-weight: 500; font-size: 0.62rem;
     text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink);
@@ -828,8 +816,9 @@
     <div id="mission-eyebrow">Today's secret mission</div>
     <div id="mission-title"></div>
     <div id="mission-prompt"></div>
+    <button id="check-vibe-btn" onclick="checkMissionVibe()" style="width: 100%; padding: 0.8rem; background: var(--accent); color: var(--ink); border: none; border-radius: 6px; font-family: 'DM Sans', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; cursor: pointer; margin-bottom: 1rem;">Check Vibe</button>
     <div id="mission-status"></div>
-    <div id="mission-hint">Build the fit, then hit "Get my verdict" to see if you passed.</div>
+    <div id="mission-hint">Build your outfit on the canvas, then hit "Check Vibe" to see if you passed.</div>
   </div>
 </div>
 
@@ -866,7 +855,6 @@
   </div>
   
   <div id="verdict-photo-frame">
-    <div id="mission-stamp"></div>
     <div id="verdict-outfit-preview"></div>
     <button id="download-outfit-btn" onclick="downloadOutfitImage()" aria-label="Download">
       <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -2610,6 +2598,37 @@ function evaluateMission(verdictKey) {
   return result;
 }
 
+function checkMissionVibe() {
+  if (Object.keys(onCanvas).length === 0) {
+    alert("Put some clothes on the canvas first!");
+    return;
+  }
+
+  // Calculate the verdict without showing the full Polaroid screen
+  const tempVerdict = calculateVerdict();
+  const verdictKey = tempVerdict.key;
+
+  const mission = getDailyMission();
+  const passed = mission.tags.includes(verdictKey);
+
+  // Save the result
+  const result = { date: todayDateStr(), passed, verdictKey, missionId: mission.id };
+  try { localStorage.setItem(MISSION_RESULT_KEY, JSON.stringify(result)); } catch (e) {}
+  updateMissionBadge();
+
+  // Update the UI in the mission window
+  const statusEl = document.getElementById('mission-status');
+  statusEl.className = 'show';
+
+  if (passed) {
+    statusEl.textContent = `Mission passed ✓ (Your vibe is ${verdictKey.toUpperCase()})`;
+    statusEl.classList.add('pass');
+  } else {
+    statusEl.textContent = `Mission failed (Your vibe is ${verdictKey.toUpperCase()}) — try again!`;
+    statusEl.classList.add('fail');
+  }
+}
+
 function renderLeaderboard() {
   const el = document.getElementById('lb-leaderboard');
   if (!el) return;
@@ -2641,7 +2660,6 @@ function showVerdict() {
   currentLang = 'en'; // always start each new verdict in English — don't carry over a previous guest's translate toggle
   currentVerdict = calculateVerdict();
   currentVerdictKey = currentVerdict.key;
-  evaluateMission(currentVerdict.key);
   
   applyTranslations();
   
