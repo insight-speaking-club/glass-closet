@@ -107,15 +107,25 @@
     display: flex; justify-content: flex-end; gap: 0.5rem;
     margin-top: 0.45rem;
   }
-  #lookbook-btn, #shake-btn, #request-btn {
+  #lookbook-btn, #shake-btn, #request-btn, #mission-btn {
     width: 32px; height: 32px; border-radius: 50%;
     background: rgba(26,20,20,0.14); border: none;
     color: rgba(26,20,20,0.75);
     display: flex; align-items: center; justify-content: center;
     cursor: pointer; transition: background 0.15s, transform 0.1s;
+    position: relative;
   }
-  #lookbook-btn svg, #shake-btn svg, #request-btn svg { width: 16px; height: 16px; }
-  #lookbook-btn:active, #shake-btn:active, #request-btn:active { transform: scale(0.9); background: rgba(26,20,20,0.24); }
+  #lookbook-btn svg, #shake-btn svg, #request-btn svg, #mission-btn svg { width: 16px; height: 16px; }
+  #lookbook-btn:active, #shake-btn:active, #request-btn:active, #mission-btn:active { transform: scale(0.9); background: rgba(26,20,20,0.24); }
+
+  #mission-btn-dot {
+    position: absolute; top: -2px; right: -2px;
+    width: 9px; height: 9px; border-radius: 50%;
+    background: #e0507a; border: 1.5px solid #f7f4f0;
+    display: none;
+  }
+  #mission-btn-dot.active { display: block; }
+  #mission-btn-dot.done { background: #7fbf8f; }
 
   /* ── CANVAS ── */
   #canvas { flex: 1; position: relative; overflow: hidden; background: #ffffff; touch-action: none; transition: height 0.3s ease; }
@@ -398,6 +408,19 @@
   .gi-locked .lock-mark {
     font-family: 'Anton', sans-serif; font-size: 1.1rem; color: var(--drawer-muted);
   }
+  /* ── REQUEST AN ITEM TILE ── */
+  .grid-item.request-tile { cursor: pointer; opacity: 0.9; }
+  .grid-item.request-tile .gi-visual {
+    display: flex; align-items: center; justify-content: center;
+    border: 1px dashed var(--accent); border-radius: 4px;
+    background: rgba(212, 155, 177, 0.06);
+  }
+  .grid-item.request-tile .plus-mark {
+    font-family: 'Anton', sans-serif; font-size: 1.3rem; color: var(--accent);
+  }
+  .grid-item.request-tile .gi-name { color: var(--accent); }
+  .grid-item.request-tile:active { transform: scale(0.96); }
+
   .grid-item .gi-release {
     font-size: 0.36rem; text-transform: uppercase; letter-spacing: 0.05em;
     color: var(--accent); margin-top: 2px; text-align: center; line-height: 1.2; width: 100%;
@@ -463,6 +486,29 @@
   .lb-edit-btn:active, .lb-delete-btn:active { transform: scale(0.9); }
   .lb-delete-btn:hover { background: rgba(139,0,0,0.75); }
   .lb-edit-btn:hover { background: rgba(212,155,177,0.75); }
+  /* ── LEADERBOARD (inside Lookbook) ── */
+  #lb-leaderboard {
+    background: #1a1414; border: 1px solid var(--drawer-border); border-radius: 8px;
+    padding: 0.8rem 0.9rem 0.9rem; margin-bottom: 1.1rem; flex-shrink: 0;
+  }
+  #lb-leaderboard-title {
+    font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 0.6rem;
+    text-transform: uppercase; letter-spacing: 0.16em; color: #6a6460; margin-bottom: 0.55rem;
+  }
+  .lb-row { display: flex; align-items: center; gap: 0.55rem; margin-bottom: 0.4rem; }
+  .lb-row:last-child { margin-bottom: 0; }
+  .lb-row-label {
+    font-family: 'DM Sans', sans-serif; font-weight: 500; font-size: 0.68rem;
+    color: #d8d4cf; text-transform: lowercase; width: 40%; flex-shrink: 0;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .lb-row-bar-track { flex: 1; height: 6px; background: rgba(255,255,255,0.08); border-radius: 3px; overflow: hidden; }
+  .lb-row-bar-fill { height: 100%; background: var(--accent); border-radius: 3px; }
+  .lb-row-pct {
+    font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 0.62rem;
+    color: var(--accent); width: 32px; text-align: right; flex-shrink: 0;
+  }
+
   /* ── ANONYMOUS REQUEST FORM ── */
   #request-overlay {
     display: none; position: fixed; inset: 0; z-index: 20000 !important;
@@ -509,6 +555,61 @@
   }
   #request-status.success { color: #8fd19e; }
   #request-status.error { color: #e08080; }
+
+  /* ── SECRET MISSION ── */
+  #mission-overlay {
+    display: none; position: fixed; inset: 0; z-index: 20000 !important;
+    background: rgba(16,13,10,0.9); backdrop-filter: blur(6px);
+    align-items: center; justify-content: center; padding: 1.2rem;
+  }
+  #mission-overlay.show { display: flex; }
+  #mission-panel {
+    background: #1a1414; border-radius: 12px; padding: 1.5rem 1.3rem 1.3rem;
+    width: 100%; max-width: 380px; box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    position: relative; text-align: center;
+  }
+  #mission-close {
+    position: absolute; top: 0.7rem; right: 0.7rem;
+    width: 30px; height: 30px; border-radius: 50%;
+    background: rgba(255,255,255,0.1); border: none; color: #f7f4f0;
+    font-size: 0.9rem; cursor: pointer;
+  }
+  #mission-eyebrow {
+    font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 0.6rem;
+    text-transform: uppercase; letter-spacing: 0.24em; color: var(--accent); margin-bottom: 0.7rem;
+  }
+  #mission-title {
+    font-family: 'Anton', sans-serif; text-transform: uppercase; letter-spacing: 0.01em;
+    font-size: 1.4rem; line-height: 1.15; color: #f7f4f0; margin-bottom: 0.7rem;
+  }
+  #mission-prompt {
+    font-family: 'Playfair Display', serif; font-style: italic; font-size: 0.95rem;
+    color: #a8a09b; line-height: 1.5; margin-bottom: 1.1rem;
+  }
+  #mission-status {
+    font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 0.62rem;
+    text-transform: uppercase; letter-spacing: 0.12em; padding: 0.55rem;
+    border-radius: 6px; display: none;
+  }
+  #mission-status.show { display: block; }
+  #mission-status.pass { background: rgba(127,191,143,0.15); color: #7fbf8f; }
+  #mission-status.fail { background: rgba(224,80,122,0.15); color: #e0507a; }
+  #mission-hint {
+    font-family: 'DM Sans', sans-serif; font-size: 0.65rem; color: #6a6460;
+    margin-top: 0.9rem; letter-spacing: 0.02em;
+  }
+
+  #mission-stamp {
+    position: absolute; top: 14px; right: 8px; z-index: 6;
+    font-family: 'Anton', sans-serif; text-transform: uppercase;
+    font-size: 0.85rem; letter-spacing: 0.05em; line-height: 1.1;
+    padding: 0.35rem 0.6rem; border: 3px solid; border-radius: 4px;
+    transform: rotate(10deg); opacity: 0.92; pointer-events: none;
+    display: none; text-align: center;
+  }
+  #mission-stamp.show { display: block; }
+  #mission-stamp.pass { color: #3a7a4a; border-color: #3a7a4a; }
+  #mission-stamp.fail { color: #a33a4a; border-color: #a33a4a; }
 
   .lookbook-caption input.lb-edit-input {
     font-family: 'DM Sans', sans-serif; font-weight: 500; font-size: 0.62rem;
@@ -637,8 +738,13 @@
     <button id="verdict-btn" onclick="showVerdict()">Get my verdict</button>
   </div>
   <div id="topbar-icon-row">
-    <button id="request-btn" onclick="openRequestForm()" aria-label="Request an item" title="Request an item">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+    <button id="mission-btn" onclick="openMissionCard()" aria-label="Today's secret mission" title="Today's secret mission">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="9"></circle>
+        <circle cx="12" cy="12" r="5"></circle>
+        <circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"></circle>
+      </svg>
+      <span id="mission-btn-dot"></span>
     </button>
     <button id="lookbook-btn" onclick="openLookbook()" aria-label="Your lookbook" title="Your lookbook">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
@@ -712,7 +818,19 @@
     <span id="lookbook-title">Your Lookbook</span>
     <button id="lookbook-close" onclick="closeLookbook()" aria-label="Close">✕</button>
   </div>
+  <div id="lb-leaderboard"></div>
   <div id="lookbook-grid"></div>
+</div>
+
+<div id="mission-overlay">
+  <div id="mission-panel">
+    <button id="mission-close" onclick="closeMissionCard()" aria-label="Close">✕</button>
+    <div id="mission-eyebrow">Today's secret mission</div>
+    <div id="mission-title"></div>
+    <div id="mission-prompt"></div>
+    <div id="mission-status"></div>
+    <div id="mission-hint">Build the fit, then hit "Get my verdict" to see if you passed.</div>
+  </div>
 </div>
 
 <div id="request-overlay">
@@ -748,6 +866,7 @@
   </div>
   
   <div id="verdict-photo-frame">
+    <div id="mission-stamp"></div>
     <div id="verdict-outfit-preview"></div>
     <button id="download-outfit-btn" onclick="downloadOutfitImage()" aria-label="Download">
       <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1827,6 +1946,7 @@ function init() {
   initTeaTicker();
   renderNewsTicker();
   restoreInProgressOutfit();
+  updateMissionBadge();
 }
 
 const INPROGRESS_KEY = 'dreamCloset_inProgress';
@@ -2101,6 +2221,12 @@ function renderGrid(catId, items) {
     card.onclick = () => toggleItem(uid, item, item._catId || catId);
     grid.appendChild(card);
   });
+
+  const reqCard = document.createElement('div');
+  reqCard.className = 'grid-item request-tile';
+  reqCard.innerHTML = `<div class="gi-visual"><span class="plus-mark">+</span></div><div class="gi-name">Request<br>an item</div>`;
+  reqCard.onclick = () => openRequestForm();
+  grid.appendChild(reqCard);
 }
 
 function handleSearch(query) {
@@ -2389,11 +2515,133 @@ function downloadOutfitImage() {
   });
 }
 
+// ── SECRET MISSIONS ──
+const MISSIONS = [
+  { id: 'debate', title: '3AM Philosophical Debate', prompt: "You're two hours deep into an argument about free will at a diner booth. Dress like you're winning.", tags: ['downtown intellectual','cerebral','academic','winter intellectual','romantic intellectual'] },
+  { id: 'villain', title: 'Villain Origin Story', prompt: "Someone wronged you. This is the outfit you wear the day you stop being nice about it.", tags: ['iconic villain era','dangerous','riot grrrl','weaponised femininity'] },
+  { id: 'reunion', title: 'Uninvited, But Showing Up Anyway', prompt: "You weren't on the list. Dress like that was their mistake, not yours.", tags: ['it-girl immunity','a little bit dramatic','queen bee','dramatic entrance'] },
+  { id: 'courtdate', title: 'Court Date, But Make It Fashion', prompt: "You have to look credible in front of a judge and unbothered for the paparazzi outside.", tags: ['power dressing','power','boss','city power'] },
+  { id: 'breakup', title: 'Breakup Text Sent, Vacation Booked', prompt: "You hit send twenty minutes ago. Dress like the healing arc already started.", tags: ['thank u, next','no tears left to cry','taste maker'] },
+  { id: 'gallery', title: "The Gallery Opening You Weren't Invited To", prompt: "Free wine, pretentious lighting, zero explanation for why you're here. Blend in by standing out.", tags: ['downtown art','art student','artsy','arty','downtown artist'] },
+  { id: 'rodeo', title: 'Rodeo, But Your Situationship Is Watching', prompt: "You didn't come here for the bulls. You came here to be seen not caring.", tags: ['camp cowgirl','dark cowgirl','cool Americana'] },
+  { id: 'exwedding', title: "Emergency Glow-Up Before the Ex's Wedding", prompt: "You RSVP'd yes out of spite. Now the outfit has to back that decision up.", tags: ['effortless chic','rich girl','retro glamour','quiet luxury peak'] },
+  { id: 'ceo', title: 'First Day Pretending You Run This Company', prompt: "Nobody asked, but you're acting like the building is yours until someone stops you.", tags: ['boss','effortlessly powerful','director','quietly powerful'] },
+  { id: 'seance', title: 'Midnight Séance With the Group Chat', prompt: "You're summoning something at 12am with people you met on the internet. Dress accordingly.", tags: ['witchy','dark romantic','victorian goth','theatrical goth','autumn witchy'] },
+  { id: 'award', title: "Winning an Award You Weren't Nominated For", prompt: "There's been a mix-up and you're accepting it anyway. Dress like you deserved it all along.", tags: ['editorial','evening editorial','retro glam','all eyes on you','theatrical'] },
+  { id: 'wholefoods', title: "Running Into the New Girlfriend at Whole Foods", prompt: "You're just getting groceries. You are also, unmistakably, thriving.", tags: ['effortless','cool','soft danger','quiet subversion','rich girl'] },
+];
+
+const MISSION_DATE_KEY = 'dreamCloset_missionDate';
+const MISSION_INDEX_KEY = 'dreamCloset_missionIndex';
+const MISSION_RESULT_KEY = 'dreamCloset_missionResult';
+
+function todayDateStr() { return new Date().toISOString().slice(0, 10); }
+
+function getDailyMission() {
+  const today = todayDateStr();
+  const storedDate = localStorage.getItem(MISSION_DATE_KEY);
+  let idx;
+  if (storedDate === today && localStorage.getItem(MISSION_INDEX_KEY) !== null) {
+    idx = parseInt(localStorage.getItem(MISSION_INDEX_KEY), 10);
+  } else {
+    idx = Math.floor(Math.random() * MISSIONS.length);
+    try {
+      localStorage.setItem(MISSION_DATE_KEY, today);
+      localStorage.setItem(MISSION_INDEX_KEY, String(idx));
+      localStorage.removeItem(MISSION_RESULT_KEY);
+    } catch (e) {}
+  }
+  return MISSIONS[idx] || MISSIONS[0];
+}
+
+function getMissionResult() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(MISSION_RESULT_KEY) || 'null');
+    if (raw && raw.date === todayDateStr()) return raw;
+  } catch (e) {}
+  return null;
+}
+
+function updateMissionBadge() {
+  const dot = document.getElementById('mission-btn-dot');
+  if (!dot) return;
+  const result = getMissionResult();
+  dot.classList.remove('active', 'done');
+  if (result) dot.classList.add('active', 'done');
+  else dot.classList.add('active');
+}
+
+function openMissionCard() {
+  const mission = getDailyMission();
+  document.getElementById('mission-title').textContent = mission.title;
+  document.getElementById('mission-prompt').textContent = mission.prompt;
+
+  const statusEl = document.getElementById('mission-status');
+  const result = getMissionResult();
+  statusEl.className = '';
+  if (result) {
+    statusEl.textContent = result.passed ? 'Mission passed ✓' : 'Mission failed — try again tomorrow';
+    statusEl.classList.add('show', result.passed ? 'pass' : 'fail');
+  } else {
+    statusEl.classList.remove('show');
+  }
+
+  document.getElementById('mission-overlay').classList.add('show');
+}
+
+function closeMissionCard() {
+  document.getElementById('mission-overlay').classList.remove('show');
+}
+
+function evaluateMission(verdictKey) {
+  const mission = getDailyMission();
+  const passed = mission.tags.includes(verdictKey);
+  const result = { date: todayDateStr(), passed, verdictKey, missionId: mission.id };
+  try { localStorage.setItem(MISSION_RESULT_KEY, JSON.stringify(result)); } catch (e) {}
+  updateMissionBadge();
+
+  const stamp = document.getElementById('mission-stamp');
+  if (stamp) {
+    stamp.textContent = passed ? 'Mission\nPassed' : 'Mission\nFailed';
+    stamp.style.whiteSpace = 'pre-line';
+    stamp.classList.remove('pass', 'fail');
+    stamp.classList.add('show', passed ? 'pass' : 'fail');
+  }
+  return result;
+}
+
+function renderLeaderboard() {
+  const el = document.getElementById('lb-leaderboard');
+  if (!el) return;
+  let history = [];
+  try { history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); } catch (e) { history = []; }
+
+  if (history.length === 0) { el.innerHTML = ''; return; }
+
+  const freq = {};
+  history.forEach(entry => { if (entry.aesthetic) freq[entry.aesthetic] = (freq[entry.aesthetic] || 0) + 1; });
+
+  const total = history.length;
+  const top = Object.keys(freq).sort((a, b) => freq[b] - freq[a]).slice(0, 5);
+
+  const rows = top.map(key => {
+    const pct = Math.round((freq[key] / total) * 100);
+    return `<div class="lb-row">
+      <span class="lb-row-label">${key}</span>
+      <div class="lb-row-bar-track"><div class="lb-row-bar-fill" style="width:${pct}%"></div></div>
+      <span class="lb-row-pct">${pct}%</span>
+    </div>`;
+  }).join('');
+
+  el.innerHTML = `<div id="lb-leaderboard-title">Your most-worn aesthetics</div>${rows}`;
+}
+
 function showVerdict() {
   if (Object.keys(onCanvas).length === 0) { alert("The closet's full. Pick something to wear."); return; }
   currentLang = 'en'; // always start each new verdict in English — don't carry over a previous guest's translate toggle
   currentVerdict = calculateVerdict();
   currentVerdictKey = currentVerdict.key;
+  evaluateMission(currentVerdict.key);
   
   applyTranslations();
   
@@ -2458,6 +2706,7 @@ function openLookbook() {
   let history = [];
   try { history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); } catch (e) { history = []; }
 
+  renderLeaderboard();
   grid.innerHTML = '';
   if (history.length === 0) {
     grid.innerHTML = '<div id="lookbook-empty">No looks saved yet — hit "Get my verdict" on an outfit to start your lookbook.</div>';
