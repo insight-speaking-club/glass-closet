@@ -242,6 +242,15 @@
   .field-label {
     font-family: 'Caveat', cursive; font-size: 1rem; color: var(--glow-deep); margin: 0 0 0.2rem 0.1rem;
   }
+  .spotlight-chip {
+    display: block; width: 100%; text-align: center;
+    font-family: 'Caveat', cursive; font-weight: 700; font-size: 1.05rem;
+    background: var(--glow-lilac); color: var(--ink); border: none;
+    border-radius: 50px; padding: 0.5rem 0.9rem; margin: 0.2rem 0 0.9rem;
+    cursor: pointer; box-shadow: 0 4px 10px rgba(28,23,20,0.14);
+    transition: transform 0.12s;
+  }
+  .spotlight-chip:active { transform: scale(0.97); }
   #glow-name {
     width: 100%; background: #fff; border: 1px solid rgba(28,23,20,0.18);
     border-radius: 6px; color: var(--ink); font-family: 'DM Sans', sans-serif;
@@ -300,6 +309,32 @@
   }
   .idx-empty a { color: var(--glow-deep); text-decoration: underline; }
 
+  /* ── host panel (secret) ── */
+  .host-panel {
+    background: #fff4d9; border: 1.5px dashed var(--glow-gold);
+    border-radius: 8px; padding: 0.7rem 0.75rem; margin-bottom: 0.9rem;
+    transform: rotate(-0.5deg);
+  }
+  .host-label {
+    font-family: 'Permanent Marker', cursive; font-size: 0.62rem; letter-spacing: 0.02em;
+    color: var(--glow-deep); text-transform: uppercase; margin-bottom: 0.4rem;
+  }
+  .host-row { display: flex; gap: 0.4rem; }
+  #host-name-input {
+    flex: 1; background: #fff; border: 1px solid rgba(28,23,20,0.18);
+    border-radius: 6px; color: var(--ink); font-family: 'DM Sans', sans-serif;
+    font-size: 0.8rem; padding: 0.45rem 0.6rem; outline: none;
+  }
+  #host-name-input:focus { border-color: var(--glow-deep); }
+  #host-add-btn {
+    font-family: 'Permanent Marker', cursive; font-size: 0.78rem;
+    background: var(--glow-deep); color: var(--paper); border: none;
+    padding: 0 0.9rem; border-radius: 6px; cursor: pointer;
+  }
+  #host-status { font-family: 'Caveat', cursive; font-size: 0.9rem; margin-top: 0.4rem; min-height: 1.1em; }
+  #host-status.success { color: #4f8f5f; }
+  #host-status.error { color: var(--glow-deep); }
+
   /* ══════════════ PERSON PAGE ══════════════ */
   .person-back {
     font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 0.65rem;
@@ -352,7 +387,7 @@
     <div class="side-tabs">
       <button class="side-tab side-tab--rules" onclick="goTo('rules')">rules</button>
       <button class="side-tab side-tab--write" onclick="goTo('write')">write</button>
-      <button class="side-tab side-tab--index" onclick="goTo('index')">index</button>
+      <button class="side-tab side-tab--index" onclick="indexTabTap()">index</button>
     </div>
     <div class="book-viewport">
       <div class="page-panel" id="page-panel">
@@ -381,7 +416,7 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getDatabase, ref, push, onValue, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+  import { getDatabase, ref, push, set, onValue, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyABrfzps49T4yKj0IMMmgYO1_qL2JObP_U",
@@ -396,6 +431,7 @@
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
   const glowQuery = query(ref(db, "glowbook"), limitToLast(500));
+  const rosterRef = ref(db, "glowroster");
 
   const BLOCKED_WORDS = ["fuck","shit","bitch","slut","whore","ugly","fat","stupid","idiot","kill yourself","kys","hate you"];
   function containsBlockedWord(text) {
@@ -449,8 +485,10 @@
 
   // ── data state ──
   let glowEntries = [];
+  let rosterMap = {};     // key(lowercase) -> display name, seeded by the host
   let people = new Map(); // key(lowercase) -> { display, entries: [] }
   let personKeys = [];    // sorted display keys (lowercase) for stable ordering
+  let lastSuggestedKey = null;
 
   function rebuildPeople() {
     const map = new Map();
@@ -459,9 +497,23 @@
       if (!map.has(key)) map.set(key, { display: e.name.trim(), entries: [] });
       map.get(key).entries.push(e);
     }
+    for (const [key, display] of Object.entries(rosterMap)) {
+      if (!map.has(key)) map.set(key, { display, entries: [] });
+    }
     for (const p of map.values()) p.entries.sort((a, b) => b.ts - a.ts);
     people = map;
     personKeys = Array.from(map.keys()).sort((a, b) => map.get(a).display.localeCompare(map.get(b).display));
+  }
+
+  function pickSpotlight() {
+    if (!personKeys.length) return null;
+    let minCount = Infinity;
+    for (const k of personKeys) minCount = Math.min(minCount, people.get(k).entries.length);
+    let candidates = personKeys.filter(k => people.get(k).entries.length === minCount);
+    if (candidates.length > 1 && lastSuggestedKey) candidates = candidates.filter(k => k !== lastSuggestedKey);
+    const pick = candidates[Math.floor(Math.random() * candidates.length)];
+    lastSuggestedKey = pick;
+    return people.get(pick).display;
   }
 
   function pagesList() {
@@ -470,6 +522,19 @@
 
   // ── navigation state ──
   let currentPage = 'cover';
+  let hostMode = false;
+  let tabTapTimes = [];
+
+  window.indexTabTap = function() {
+    const now = Date.now();
+    tabTapTimes = tabTapTimes.filter(t => now - t < 2500);
+    tabTapTimes.push(now);
+    if (tabTapTimes.length >= 5) {
+      hostMode = true;
+      tabTapTimes = [];
+    }
+    goTo('index');
+  };
 
   window.goTo = function(pageId, dir) {
     flipTo(pageId, dir);
@@ -502,8 +567,9 @@
   function flipTo(pageId, dir = 'fwd') {
     const panel = document.getElementById('page-panel');
     if (!panel) return;
+    const samePage = pageId === currentPage;
     currentPage = pageId;
-    if (reduceMotion) {
+    if (reduceMotion || samePage) {
       renderPage(pageId);
       updateChrome();
       return;
@@ -591,10 +657,12 @@
   }
 
   function writeHtml() {
+    const showChip = personKeys.length > 0;
     return `
       <div class="pg-eyebrow">page two</div>
       <h2 class="pg-title">write one</h2>
       <div class="pg-sub">who are you glowing today?</div>
+      ${showChip ? `<button type="button" id="spotlight-btn" class="spotlight-chip">🎲 surprise me — pick someone light on glow</button>` : ''}
       <div class="write-card">
         <div class="field-label">their name</div>
         <input id="glow-name" maxlength="40" placeholder="who's it for?">
@@ -617,6 +685,18 @@
     }
     msgEl.addEventListener('input', updateCounter);
     updateCounter();
+
+    const needsBtn = document.getElementById('spotlight-btn');
+    if (needsBtn) {
+      needsBtn.addEventListener('click', () => {
+        const pick = pickSpotlight();
+        if (!pick) return;
+        const nameEl = document.getElementById('glow-name');
+        nameEl.value = pick;
+        nameEl.focus();
+        needsBtn.textContent = `🎲 picked ${pick} — go ahead ↓`;
+      });
+    }
 
     document.getElementById('glow-submit-btn').addEventListener('click', () => {
       const nameEl = document.getElementById('glow-name');
@@ -659,10 +739,21 @@
   }
 
   function indexHtml() {
+    const hostPanel = hostMode ? `
+      <div class="host-panel">
+        <div class="host-label">🔒 host — add a name to the roster</div>
+        <div class="host-row">
+          <input id="host-name-input" maxlength="40" placeholder="add a name...">
+          <button id="host-add-btn">add</button>
+        </div>
+        <div id="host-status"></div>
+      </div>` : '';
+
     if (!personKeys.length) {
       return `
         <div class="pg-eyebrow">page three</div>
         <h2 class="pg-title">the index</h2>
+        ${hostPanel}
         <div class="idx-empty">the book is empty so far —<br>be the first to write something 💌<br><br><a onclick="goTo('write','back')">go write one →</a></div>
       `;
     }
@@ -670,6 +761,7 @@
       <div class="pg-eyebrow">page three</div>
       <h2 class="pg-title">the index</h2>
       <div class="pg-sub">find someone, or find yourself</div>
+      ${hostPanel}
       <input id="glow-search" placeholder="search a name...">
       <div class="idx-list" id="idx-list"></div>
     `;
@@ -679,6 +771,22 @@
     const searchEl = document.getElementById('glow-search');
     renderIndexList('');
     if (searchEl) searchEl.addEventListener('input', () => renderIndexList(searchEl.value));
+
+    const addBtn = document.getElementById('host-add-btn');
+    if (addBtn) {
+      addBtn.addEventListener('click', () => {
+        const input = document.getElementById('host-name-input');
+        const statusEl = document.getElementById('host-status');
+        const name = input.value.trim();
+        statusEl.className = ''; statusEl.textContent = '';
+        if (!name) { statusEl.textContent = 'type a name first'; statusEl.classList.add('error'); return; }
+        if (containsBlockedWord(name)) { statusEl.textContent = 'keep it kind 💗'; statusEl.classList.add('error'); return; }
+        const key = name.toLowerCase();
+        set(ref(db, 'glowroster/' + key.replace(/[.#$/\[\]]/g, '_')), name)
+          .then(() => { statusEl.textContent = `added ${name} ✓`; statusEl.classList.add('success'); input.value = ''; input.focus(); })
+          .catch(() => { statusEl.textContent = "couldn't add — try again"; statusEl.classList.add('error'); });
+      });
+    }
   }
 
   function renderIndexList(q) {
@@ -732,9 +840,7 @@
   }
 
   // ── live sync ──
-  onValue(glowQuery, (snap) => {
-    const val = snap.val() || {};
-    glowEntries = Object.values(val).sort((a, b) => b.ts - a.ts);
+  function onDataChange() {
     rebuildPeople();
     // keep the current page fresh without disrupting an in-progress flip
     if (currentPage === 'index') renderIndexList(document.getElementById('glow-search')?.value || '');
@@ -749,7 +855,18 @@
       }
     }
     updateChrome();
+  }
+
+  onValue(glowQuery, (snap) => {
+    const val = snap.val() || {};
+    glowEntries = Object.values(val).sort((a, b) => b.ts - a.ts);
+    onDataChange();
   }, (err) => console.warn('[glow book] live sync error — check your Firebase config and database rules:', err));
+
+  onValue(rosterRef, (snap) => {
+    rosterMap = snap.val() || {};
+    onDataChange();
+  }, (err) => console.warn('[glow book] roster sync error:', err));
 
   // ── swipe support ──
   let touchX = null;
