@@ -2,15 +2,15 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>The Glow Book 💌 — Glass Closet</title>
-<meta name="description" content="Leave someone a compliment — no burns, just glow.">
+<meta name="description" content="Like a burn book, but glow instead of burn. Compliments only.">
 <meta property="og:title" content="The Glow Book 💌">
 <meta property="og:description" content="Leave someone a compliment — no burns, just glow.">
 <meta property="og:type" content="website">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💌</text></svg>">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Anton&family=Playfair+Display:ital,wght@0,700;1,700&family=DM+Sans:wght@400;500;700;800&family=Caveat:wght@500;600&family=Permanent+Marker&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Anton&family=Playfair+Display:ital,wght@0,700;1,700&family=DM+Sans:wght@400;500;700;800&family=Caveat:wght@500;600;700&family=Permanent+Marker&display=swap');
 
   :root {
     --ink: #1c1714;
@@ -20,13 +20,17 @@
     --glow-pink: #eb9dbd;
     --glow-gold: #e3ae4a;
     --glow-deep: #a8456d;
+    --glow-lilac: #cbb8e8;
+    --glow-blue: #b9d3e8;
+    --dim: #9a8b7f;
   }
 
-  * { box-sizing: border-box; }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
   html, body {
     margin: 0; padding: 0; min-height: 100%;
     font-family: 'DM Sans', sans-serif;
+    overscroll-behavior-y: contain;
   }
 
   body {
@@ -39,320 +43,342 @@
       radial-gradient(circle at 8% 85%, rgba(255,255,255,0.05) 0%, transparent 22%),
       repeating-linear-gradient(118deg, rgba(255,255,255,0.025) 0px, rgba(255,255,255,0.025) 2px, transparent 2px, transparent 7px);
     color: var(--ink);
-    display: flex; align-items: center; justify-content: center;
-    padding: 2rem 1.2rem;
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 1.6rem 1rem 1.2rem;
   }
 
-  @media (prefers-reduced-motion: no-preference) {
-    .notebook { animation: nb-settle 0.7s cubic-bezier(.2,.8,.3,1) both; }
-  }
-  @keyframes nb-settle {
-    0% { opacity: 0; transform: rotate(-6deg) scale(0.94) translateY(14px); }
-    100% { opacity: 1; transform: rotate(-1deg) scale(1) translateY(0); }
-  }
+  a { color: inherit; }
 
-  .notebook {
-    width: 100%; max-width: 440px;
-    transform: rotate(-1deg);
-  }
-
-  /* ── back tab ── */
+  /* ── back link ── */
   .nb-back {
     display: inline-flex; align-items: center; gap: 0.3rem;
     font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 0.65rem;
     text-transform: uppercase; letter-spacing: 0.08em; color: var(--paper);
-    text-decoration: none; margin-bottom: 0.7rem; margin-left: 0.4rem;
-    background: rgba(247,236,217,0.12); padding: 0.3rem 0.7rem 0.3rem 0.5rem;
-    border-radius: 3px 3px 0 0; opacity: 0.85; transition: opacity 0.15s, background 0.15s;
+    text-decoration: none; margin-bottom: 0.6rem;
+    opacity: 0.7; transition: opacity 0.15s;
   }
-  .nb-back:hover { opacity: 1; background: rgba(247,236,217,0.2); }
+  .nb-back:hover { opacity: 1; }
 
-  /* ── cover: marbled composition-notebook front ── */
-  .nb-cover {
+  /* ══════════════ BOOK SHELL ══════════════ */
+  .book-shell {
     position: relative;
-    background:
-      radial-gradient(circle at 15% 20%, rgba(255,255,255,0.14) 0%, transparent 22%),
-      radial-gradient(circle at 82% 15%, rgba(255,255,255,0.1) 0%, transparent 26%),
-      radial-gradient(circle at 30% 75%, rgba(255,255,255,0.12) 0%, transparent 24%),
-      radial-gradient(circle at 90% 70%, rgba(255,255,255,0.08) 0%, transparent 22%),
-      radial-gradient(circle at 55% 45%, rgba(255,255,255,0.06) 0%, transparent 30%),
-      repeating-linear-gradient(112deg, rgba(255,255,255,0.035) 0px, rgba(255,255,255,0.035) 1.5px, transparent 1.5px, transparent 5px),
-      #100d0c;
-    border-radius: 10px 10px 4px 4px;
-    padding: 2.4rem 1.3rem 1.6rem;
-    box-shadow: 0 14px 34px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(255,255,255,0.04);
+    width: 100%; max-width: 420px;
   }
 
-  .nb-tape {
-    position: absolute; width: 62px; height: 22px; opacity: 0.88;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-    z-index: 3;
-  }
-  .nb-tape--tl {
-    top: 1.1rem; left: 2.2rem; transform: rotate(-10deg);
-    background: repeating-linear-gradient(45deg, var(--glow-pink) 0 5px, rgba(255,255,255,0.55) 5px 10px);
-  }
-  .nb-tape--tr {
-    top: 1.1rem; right: 2.1rem; transform: rotate(9deg);
-    background: repeating-linear-gradient(45deg, var(--glow-gold) 0 5px, rgba(255,255,255,0.55) 5px 10px);
-  }
-
-  /* ── label / photo frame (the "burn book" label, glow-ified) ── */
-  .nb-frame {
+  .book-frame {
     position: relative;
+    border-radius: 6px;
+    box-shadow: 0 20px 45px rgba(0,0,0,0.55);
+  }
+
+  /* spine shadow down the left */
+  .book-frame::before {
+    content: ''; position: absolute; top: 0; bottom: 0; left: 0; width: 16px;
+    background: linear-gradient(90deg, rgba(0,0,0,0.35), transparent);
+    z-index: 5; border-radius: 6px 0 0 6px; pointer-events: none;
+  }
+
+  .book-viewport {
+    perspective: 1800px;
+    height: 74vh; min-height: 480px; max-height: 640px;
+  }
+
+  .page-panel {
+    position: relative;
+    width: 100%; height: 100%;
     background: var(--paper);
-    border: 3px solid var(--ink);
-    border-radius: 2px;
-    padding: 0.35rem;
-    aspect-ratio: 5 / 4;
-    transform: rotate(0.8deg);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+    border-radius: 6px;
     overflow: hidden;
+    transform-origin: left center;
+    transform: rotateY(0deg);
+    opacity: 1;
+    box-shadow: inset 0 0 0 1px rgba(28,23,20,0.06);
   }
-  #glow-cover-img {
-    width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 1px;
-  }
-  .nb-cover-fallback {
-    width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
-    flex-wrap: wrap; align-content: center; gap: 0 0.15rem; padding: 0.6rem;
-    background:
-      repeating-linear-gradient(rgba(28,23,20,0.05) 0px, rgba(28,23,20,0.05) 1px, transparent 1px, transparent 26px);
-  }
-  .ransom-title { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; row-gap: 0; }
-  .ransom-title .sp { width: 0.5rem; }
-  .rl { display: inline-block; line-height: 1; }
-  .rl-g  { font-family: 'Anton', sans-serif; color: var(--ink); font-size: clamp(1.7rem,9vw,2.3rem); transform: rotate(-7deg) translateY(3px); }
-  .rl-l  { font-family: 'Permanent Marker', cursive; color: var(--glow-deep); font-size: clamp(1.5rem,7.6vw,2rem); transform: rotate(5deg) translateY(-4px); }
-  .rl-o1 { font-family: 'Playfair Display', serif; font-style: italic; font-weight: 700; color: var(--glow-gold); font-size: clamp(1.9rem,9.6vw,2.5rem); transform: rotate(-3deg) translateY(0); }
-  .rl-w  { font-family: 'DM Sans', sans-serif; font-weight: 800; color: var(--ink); font-size: clamp(1.6rem,8vw,2.1rem); transform: rotate(8deg) translateY(4px); }
-  .rl-b  { font-family: 'Permanent Marker', cursive; color: var(--glow-pink); font-size: clamp(1.8rem,9vw,2.4rem); transform: rotate(-6deg) translateY(-3px); }
-  .rl-o2 { font-family: 'Anton', sans-serif; color: var(--ink); font-size: clamp(1.6rem,8vw,2.1rem); transform: rotate(6deg) translateY(3px); }
-  .rl-o3 { font-family: 'Playfair Display', serif; font-style: italic; font-weight: 700; color: var(--glow-gold); font-size: clamp(2rem,10vw,2.6rem); transform: rotate(-4deg) translateY(-2px); }
-  .rl-k  { font-family: 'DM Sans', sans-serif; font-weight: 800; color: var(--glow-deep); font-size: clamp(1.7rem,8.6vw,2.2rem); transform: rotate(7deg) translateY(3px); }
-
-  /* ── sticky note callout ── */
-  .nb-sticky {
-    margin: 1.1rem auto 0; width: fit-content; max-width: 88%;
-    background: var(--glow-gold); color: var(--ink);
-    font-family: 'Caveat', cursive; font-size: 1.15rem; line-height: 1.15;
-    padding: 0.5rem 0.9rem 0.6rem; border-radius: 2px;
-    transform: rotate(-2.5deg);
-    box-shadow: 0 6px 14px rgba(0,0,0,0.35);
-    text-align: center;
+  @media (prefers-reduced-motion: no-preference) {
+    .page-panel.flipping { transition: transform 0.42s cubic-bezier(.4,.05,.2,1), opacity 0.36s ease; }
   }
 
-  /* ── torn edge into the pages ── */
-  .nb-torn {
-    height: 14px; margin-top: -1px; position: relative; z-index: 2;
-    background: var(--paper);
-    clip-path: polygon(0% 100%,4% 20%,8% 100%,12% 15%,16% 100%,20% 25%,24% 100%,28% 10%,32% 100%,36% 20%,40% 100%,44% 15%,48% 100%,52% 25%,56% 100%,60% 10%,64% 100%,68% 20%,72% 100%,76% 15%,80% 100%,84% 25%,88% 100%,92% 15%,96% 100%,100% 20%,100% 100%);
-  }
-
-  /* ── pages: ruled cream paper ── */
-  .nb-pages {
-    background: var(--paper);
-    border-radius: 0 0 8px 8px;
-    box-shadow: 0 14px 30px rgba(0,0,0,0.4);
-    padding: 1.3rem 1.1rem 1.4rem 2.1rem;
-    position: relative;
+  .page-inner {
+    height: 100%; overflow-y: auto; overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    padding: 1.5rem 1.3rem 2rem;
     background-image: repeating-linear-gradient(var(--paper) 0px, var(--paper) 27px, var(--paper-line) 28px);
     background-position: 0 4px;
   }
-  .nb-pages::before {
-    content: ''; position: absolute; top: 0; bottom: 0; left: 1.35rem;
-    width: 1.5px; background: var(--paper-margin);
+  .page-inner::-webkit-scrollbar { width: 4px; }
+  .page-inner::-webkit-scrollbar-thumb { background: rgba(28,23,20,0.15); border-radius: 4px; }
+
+  /* ── bottom nav ── */
+  .book-nav {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 0.6rem; margin-top: 0.85rem; padding: 0 0.2rem;
+  }
+  .nav-arrow {
+    font-family: 'Permanent Marker', cursive; font-size: 0.85rem;
+    background: rgba(247,236,217,0.1); color: var(--paper);
+    border: 1px solid rgba(247,236,217,0.25); border-radius: 50px;
+    padding: 0.5rem 0.95rem; cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+  }
+  .nav-arrow:active { transform: scale(0.95); }
+  .nav-arrow:hover { background: rgba(247,236,217,0.18); }
+  .nav-count {
+    font-family: 'Caveat', cursive; font-size: 1rem; color: var(--paper); opacity: 0.75;
   }
 
-  #glow-eyebrow {
-    font-family: 'Anton', sans-serif; text-transform: uppercase; letter-spacing: 0.02em;
-    font-size: 1.3rem; color: var(--ink);
+  /* ── side bookmark tabs ── */
+  .side-tabs {
+    position: absolute; right: -2px; top: 4.6rem;
+    display: flex; flex-direction: column; gap: 0.45rem;
+    z-index: 6;
   }
-  #glow-sub {
-    font-family: 'Caveat', cursive; font-size: 1.05rem; color: var(--glow-deep);
-    margin-bottom: 1rem;
+  .side-tab {
+    font-family: 'Permanent Marker', cursive; font-size: 0.62rem; letter-spacing: 0.02em;
+    color: var(--ink); text-transform: lowercase;
+    border: none; cursor: pointer;
+    padding: 0.5rem 0.5rem 0.5rem 0.65rem;
+    border-radius: 0 5px 5px 0;
+    box-shadow: 2px 3px 6px rgba(0,0,0,0.3);
+    writing-mode: vertical-rl; text-orientation: mixed;
+    transform: rotate(180deg);
+    transition: transform 0.15s, filter 0.15s;
+  }
+  .side-tab:hover { filter: brightness(1.08); }
+  .side-tab:active { transform: rotate(180deg) translateX(2px); }
+  .side-tab--rules { background: var(--glow-gold); }
+  .side-tab--write { background: var(--glow-pink); }
+  .side-tab--index { background: var(--glow-blue); }
+  .side-tab.current { outline: 2px solid var(--ink); outline-offset: -2px; }
+
+  /* ══════════════ COVER PAGE ══════════════ */
+  .pg-cover {
+    height: 100%; position: relative; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; text-align: center;
+    background: var(--glow-pink);
+    background-image:
+      radial-gradient(circle at 20% 18%, rgba(255,255,255,0.35) 0%, transparent 20%),
+      radial-gradient(circle at 85% 75%, rgba(255,255,255,0.2) 0%, transparent 24%);
+    cursor: pointer; padding: 1.4rem; overflow: hidden;
+  }
+  #glow-cover-img {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    object-fit: cover; object-position: center; z-index: 1;
+  }
+  .cover-fallback { position: relative; z-index: 0; display: flex; flex-direction: column; align-items: center; }
+  .doodle-corner { position: absolute; width: 92px; height: 92px; color: rgba(28,23,20,0.55); opacity: 0.8; }
+  .doodle-corner--tl { top: 10px; left: 8px; }
+  .doodle-corner--br { bottom: 10px; right: 8px; transform: rotate(180deg); }
+  .cover-kiss { font-size: 2.6rem; transform: rotate(-9deg); margin-bottom: 0.3rem; filter: drop-shadow(0 3px 4px rgba(0,0,0,0.25)); }
+  .ransom-title { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; row-gap: 0.1rem; }
+  .ransom-title .sp { width: 0.55rem; }
+  .rl { display: inline-block; line-height: 1; padding: 0.05rem 0.15rem; background: var(--paper); box-shadow: 1px 2px 3px rgba(0,0,0,0.25); }
+  .rl-g  { font-family: 'Anton', sans-serif; color: var(--ink); font-size: clamp(1.7rem,9vw,2.2rem); transform: rotate(-7deg); }
+  .rl-l  { font-family: 'Permanent Marker', cursive; color: var(--glow-deep); font-size: clamp(1.5rem,7.6vw,1.9rem); transform: rotate(5deg); }
+  .rl-o1 { font-family: 'Playfair Display', serif; font-style: italic; font-weight: 700; color: var(--glow-gold); font-size: clamp(1.9rem,9.6vw,2.4rem); transform: rotate(-3deg); background: var(--ink); }
+  .rl-w  { font-family: 'DM Sans', sans-serif; font-weight: 800; color: var(--ink); font-size: clamp(1.6rem,8vw,2rem); transform: rotate(8deg); }
+  .rl-b  { font-family: 'Permanent Marker', cursive; color: var(--glow-pink); font-size: clamp(1.8rem,9vw,2.3rem); transform: rotate(-6deg); background: var(--ink); }
+  .rl-o2 { font-family: 'Anton', sans-serif; color: var(--ink); font-size: clamp(1.6rem,8vw,2rem); transform: rotate(6deg); }
+  .rl-o3 { font-family: 'Playfair Display', serif; font-style: italic; font-weight: 700; color: var(--glow-gold); font-size: clamp(2rem,10vw,2.5rem); transform: rotate(-4deg); background: var(--ink); }
+  .rl-k  { font-family: 'DM Sans', sans-serif; font-weight: 800; color: var(--glow-deep); font-size: clamp(1.7rem,8.6vw,2.1rem); transform: rotate(7deg); }
+  .cover-sticky {
+    margin-top: 1.3rem; background: var(--glow-gold); color: var(--ink);
+    font-family: 'Caveat', cursive; font-weight: 700; font-size: 1.05rem;
+    padding: 0.45rem 0.9rem; border-radius: 2px; transform: rotate(-2deg);
+    box-shadow: 0 5px 12px rgba(0,0,0,0.3);
+  }
+  .cover-tap {
+    position: absolute; bottom: 1.3rem; left: 0; right: 0; z-index: 2;
+    font-family: 'Caveat', cursive; font-size: 1.05rem; color: rgba(28,23,20,0.65);
+    text-shadow: 0 1px 3px rgba(255,255,255,0.5);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .cover-tap { animation: tap-bounce 1.8s ease-in-out infinite; }
+  }
+  @keyframes tap-bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(4px); } }
+
+  /* ══════════════ SHARED PAGE HEADERS ══════════════ */
+  .pg-eyebrow {
+    font-family: 'Permanent Marker', cursive; font-size: 0.68rem; letter-spacing: 0.04em;
+    color: var(--glow-deep); text-transform: uppercase; margin-bottom: 0.15rem;
+  }
+  .pg-title {
+    font-family: 'Anton', sans-serif; text-transform: uppercase; letter-spacing: 0.01em;
+    font-size: 1.6rem; color: var(--ink); margin: 0 0 0.2rem;
+  }
+  .pg-sub {
+    font-family: 'Caveat', cursive; font-size: 1.05rem; color: var(--glow-deep); margin-bottom: 1.1rem;
+  }
+  .doodle-underline { width: 92px; height: 10px; margin: 0.15rem 0 0.9rem; color: var(--glow-deep); opacity: 0.7; }
+
+  /* ══════════════ RULES PAGE ══════════════ */
+  .rules-list { list-style: none; margin: 0; padding: 0; }
+  .rules-list li {
+    display: flex; gap: 0.6rem; align-items: flex-start;
+    font-family: 'Caveat', cursive; font-size: 1.28rem; line-height: 1.28;
+    color: var(--ink); margin-bottom: 0.85rem;
+  }
+  .rules-list li:nth-child(odd) { transform: rotate(-0.4deg); }
+  .rules-list li:nth-child(even) { transform: rotate(0.4deg); }
+  .rule-mark { flex-shrink: 0; font-size: 1.1rem; margin-top: 0.1rem; }
+  .rules-footnote {
+    margin-top: 1.2rem; font-family: 'Caveat', cursive; font-size: 1.05rem;
+    color: var(--dim); border-top: 1.5px dashed rgba(28,23,20,0.2); padding-top: 0.8rem;
   }
 
-  /* ── tabs styled as folder tabs ── */
-  #glow-tabs { display: flex; gap: 0.5rem; margin-bottom: 1.1rem; }
-  .glow-tab {
-    flex: 1; font-family: 'Permanent Marker', cursive; font-size: 0.82rem;
-    letter-spacing: 0.01em; padding: 0.5rem 0.4rem 0.45rem;
-    background: rgba(28,23,20,0.06); color: #6a5d55; border: none;
-    border-bottom: 3px solid rgba(28,23,20,0.12);
-    border-radius: 5px 5px 0 0; cursor: pointer;
-    transition: background 0.15s, color 0.15s, transform 0.15s;
-    transform: translateY(2px);
-  }
-  .glow-tab.active {
-    background: var(--glow-pink); color: var(--ink);
-    border-bottom-color: var(--glow-deep);
-    transform: translateY(0) rotate(-0.5deg);
-  }
-  .glow-tab:nth-child(2).active { transform: translateY(0) rotate(0.5deg); }
-
-  /* ── write panel: an index card clipped to the page ── */
-  #glow-write {
+  /* ══════════════ WRITE PAGE ══════════════ */
+  .write-card {
     background: #fffaf0; border: 1px solid rgba(28,23,20,0.1);
-    border-radius: 6px; padding: 1rem 0.9rem 0.85rem;
+    border-radius: 6px; padding: 1rem 0.9rem 0.9rem;
     box-shadow: 0 8px 18px rgba(28,23,20,0.12);
-    transform: rotate(0.4deg);
-    position: relative;
+    transform: rotate(0.4deg); position: relative; margin-top: 0.3rem;
   }
-  #glow-write::before {
+  .write-card::before {
     content: ''; position: absolute; top: -9px; left: 50%; transform: translateX(-50%) rotate(-3deg);
     width: 26px; height: 14px;
     background: repeating-linear-gradient(45deg, var(--glow-gold) 0 4px, rgba(255,255,255,0.55) 4px 8px);
     opacity: 0.9; box-shadow: 0 2px 4px rgba(0,0,0,0.25);
   }
-
-  #glow-name, #glow-search {
+  .field-label {
+    font-family: 'Caveat', cursive; font-size: 1rem; color: var(--glow-deep); margin: 0 0 0.2rem 0.1rem;
+  }
+  #glow-name {
     width: 100%; background: #fff; border: 1px solid rgba(28,23,20,0.18);
     border-radius: 6px; color: var(--ink); font-family: 'DM Sans', sans-serif;
     font-size: 0.85rem; padding: 0.6rem 0.75rem; outline: none;
-    transition: border-color 0.15s; margin-bottom: 0.55rem;
+    margin-bottom: 0.7rem; transition: border-color 0.15s;
   }
   #glow-message {
     width: 100%; background: #fff; border: 1px solid rgba(28,23,20,0.18);
     border-radius: 6px; color: var(--ink); font-family: 'Caveat', cursive;
-    font-size: 1.25rem; padding: 0.7rem 0.8rem; resize: vertical;
-    outline: none; transition: border-color 0.15s; margin-bottom: 0.4rem;
+    font-size: 1.3rem; padding: 0.7rem 0.8rem; resize: vertical; min-height: 100px;
+    outline: none; margin-bottom: 0.35rem; transition: border-color 0.15s;
   }
-  #glow-name:focus, #glow-search:focus, #glow-message:focus { border-color: var(--glow-deep); }
-
-  #glow-counter {
-    text-align: right; font-family: 'Caveat', cursive; font-size: 0.85rem;
-    color: #9a8b7f; margin: 0 0 0.5rem;
-  }
+  #glow-name:focus, #glow-message:focus, #glow-search:focus { border-color: var(--glow-deep); }
+  #glow-counter { text-align: right; font-family: 'Caveat', cursive; font-size: 0.85rem; color: var(--dim); margin: 0 0 0.6rem; }
   #glow-counter.near-limit { color: var(--glow-deep); }
-
   #glow-submit-btn {
     width: 100%; font-family: 'Permanent Marker', cursive; font-size: 0.95rem;
-    letter-spacing: 0.01em;
     background: var(--glow-deep); color: var(--paper); border: none;
-    padding: 0.65rem; border-radius: 6px; cursor: pointer;
-    transition: opacity 0.15s, transform 0.15s;
-    box-shadow: 0 4px 0 rgba(0,0,0,0.2);
+    padding: 0.68rem; border-radius: 6px; cursor: pointer;
+    box-shadow: 0 4px 0 rgba(0,0,0,0.2); transition: opacity 0.15s, transform 0.15s;
   }
   #glow-submit-btn:disabled { opacity: 0.6; cursor: default; }
   #glow-submit-btn.sent { transform: translateY(2px); box-shadow: 0 2px 0 rgba(0,0,0,0.2); }
-
-  #glow-status {
-    font-family: 'Caveat', cursive; font-size: 0.95rem; margin-top: 0.5rem;
-    text-align: center; min-height: 1.2em; color: var(--ink);
-  }
+  #glow-status { font-family: 'Caveat', cursive; font-size: 1.05rem; margin-top: 0.55rem; text-align: center; min-height: 1.3em; }
   #glow-status.success { color: #4f8f5f; }
   #glow-status.error { color: var(--glow-deep); }
-
-  @keyframes glow-pop {
-    0% { opacity: 0; transform: translateY(-8px) scale(0.96); }
-    60% { opacity: 1; transform: translateY(1px) scale(1.01); }
-    100% { opacity: 1; transform: translateY(0) scale(1); }
+  .status-jump {
+    display: inline-block; margin-top: 0.35rem; font-family: 'Caveat', cursive; font-size: 1.05rem;
+    color: var(--glow-deep); text-decoration: underline; cursor: pointer; background: none; border: none;
   }
+
+  /* ══════════════ INDEX PAGE ══════════════ */
+  #glow-search {
+    width: 100%; background: #fff; border: 1px solid rgba(28,23,20,0.18);
+    border-radius: 50px; color: var(--ink); font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem; padding: 0.55rem 0.9rem; outline: none; margin-bottom: 0.9rem;
+  }
+  .idx-list { display: flex; flex-direction: column; gap: 0.55rem; }
+  .idx-row {
+    display: flex; align-items: center; gap: 0.65rem;
+    background: #fffaf0; border: 1px solid rgba(28,23,20,0.1); border-radius: 8px;
+    padding: 0.5rem 0.7rem; cursor: pointer; box-shadow: 0 4px 10px rgba(28,23,20,0.08);
+    transition: transform 0.12s;
+  }
+  .idx-row:active { transform: scale(0.98); }
+  .idx-avatar {
+    width: 34px; height: 34px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+    font-family: 'Permanent Marker', cursive; font-size: 0.85rem; color: var(--ink);
+    border: 2px solid var(--ink);
+  }
+  .idx-name { font-family: 'Caveat', cursive; font-weight: 700; font-size: 1.15rem; color: var(--ink); flex: 1; }
+  .idx-count { font-family: 'DM Sans', sans-serif; font-size: 0.68rem; color: var(--dim); white-space: nowrap; }
+  .idx-empty {
+    text-align: center; font-family: 'Caveat', cursive; font-size: 1.15rem; color: var(--dim);
+    padding: 2rem 0.5rem; line-height: 1.4;
+  }
+  .idx-empty a { color: var(--glow-deep); text-decoration: underline; }
+
+  /* ══════════════ PERSON PAGE ══════════════ */
+  .person-back {
+    font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 0.65rem;
+    text-transform: uppercase; letter-spacing: 0.08em; color: var(--glow-deep);
+    text-decoration: none; display: inline-block; margin-bottom: 0.9rem; cursor: pointer; background:none; border:none; padding:0;
+  }
+  .person-head { display: flex; align-items: center; gap: 0.9rem; margin-bottom: 0.4rem; }
+  .person-avatar {
+    width: 62px; height: 62px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+    font-family: 'Permanent Marker', cursive; font-size: 1.35rem; color: var(--ink);
+    border: 3px solid var(--ink); box-shadow: 3px 4px 0 rgba(28,23,20,0.18);
+  }
+  .person-name { font-family: 'Permanent Marker', cursive; font-size: 1.3rem; color: var(--ink); line-height: 1.15; }
+  .person-count { font-family: 'Caveat', cursive; font-size: 1rem; color: var(--glow-deep); }
+  .person-cards { display: flex; flex-direction: column; gap: 0.65rem; margin-top: 1.1rem; }
+  .glow-card {
+    background: #fffaf0; border: 1px solid rgba(28,23,20,0.1); border-radius: 6px;
+    padding: 0.75rem 0.85rem; position: relative; box-shadow: 0 6px 14px rgba(28,23,20,0.12);
+  }
+  .glow-card::before {
+    content: ''; position: absolute; top: -7px; left: 14px; width: 30px; height: 12px;
+    background: repeating-linear-gradient(45deg, var(--glow-pink) 0 3px, rgba(255,255,255,0.55) 3px 6px);
+    opacity: 0.85; box-shadow: 0 2px 3px rgba(0,0,0,0.2); transform: rotate(-4deg);
+  }
+  .person-cards .glow-card:nth-child(odd) { transform: rotate(-0.6deg); }
+  .person-cards .glow-card:nth-child(even) { transform: rotate(0.6deg); }
+  .glow-card-time { font-family: 'DM Sans', sans-serif; font-size: 0.6rem; color: var(--dim); margin-bottom: 0.3rem; }
+  .glow-card-msg { font-family: 'Caveat', cursive; font-size: 1.22rem; line-height: 1.28; color: var(--ink); }
+  .person-cta {
+    display: block; text-align: center; margin-top: 1.2rem; font-family: 'Caveat', cursive; font-size: 1.1rem;
+    color: var(--glow-deep); text-decoration: underline; cursor: pointer; background: none; border: none; width: 100%;
+  }
+
+  /* ── burst heart ── */
   @keyframes glow-burst-heart {
     0% { opacity: 0; transform: translate(-50%, -50%) scale(0.4); }
     35% { opacity: 1; transform: translate(-50%, -70%) scale(1.15); }
     100% { opacity: 0; transform: translate(-50%, -110%) scale(1); }
   }
-  #glow-burst {
-    position: fixed; left: 50%; top: 50%; font-size: 2.4rem;
-    pointer-events: none; z-index: 30; display: none;
-  }
+  #glow-burst { position: fixed; left: 50%; top: 50%; font-size: 2.4rem; pointer-events: none; z-index: 40; display: none; }
   #glow-burst.play { display: block; animation: glow-burst-heart 0.9s ease-out; }
-
-  /* ── read feed: taped index cards, grouped by date ── */
-  #glow-read { padding-top: 0.2rem; }
-  #glow-feed { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.7rem; max-height: 52vh; overflow-y: auto; padding: 0.2rem 0.2rem 0.4rem; }
-  .glow-date-heading {
-    display: inline-block; align-self: flex-start;
-    font-family: 'Permanent Marker', cursive; font-size: 0.8rem; color: var(--ink);
-    background: linear-gradient(120deg, transparent 0%, var(--glow-gold) 8%, var(--glow-gold) 92%, transparent 100%);
-    padding: 0.12rem 0.6rem; margin: 0.5rem 0 0.15rem; transform: rotate(-1deg);
-  }
-  .glow-date-group { display: flex; flex-direction: column; gap: 0.65rem; }
-  .glow-card {
-    background: #fffaf0;
-    border: 1px solid rgba(28,23,20,0.1); border-radius: 6px;
-    padding: 0.75rem 0.85rem; position: relative;
-    box-shadow: 0 6px 14px rgba(28,23,20,0.12);
-    animation: glow-pop 0.35s ease-out;
-  }
-  .glow-date-group .glow-card:nth-child(odd)  { transform: rotate(-0.6deg); }
-  .glow-date-group .glow-card:nth-child(even) { transform: rotate(0.6deg); }
-  .glow-card-top {
-    display: flex; justify-content: space-between; align-items: baseline; gap: 0.5rem;
-    margin-bottom: 0.25rem;
-  }
-  .glow-card-name {
-    font-family: 'Permanent Marker', cursive; font-size: 0.68rem;
-    letter-spacing: 0.02em; color: var(--glow-deep);
-  }
-  .glow-card-time {
-    font-family: 'DM Sans', sans-serif; font-size: 0.6rem; color: #9a8b7f;
-    white-space: nowrap; flex-shrink: 0;
-  }
-  .glow-card-msg {
-    font-family: 'Caveat', cursive; font-size: 1.2rem; line-height: 1.25; color: var(--ink);
-  }
-  #glow-empty {
-    text-align: center; font-family: 'Caveat', cursive; font-size: 1rem;
-    color: #9a8b7f; padding: 1.5rem 0;
-  }
 </style>
 </head>
 <body>
 
-<div class="notebook">
-  <a class="nb-back" href="index.html">&larr; Back to Glass Closet</a>
+<a class="nb-back" href="index.html">&larr; Back to Glass Closet</a>
 
-  <div class="nb-cover">
-    <div class="nb-tape nb-tape--tl"></div>
-    <div class="nb-tape nb-tape--tr"></div>
-
-    <div class="nb-frame">
-      <!-- Drop a file named glow-book.png next to this page to use it as the cover photo. -->
-      <img id="glow-cover-img" src="glow-book.png" alt="The Glow Book"
-           onerror="this.remove(); document.getElementById('glow-cover-fallback').style.display='flex';">
-      <div id="glow-cover-fallback" class="nb-cover-fallback" style="display:none">
-        <div class="ransom-title">
-          <span class="rl rl-g">G</span><span class="rl rl-l">L</span><span class="rl rl-o1">O</span><span class="rl rl-w">W</span>
-          <span class="sp"></span>
-          <span class="rl rl-b">B</span><span class="rl rl-o2">O</span><span class="rl rl-o3">O</span><span class="rl rl-k">K</span>
-        </div>
+<div class="book-shell">
+  <div class="book-frame">
+    <div class="side-tabs">
+      <button class="side-tab side-tab--rules" onclick="goTo('rules')">rules</button>
+      <button class="side-tab side-tab--write" onclick="goTo('write')">write</button>
+      <button class="side-tab side-tab--index" onclick="goTo('index')">index</button>
+    </div>
+    <div class="book-viewport">
+      <div class="page-panel" id="page-panel">
+        <div class="page-inner" id="page-inner"></div>
       </div>
     </div>
-
-    <div class="nb-sticky">like a burn book...<br>but glow instead of burn 💌</div>
   </div>
-
-  <div class="nb-torn"></div>
-
-  <div class="nb-pages">
-    <div id="glow-eyebrow">The Glow Book</div>
-    <div id="glow-sub">Compliments only — no burns.</div>
-
-    <div id="glow-tabs">
-      <button class="glow-tab active" data-tab="write" onclick="setGlowTab('write')">write one</button>
-      <button class="glow-tab" data-tab="read" onclick="setGlowTab('read')">read the glow</button>
-    </div>
-
-    <div id="glow-write">
-      <input id="glow-name" maxlength="40" placeholder="Who's it for?">
-      <textarea id="glow-message" maxlength="240" rows="4" placeholder="Say something nice..."></textarea>
-      <div id="glow-counter">240 left</div>
-      <button id="glow-submit-btn" onclick="submitGlow()">send it 💌</button>
-      <div id="glow-status"></div>
-    </div>
-
-    <div id="glow-read" style="display:none">
-      <input id="glow-search" placeholder="Search a name or message...">
-      <div id="glow-feed"></div>
-    </div>
+  <div class="book-nav">
+    <button class="nav-arrow" onclick="stepPage(-1)">‹ back</button>
+    <span class="nav-count" id="nav-count">1 / 4</span>
+    <button class="nav-arrow" onclick="stepPage(1)">next ›</button>
   </div>
 </div>
 
 <div id="glow-burst">💌</div>
 
-<!-- ── THE GLOW BOOK — live synced compliments board ── -->
+<!-- reusable doodle swirl -->
+<svg width="0" height="0" style="position:absolute">
+  <symbol id="doodle-swirl" viewBox="0 0 120 120">
+    <path d="M8,64 C6,32 38,10 66,16 C94,22 104,48 86,64 C68,80 48,74 50,58 C52,44 66,38 74,46 C80,52 78,60 70,60" stroke="currentColor" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+    <circle cx="14" cy="82" r="2" fill="currentColor"/>
+    <circle cx="22" cy="92" r="1.6" fill="currentColor"/>
+    <circle cx="10" cy="94" r="1.2" fill="currentColor"/>
+  </symbol>
+</svg>
+
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import { getDatabase, ref, push, onValue, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
@@ -369,7 +395,7 @@
 
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
-  const glowQuery = query(ref(db, "glowbook"), limitToLast(300));
+  const glowQuery = query(ref(db, "glowbook"), limitToLast(500));
 
   const BLOCKED_WORDS = ["fuck","shit","bitch","slut","whore","ugly","fat","stupid","idiot","kill yourself","kys","hate you"];
   function containsBlockedWord(text) {
@@ -381,15 +407,30 @@
     div.textContent = str;
     return div.innerHTML;
   }
-
-  const MSG_LIMIT = 240;
-  function updateCounter() {
-    const msgEl = document.getElementById('glow-message');
-    const counterEl = document.getElementById('glow-counter');
-    if (!msgEl || !counterEl) return;
-    const left = MSG_LIMIT - msgEl.value.length;
-    counterEl.textContent = `${left} left`;
-    counterEl.classList.toggle('near-limit', left <= 20);
+  function initialsOf(name) {
+    const parts = name.trim().split(/\s+/).filter(Boolean);
+    if (!parts.length) return '?';
+    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  }
+  function hashStr(str) {
+    let h = 0;
+    for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) >>> 0;
+    return h;
+  }
+  const BLOBS = [
+    'border-radius:255px 15px 225px 15px/15px 225px 15px 255px;',
+    'border-radius:60% 40% 30% 70%/60% 30% 70% 40%;',
+    'border-radius:40% 60% 70% 30%/50% 60% 30% 60%;',
+    'border-radius:70% 30% 50% 50%/30% 50% 50% 70%;'
+  ];
+  const AVATAR_BG = ['var(--glow-pink)', 'var(--glow-gold)', 'var(--glow-blue)', 'var(--glow-lilac)'];
+  function avatarStyle(name) {
+    const h = hashStr(name.toLowerCase());
+    const blob = BLOBS[h % BLOBS.length];
+    const bg = AVATAR_BG[Math.floor(h / 7) % AVATAR_BG.length];
+    const rot = (h % 9) - 4;
+    return `${blob} background:${bg}; transform: rotate(${rot}deg);`;
   }
 
   function relativeTime(ts) {
@@ -404,15 +445,283 @@
     return new Date(ts).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
   }
 
-  function dateLabel(ts) {
-    const d = new Date(ts);
-    const now = new Date();
-    const startOf = date => new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
-    const diffDays = Math.round((startOf(now) - startOf(d)) / 86400000);
-    if (diffDays === 0) return 'Today';
-    if (diffDays === 1) return 'Yesterday';
-    if (diffDays < 7) return d.toLocaleDateString(undefined, { weekday: 'long' });
-    return d.toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: d.getFullYear() !== now.getFullYear() ? 'numeric' : undefined });
+  const MSG_LIMIT = 240;
+
+  // ── data state ──
+  let glowEntries = [];
+  let people = new Map(); // key(lowercase) -> { display, entries: [] }
+  let personKeys = [];    // sorted display keys (lowercase) for stable ordering
+
+  function rebuildPeople() {
+    const map = new Map();
+    for (const e of glowEntries) {
+      const key = e.name.trim().toLowerCase();
+      if (!map.has(key)) map.set(key, { display: e.name.trim(), entries: [] });
+      map.get(key).entries.push(e);
+    }
+    for (const p of map.values()) p.entries.sort((a, b) => b.ts - a.ts);
+    people = map;
+    personKeys = Array.from(map.keys()).sort((a, b) => map.get(a).display.localeCompare(map.get(b).display));
+  }
+
+  function pagesList() {
+    return ['cover', 'rules', 'write', 'index', ...personKeys.map(k => 'person:' + k)];
+  }
+
+  // ── navigation state ──
+  let currentPage = 'cover';
+
+  window.goTo = function(pageId, dir) {
+    flipTo(pageId, dir);
+  };
+  window.stepPage = function(delta) {
+    const pages = pagesList();
+    let idx = pages.indexOf(currentPage);
+    if (idx === -1) idx = 0;
+    let next = idx + delta;
+    if (next < 0) next = pages.length - 1;
+    if (next >= pages.length) next = 0;
+    flipTo(pages[next], delta > 0 ? 'fwd' : 'back');
+  };
+  window.openPerson = function(key) {
+    const pages = pagesList();
+    const from = pages.indexOf(currentPage);
+    const to = pages.indexOf('person:' + key);
+    flipTo('person:' + key, to > from ? 'fwd' : 'back');
+  };
+  window.prefillAndWrite = function(name) {
+    flipTo('write', 'back');
+    setTimeout(() => {
+      const nameEl = document.getElementById('glow-name');
+      if (nameEl) nameEl.value = name;
+    }, 60);
+  };
+
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function flipTo(pageId, dir = 'fwd') {
+    const panel = document.getElementById('page-panel');
+    if (!panel) return;
+    currentPage = pageId;
+    if (reduceMotion) {
+      renderPage(pageId);
+      updateChrome();
+      return;
+    }
+    panel.classList.add('flipping');
+    panel.style.transform = dir === 'fwd' ? 'rotateY(-100deg)' : 'rotateY(100deg)';
+    panel.style.opacity = '0';
+    setTimeout(() => {
+      panel.classList.remove('flipping');
+      panel.style.transform = dir === 'fwd' ? 'rotateY(100deg)' : 'rotateY(-100deg)';
+      renderPage(pageId);
+      updateChrome();
+      void panel.offsetWidth;
+      panel.classList.add('flipping');
+      panel.style.transform = 'rotateY(0deg)';
+      panel.style.opacity = '1';
+    }, 380);
+  }
+
+  function updateChrome() {
+    const pages = pagesList();
+    const idx = Math.max(0, pages.indexOf(currentPage));
+    document.getElementById('nav-count').textContent = `${idx + 1} / ${pages.length}`;
+    document.querySelectorAll('.side-tab').forEach(t => t.classList.remove('current'));
+    if (currentPage === 'rules') document.querySelector('.side-tab--rules').classList.add('current');
+    if (currentPage === 'write') document.querySelector('.side-tab--write').classList.add('current');
+    if (currentPage === 'index') document.querySelector('.side-tab--index').classList.add('current');
+  }
+
+  function renderPage(pageId) {
+    const inner = document.getElementById('page-inner');
+    if (pageId === 'cover') { inner.style.padding = '0'; inner.innerHTML = coverHtml(); inner.style.overflow='hidden'; inner.style.background='none'; inner.querySelector('.pg-cover').addEventListener('click', () => flipTo('rules', 'fwd')); return; }
+    inner.style.overflow = 'auto'; inner.style.padding = '1.5rem 1.3rem 2rem';
+    inner.style.backgroundImage = "repeating-linear-gradient(var(--paper) 0px, var(--paper) 27px, var(--paper-line) 28px)";
+    if (pageId === 'rules') return void (inner.innerHTML = rulesHtml());
+    if (pageId === 'write') { inner.innerHTML = writeHtml(); wireWrite(); return; }
+    if (pageId === 'index') { inner.innerHTML = indexHtml(); wireIndex(); return; }
+    if (pageId.startsWith('person:')) {
+      const key = pageId.slice(7);
+      inner.innerHTML = personHtml(key);
+      const cta = inner.querySelector('.person-cta');
+      const p = people.get(key);
+      if (cta && p) cta.addEventListener('click', () => prefillAndWrite(p.display));
+      return;
+    }
+  }
+
+  function coverHtml() {
+    return `
+    <div class="pg-cover">
+      <div class="cover-fallback">
+        <svg class="doodle-corner doodle-corner--tl"><use href="#doodle-swirl"/></svg>
+        <svg class="doodle-corner doodle-corner--br"><use href="#doodle-swirl"/></svg>
+        <div class="cover-kiss">💋</div>
+        <div class="ransom-title">
+          <span class="rl rl-g">G</span><span class="rl rl-l">L</span><span class="rl rl-o1">O</span><span class="rl rl-w">W</span>
+          <span class="sp"></span>
+          <span class="rl rl-b">B</span><span class="rl rl-o2">O</span><span class="rl rl-o3">O</span><span class="rl rl-k">K</span>
+        </div>
+        <div class="cover-sticky">like a burn book...<br>but glow instead of burn 💌</div>
+      </div>
+      <img id="glow-cover-img" src="glow-book.png" alt="The Glow Book" onerror="this.remove()">
+      <div class="cover-tap">tap to open ↓</div>
+    </div>`;
+  }
+
+  function rulesHtml() {
+    const rules = [
+      ['✿', `No burns in here. Compliments only — the real, specific kind.`],
+      ['♡', `Say the actual thing. "You're so you" beats "you're nice."`],
+      ['★', `Sign it, or don't — anonymous glow still counts as glow.`],
+      ['✦', `If you wouldn't want it read out loud with love, save it for later.`],
+      ['❀', `Everyone gets a page here. Everyone deserves one.`],
+      ['♥', `Come back and reread these on the days you forget you're loved.`]
+    ];
+    return `
+      <div class="pg-eyebrow">page one</div>
+      <h2 class="pg-title">the rules</h2>
+      <svg class="doodle-underline" viewBox="0 0 120 20"><path d="M2,12 Q20,2 40,12 T78,12 T116,10" stroke="currentColor" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg>
+      <ul class="rules-list">
+        ${rules.map(([m, t]) => `<li><span class="rule-mark">${m}</span><span>${t}</span></li>`).join('')}
+      </ul>
+      <div class="rules-footnote">that's it. that's the whole system.</div>
+    `;
+  }
+
+  function writeHtml() {
+    return `
+      <div class="pg-eyebrow">page two</div>
+      <h2 class="pg-title">write one</h2>
+      <div class="pg-sub">who are you glowing today?</div>
+      <div class="write-card">
+        <div class="field-label">their name</div>
+        <input id="glow-name" maxlength="40" placeholder="who's it for?">
+        <div class="field-label">your message</div>
+        <textarea id="glow-message" maxlength="240" rows="4" placeholder="say something nice..."></textarea>
+        <div id="glow-counter">240 left</div>
+        <button id="glow-submit-btn">tuck it in 💌</button>
+        <div id="glow-status"></div>
+      </div>
+    `;
+  }
+
+  function wireWrite() {
+    const msgEl = document.getElementById('glow-message');
+    const counterEl = document.getElementById('glow-counter');
+    function updateCounter() {
+      const left = MSG_LIMIT - msgEl.value.length;
+      counterEl.textContent = `${left} left`;
+      counterEl.classList.toggle('near-limit', left <= 20);
+    }
+    msgEl.addEventListener('input', updateCounter);
+    updateCounter();
+
+    document.getElementById('glow-submit-btn').addEventListener('click', () => {
+      const nameEl = document.getElementById('glow-name');
+      const statusEl = document.getElementById('glow-status');
+      const btn = document.getElementById('glow-submit-btn');
+      const name = nameEl.value.trim();
+      const message = msgEl.value.trim();
+
+      statusEl.className = ''; statusEl.innerHTML = '';
+      if (!name || !message) { statusEl.textContent = "add a name and a compliment first!"; statusEl.classList.add('error'); return; }
+      if (containsBlockedWord(name) || containsBlockedWord(message)) {
+        statusEl.textContent = "keep it kind — try rewording that 💗";
+        statusEl.classList.add('error');
+        return;
+      }
+
+      btn.disabled = true;
+      push(ref(db, "glowbook"), { name, message, ts: Date.now() })
+        .then(() => {
+          statusEl.classList.add('success');
+          statusEl.textContent = 'sent! 💌 ';
+          const jumpBtn = document.createElement('button');
+          jumpBtn.className = 'status-jump';
+          jumpBtn.textContent = `read ${name}'s page →`;
+          jumpBtn.addEventListener('click', () => openPerson(name.trim().toLowerCase()));
+          statusEl.appendChild(jumpBtn);
+          nameEl.value = ''; msgEl.value = '';
+          updateCounter();
+          btn.classList.add('sent');
+          setTimeout(() => btn.classList.remove('sent'), 200);
+          playBurst();
+        })
+        .catch(err => {
+          statusEl.textContent = "couldn't send — try again.";
+          statusEl.classList.add('error');
+          console.warn('[glow book] push failed:', err);
+        })
+        .finally(() => { btn.disabled = false; });
+    });
+  }
+
+  function indexHtml() {
+    if (!personKeys.length) {
+      return `
+        <div class="pg-eyebrow">page three</div>
+        <h2 class="pg-title">the index</h2>
+        <div class="idx-empty">the book is empty so far —<br>be the first to write something 💌<br><br><a onclick="goTo('write','back')">go write one →</a></div>
+      `;
+    }
+    return `
+      <div class="pg-eyebrow">page three</div>
+      <h2 class="pg-title">the index</h2>
+      <div class="pg-sub">find someone, or find yourself</div>
+      <input id="glow-search" placeholder="search a name...">
+      <div class="idx-list" id="idx-list"></div>
+    `;
+  }
+
+  function wireIndex() {
+    const searchEl = document.getElementById('glow-search');
+    renderIndexList('');
+    if (searchEl) searchEl.addEventListener('input', () => renderIndexList(searchEl.value));
+  }
+
+  function renderIndexList(q) {
+    const list = document.getElementById('idx-list');
+    if (!list) return;
+    const query = q.trim().toLowerCase();
+    const keys = personKeys.filter(k => !query || k.includes(query));
+    if (!keys.length) { list.innerHTML = `<div class="idx-empty">no one by that name yet.</div>`; return; }
+    list.innerHTML = keys.map(k => {
+      const p = people.get(k);
+      return `
+        <div class="idx-row">
+          <div class="idx-avatar" style="${avatarStyle(p.display)}">${initialsOf(p.display)}</div>
+          <div class="idx-name">${escapeHtml(p.display)}</div>
+          <div class="idx-count">${p.entries.length} glow${p.entries.length === 1 ? '' : 's'}</div>
+        </div>`;
+    }).join('');
+    list.querySelectorAll('.idx-row').forEach((row, i) => {
+      row.addEventListener('click', () => openPerson(keys[i]));
+    });
+  }
+
+  function personHtml(key) {
+    const p = people.get(key);
+    if (!p) return `<div class="idx-empty">this page hasn't been written yet.<br><br><a onclick="goTo('index','back')">← back to the index</a></div>`;
+    return `
+      <button class="person-back" onclick="goTo('index','back')">&larr; index</button>
+      <div class="person-head">
+        <div class="person-avatar" style="${avatarStyle(p.display)}">${initialsOf(p.display)}</div>
+        <div>
+          <div class="person-name">${escapeHtml(p.display)}</div>
+          <div class="person-count">${p.entries.length} thing${p.entries.length === 1 ? '' : 's'} people said</div>
+        </div>
+      </div>
+      <div class="person-cards">
+        ${p.entries.map(e => `
+          <div class="glow-card">
+            <div class="glow-card-time">${relativeTime(e.ts)}</div>
+            <div class="glow-card-msg">${escapeHtml(e.message)}</div>
+          </div>`).join('')}
+      </div>
+      <button class="person-cta">leave one more for ${escapeHtml(p.display)} →</button>
+    `;
   }
 
   function playBurst() {
@@ -422,103 +731,40 @@
     burst.classList.add('play');
   }
 
-  window.setGlowTab = function(tab) {
-    document.querySelectorAll('.glow-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
-    document.getElementById('glow-write').style.display = tab === 'write' ? '' : 'none';
-    document.getElementById('glow-read').style.display = tab === 'read' ? '' : 'none';
-  };
-
-  window.submitGlow = function() {
-    const nameEl = document.getElementById('glow-name');
-    const msgEl = document.getElementById('glow-message');
-    const statusEl = document.getElementById('glow-status');
-    const btn = document.getElementById('glow-submit-btn');
-    const name = nameEl.value.trim();
-    const message = msgEl.value.trim();
-
-    statusEl.className = '';
-    if (!name || !message) { statusEl.textContent = "Add a name and a compliment first!"; statusEl.classList.add('error'); return; }
-    if (containsBlockedWord(name) || containsBlockedWord(message)) {
-      statusEl.textContent = "Keep it kind — try rewording that 💗";
-      statusEl.classList.add('error');
-      return;
-    }
-
-    btn.disabled = true;
-    push(ref(db, "glowbook"), { name, message, ts: Date.now() })
-      .then(() => {
-        statusEl.textContent = "Sent! 💌";
-        statusEl.classList.add('success');
-        nameEl.value = ''; msgEl.value = '';
-        updateCounter();
-        btn.classList.add('sent');
-        setTimeout(() => btn.classList.remove('sent'), 200);
-        playBurst();
-      })
-      .catch(err => {
-        statusEl.textContent = "Couldn't send — try again.";
-        statusEl.classList.add('error');
-        console.warn('[glow book] push failed:', err);
-      })
-      .finally(() => { btn.disabled = false; });
-  };
-
-  let glowEntries = [];
-  function renderGlowFeed() {
-    const feed = document.getElementById('glow-feed');
-    if (!feed) return;
-    const q = (document.getElementById('glow-search').value || '').toLowerCase();
-    const filtered = q
-      ? glowEntries.filter(e => e.name.toLowerCase().includes(q) || e.message.toLowerCase().includes(q))
-      : glowEntries;
-
-    if (!filtered.length) {
-      feed.innerHTML = `<div id="glow-empty">No compliments yet — be the first 💌</div>`;
-      return;
-    }
-
-    const groups = [];
-    let currentLabel = null, currentGroup = null;
-    for (const e of filtered) {
-      const label = dateLabel(e.ts);
-      if (label !== currentLabel) {
-        currentLabel = label;
-        currentGroup = { label, entries: [] };
-        groups.push(currentGroup);
-      }
-      currentGroup.entries.push(e);
-    }
-
-    feed.innerHTML = groups.map(g => `
-      <div class="glow-date-heading">${escapeHtml(g.label)}</div>
-      <div class="glow-date-group">
-        ${g.entries.map(e => `
-          <div class="glow-card">
-            <div class="glow-card-top">
-              <div class="glow-card-name">for ${escapeHtml(e.name)}</div>
-              <div class="glow-card-time">${relativeTime(e.ts)}</div>
-            </div>
-            <div class="glow-card-msg">${escapeHtml(e.message)}</div>
-          </div>`).join('')}
-      </div>`).join('');
-  }
-
+  // ── live sync ──
   onValue(glowQuery, (snap) => {
     const val = snap.val() || {};
     glowEntries = Object.values(val).sort((a, b) => b.ts - a.ts);
-    renderGlowFeed();
+    rebuildPeople();
+    // keep the current page fresh without disrupting an in-progress flip
+    if (currentPage === 'index') renderIndexList(document.getElementById('glow-search')?.value || '');
+    if (currentPage.startsWith('person:')) {
+      const key = currentPage.slice(7);
+      if (people.has(key)) {
+        const inner = document.getElementById('page-inner');
+        inner.innerHTML = personHtml(key);
+        const cta = inner.querySelector('.person-cta');
+        const p = people.get(key);
+        if (cta && p) cta.addEventListener('click', () => prefillAndWrite(p.display));
+      }
+    }
+    updateChrome();
   }, (err) => console.warn('[glow book] live sync error — check your Firebase config and database rules:', err));
 
-  document.addEventListener('DOMContentLoaded', () => {
-    const searchEl = document.getElementById('glow-search');
-    if (searchEl) searchEl.addEventListener('input', renderGlowFeed);
+  // ── swipe support ──
+  let touchX = null;
+  const viewport = document.querySelector('.book-viewport');
+  viewport.addEventListener('touchstart', (e) => { touchX = e.touches[0].clientX; }, { passive: true });
+  viewport.addEventListener('touchend', (e) => {
+    if (touchX === null) return;
+    const dx = e.changedTouches[0].clientX - touchX;
+    if (Math.abs(dx) > 50) stepPage(dx < 0 ? 1 : -1);
+    touchX = null;
+  }, { passive: true });
 
-    const msgEl = document.getElementById('glow-message');
-    if (msgEl) msgEl.addEventListener('input', updateCounter);
-    updateCounter();
-
-    setInterval(renderGlowFeed, 60000);
-  });
+  // ── init ──
+  renderPage('cover');
+  updateChrome();
 </script>
 </body>
 </html>
