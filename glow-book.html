@@ -251,11 +251,36 @@
     transition: transform 0.12s;
   }
   .spotlight-chip:active { transform: scale(0.97); }
+  .name-combo { position: relative; margin-bottom: 0.7rem; }
   #glow-name {
     width: 100%; background: #fff; border: 1px solid rgba(28,23,20,0.18);
     border-radius: 6px; color: var(--ink); font-family: 'DM Sans', sans-serif;
     font-size: 0.85rem; padding: 0.6rem 0.75rem; outline: none;
-    margin-bottom: 0.7rem; transition: border-color 0.15s;
+    transition: border-color 0.15s;
+  }
+  .name-suggest {
+    position: absolute; left: 0; right: 0; top: calc(100% + 4px);
+    background: #fffaf0; border: 1px solid rgba(28,23,20,0.18); border-radius: 8px;
+    box-shadow: 0 8px 18px rgba(28,23,20,0.18);
+    max-height: 172px; overflow-y: auto; z-index: 25; display: none;
+  }
+  .name-suggest.open { display: block; }
+  .name-suggest-item {
+    display: flex; align-items: center; gap: 0.5rem;
+    padding: 0.5rem 0.7rem; cursor: pointer;
+    font-family: 'DM Sans', sans-serif; font-size: 0.82rem; color: var(--ink);
+    border-bottom: 1px solid rgba(28,23,20,0.08);
+  }
+  .name-suggest-item:last-child { border-bottom: none; }
+  .name-suggest-item:hover, .name-suggest-item.active { background: #fdecd6; }
+  .nsi-avatar {
+    width: 20px; height: 20px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+    font-family: 'Permanent Marker', cursive; font-size: 0.55rem; color: var(--ink);
+    border: 1.5px solid var(--ink);
+  }
+  .nsi-count { margin-left: auto; font-size: 0.62rem; color: var(--dim); white-space: nowrap; }
+  .name-suggest-empty {
+    padding: 0.55rem 0.7rem; font-family: 'Caveat', cursive; font-size: 0.95rem; color: var(--dim);
   }
   #glow-message {
     width: 100%; background: #fff; border: 1px solid rgba(28,23,20,0.18);
@@ -489,6 +514,10 @@
   let people = new Map(); // key(lowercase) -> { display, entries: [] }
   let personKeys = [];    // sorted display keys (lowercase) for stable ordering
   let lastSuggestedKey = null;
+  // names kept out of "surprise me" and the name-suggestion dropdown —
+  // their page still exists and is reachable via search/index, they just
+  // won't be actively suggested. add more lowercase keys as needed.
+  const SUGGEST_EXCLUDE = new Set(['ariana grande']);
 
   function rebuildPeople() {
     const map = new Map();
@@ -506,10 +535,11 @@
   }
 
   function pickSpotlight() {
-    if (!personKeys.length) return null;
+    const pool = personKeys.filter(k => !SUGGEST_EXCLUDE.has(k));
+    if (!pool.length) return null;
     let minCount = Infinity;
-    for (const k of personKeys) minCount = Math.min(minCount, people.get(k).entries.length);
-    let candidates = personKeys.filter(k => people.get(k).entries.length === minCount);
+    for (const k of pool) minCount = Math.min(minCount, people.get(k).entries.length);
+    let candidates = pool.filter(k => people.get(k).entries.length === minCount);
     if (candidates.length > 1 && lastSuggestedKey) candidates = candidates.filter(k => k !== lastSuggestedKey);
     const pick = candidates[Math.floor(Math.random() * candidates.length)];
     lastSuggestedKey = pick;
@@ -665,7 +695,10 @@
       ${showChip ? `<button type="button" id="spotlight-btn" class="spotlight-chip">🎲 surprise me — pick someone light on glow</button>` : ''}
       <div class="write-card">
         <div class="field-label">their name</div>
-        <input id="glow-name" maxlength="40" placeholder="who's it for?">
+        <div class="name-combo" id="name-combo">
+          <input id="glow-name" maxlength="40" placeholder="who's it for? (pick or type a name)" autocomplete="off">
+          <div class="name-suggest" id="name-suggest"></div>
+        </div>
         <div class="field-label">your message</div>
         <textarea id="glow-message" maxlength="240" rows="4" placeholder="say something nice..."></textarea>
         <div id="glow-counter">240 left</div>
@@ -676,6 +709,46 @@
   }
 
   function wireWrite() {
+    const nameEl = document.getElementById('glow-name');
+    const suggestEl = document.getElementById('name-suggest');
+
+    function renderNameSuggestions(filter) {
+      const q = filter.trim().toLowerCase();
+      const matches = personKeys
+        .filter(k => !SUGGEST_EXCLUDE.has(k))
+        .map(k => people.get(k))
+        .filter(p => !q || p.display.toLowerCase().includes(q))
+        .slice(0, 8);
+
+      if (!matches.length) {
+        suggestEl.innerHTML = q
+          ? `<div class="name-suggest-empty">no match — "${escapeHtml(filter.trim())}" will start a new page 💌</div>`
+          : `<div class="name-suggest-empty">no one on the roster yet — type any name</div>`;
+      } else {
+        suggestEl.innerHTML = matches.map(p => `
+          <div class="name-suggest-item" data-name="${escapeHtml(p.display)}">
+            <div class="nsi-avatar" style="${avatarStyle(p.display)}">${initialsOf(p.display)}</div>
+            <span>${escapeHtml(p.display)}</span>
+            <span class="nsi-count">${p.entries.length} glow${p.entries.length === 1 ? '' : 's'}</span>
+          </div>`).join('');
+      }
+      suggestEl.classList.add('open');
+    }
+
+    if (nameEl && suggestEl) {
+      nameEl.addEventListener('focus', () => renderNameSuggestions(nameEl.value));
+      nameEl.addEventListener('input', () => renderNameSuggestions(nameEl.value));
+      nameEl.addEventListener('blur', () => {
+        setTimeout(() => suggestEl.classList.remove('open'), 150);
+      });
+      suggestEl.addEventListener('mousedown', (e) => {
+        const item = e.target.closest('.name-suggest-item');
+        if (!item) return;
+        nameEl.value = item.dataset.name;
+        suggestEl.classList.remove('open');
+      });
+    }
+
     const msgEl = document.getElementById('glow-message');
     const counterEl = document.getElementById('glow-counter');
     function updateCounter() {
@@ -691,8 +764,8 @@
       needsBtn.addEventListener('click', () => {
         const pick = pickSpotlight();
         if (!pick) return;
-        const nameEl = document.getElementById('glow-name');
         nameEl.value = pick;
+        suggestEl.classList.remove('open');
         nameEl.focus();
         needsBtn.textContent = `🎲 picked ${pick} — go ahead ↓`;
       });
