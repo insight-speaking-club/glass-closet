@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>The Glow Book 📸 — Glass Closet</title>
-<meta name="description" content="The tabloid where everyone's the it-girl. Real sources, zero burns.">
+<meta name="description" content="The tabloid where you're always the headline. Real sources, zero burns.">
 <meta property="og:title" content="The Glow Book 📸">
-<meta property="og:description" content="Leave someone an exclusive — no burns, just glow.">
+<meta property="og:description" content="Leave someone an exclusive — everyone deserves to feel this famous.">
 <meta property="og:type" content="website">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📸</text></svg>">
 <style>
@@ -187,13 +187,6 @@
 
   .cover-wreath { position: relative; width: 270px; height: 250px; }
 
-  .kiss-wrap {
-    position: absolute; top: 51%; left: 50%; transform: translate(-50%, -50%);
-    width: 128px; height: 92px; z-index: 3;
-  }
-  .kiss-print-fallback { position: absolute; inset: 0; width: 100%; height: 100%; color: var(--glow-wine); filter: drop-shadow(0 3px 5px rgba(0,0,0,0.25)); }
-  .kiss-print-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.28)); }
-
   .wl {
     position: absolute; display: inline-block; line-height: 1;
     box-shadow: 2px 3px 5px rgba(0,0,0,0.32); padding: 0.18rem 0.32rem; border-radius: 1px;
@@ -343,9 +336,111 @@
     font-size: 0.92rem; padding: 0.7rem 0.8rem; resize: vertical; min-height: 100px;
     outline: none; margin-bottom: 0.35rem; transition: border-color 0.15s;
   }
-  #glow-name:focus, #glow-message:focus, #glow-search:focus { border-color: var(--glow-deep); }
+  #glow-name:focus, #glow-message:focus, #glow-search:focus, #glow-byline:focus { border-color: var(--glow-deep); }
   #glow-counter { text-align: right; font-family: 'DM Sans', sans-serif; font-size: 0.7rem; color: var(--dim); margin: 0 0 0.6rem; }
   #glow-counter.near-limit { color: var(--glow-deep); }
+
+  /* ── writer's block starters ── */
+  .wb-row {
+    display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;
+    margin: 0 0 0.35rem 0.1rem;
+  }
+  .wb-toggle {
+    font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 0.66rem;
+    letter-spacing: 0.05em; text-transform: uppercase; color: var(--glow-deep);
+    background: none; border: none; cursor: pointer; text-decoration: underline;
+    padding: 0; opacity: 0.85;
+  }
+  .wb-toggle:hover { opacity: 1; }
+  .wb-chips {
+    display: none; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.6rem;
+  }
+  .wb-chips.open { display: flex; }
+  .wb-chip {
+    font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 0.7rem;
+    color: var(--ink); background: #fffaf0; border: 1px solid rgba(28,23,20,0.2);
+    border-radius: 50px; padding: 0.32rem 0.6rem; cursor: pointer;
+    transition: transform 0.1s, background 0.15s;
+  }
+  .wb-chip:hover { background: var(--tab-yellow-2); }
+  .wb-chip:active { transform: scale(0.96); }
+
+  /* ── byline / signature ── */
+  #glow-byline {
+    width: 100%; background: #fff; border: 1px solid rgba(28,23,20,0.18);
+    border-radius: 6px; color: var(--ink); font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem; padding: 0.6rem 0.75rem; outline: none;
+    transition: border-color 0.15s; margin-bottom: 0.2rem;
+  }
+  .byline-hint {
+    font-family: 'DM Sans', sans-serif; font-style: italic; font-size: 0.68rem;
+    color: var(--dim); margin: 0 0 0.9rem 0.1rem;
+  }
+  .glow-card-byline {
+    font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 0.66rem;
+    letter-spacing: 0.03em; color: var(--glow-deep); margin-top: 0.4rem;
+    text-align: right; opacity: 0.85;
+  }
+  .glow-card-feature .glow-card-byline { color: var(--tab-red); }
+
+  /* ── likes + comments footer ── */
+  .card-footer {
+    margin-top: 0.6rem; padding-top: 0.5rem; border-top: 1px dashed rgba(28,23,20,0.15);
+  }
+  .card-actions { display: flex; align-items: center; gap: 0.5rem; }
+  .like-btn, .comment-toggle-btn {
+    display: inline-flex; align-items: center; gap: 0.3rem;
+    font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 0.72rem;
+    color: var(--ink); background: #fffaf0; border: 1px solid rgba(28,23,20,0.18);
+    border-radius: 50px; padding: 0.3rem 0.65rem; cursor: pointer;
+    transition: transform 0.1s, background 0.15s, border-color 0.15s;
+  }
+  .like-btn:hover, .comment-toggle-btn:hover { background: var(--tab-yellow-2); }
+  .like-btn:active, .comment-toggle-btn:active { transform: scale(0.95); }
+  .like-btn.liked { border-color: var(--tab-red); background: #fdeaea; }
+  .like-btn:disabled { opacity: 0.7; cursor: default; }
+  .like-emoji { font-size: 0.85rem; }
+  .comment-list { display: flex; flex-direction: column; gap: 0.4rem; margin: 0.55rem 0 0.15rem; }
+  .comment-row {
+    background: rgba(255,255,255,0.55); border-radius: 5px; padding: 0.4rem 0.55rem;
+  }
+  .comment-text {
+    display: block; font-family: 'DM Sans', sans-serif; font-size: 0.78rem; color: var(--ink); line-height: 1.35;
+  }
+  .comment-byline {
+    display: block; font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 0.6rem;
+    letter-spacing: 0.03em; color: var(--glow-deep); text-align: right; margin-top: 0.15rem; opacity: 0.8;
+  }
+  .comment-compose {
+    display: none; margin-top: 0.55rem;
+  }
+  .comment-compose.open { display: block; }
+  .comment-input {
+    width: 100%; background: #fff; border: 1px solid rgba(28,23,20,0.18);
+    border-radius: 6px; color: var(--ink); font-family: 'DM Sans', sans-serif;
+    font-size: 0.8rem; padding: 0.5rem 0.65rem; outline: none;
+    margin-bottom: 0.35rem; transition: border-color 0.15s;
+  }
+  .comment-compose-row { display: flex; gap: 0.4rem; }
+  .comment-byline-input {
+    flex: 1; min-width: 0; background: #fff; border: 1px solid rgba(28,23,20,0.18);
+    border-radius: 6px; color: var(--ink); font-family: 'DM Sans', sans-serif;
+    font-size: 0.78rem; padding: 0.45rem 0.6rem; outline: none; transition: border-color 0.15s;
+  }
+  .comment-input:focus, .comment-byline-input:focus { border-color: var(--glow-deep); }
+  .comment-post-btn {
+    flex-shrink: 0; font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 0.74rem;
+    text-transform: uppercase; letter-spacing: 0.04em;
+    background: var(--tab-red); color: #fff; border: none; border-radius: 50px;
+    padding: 0.45rem 0.9rem; cursor: pointer; transition: opacity 0.15s, transform 0.1s;
+  }
+  .comment-post-btn:active { transform: scale(0.96); }
+  .comment-post-btn:disabled { opacity: 0.6; cursor: default; }
+  .comment-status {
+    font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 0.72rem;
+    margin-top: 0.3rem; min-height: 1.1em;
+  }
+  .comment-status.error { color: var(--glow-deep); }
   #glow-submit-btn {
     width: 100%; font-family: 'Anton', sans-serif; font-size: 1rem; letter-spacing: 0.03em;
     text-transform: uppercase;
@@ -516,6 +611,40 @@
     100% { opacity: 0; }
   }
   #paparazzi-overlay.play { animation: paparazzi-pop 1.35s ease-in-out; }
+
+  /* ── breaking news ticker ── */
+  .ticker-bar {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 30;
+    height: 32px; display: flex; align-items: stretch;
+    background: var(--tab-red); border-top: 2px solid var(--ink);
+    box-shadow: 0 -4px 14px rgba(0,0,0,0.35);
+    overflow: hidden;
+  }
+  .ticker-badge {
+    flex-shrink: 0; display: flex; align-items: center; z-index: 2;
+    font-family: 'Anton', sans-serif; font-size: 0.62rem; letter-spacing: 0.06em; text-transform: uppercase;
+    background: var(--ink); color: var(--tab-yellow-2);
+    padding: 0 0.75rem; box-shadow: 3px 0 8px rgba(0,0,0,0.25);
+  }
+  .ticker-track {
+    display: flex; align-items: center; white-space: nowrap;
+    animation: ticker-scroll 38s linear infinite;
+    will-change: transform;
+  }
+  .ticker-track .ticker-item {
+    display: inline-flex; align-items: center;
+    font-family: 'Anton', sans-serif; font-weight: 400; font-size: 0.66rem;
+    letter-spacing: 0.02em; text-transform: uppercase; color: #fff;
+    padding: 0 1.6rem; flex-shrink: 0;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ticker-track { animation: none; }
+  }
+  @keyframes ticker-scroll {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  body { padding-bottom: calc(1.2rem + 32px); }
 </style>
 </head>
 <body>
@@ -527,7 +656,7 @@
     <div class="side-tabs">
       <button class="side-tab side-tab--rules" onclick="goTo('rules')">press</button>
       <button class="side-tab side-tab--write" onclick="goTo('write')">file</button>
-      <button class="side-tab side-tab--index" onclick="indexTabTap()">roster</button>
+      <button class="side-tab side-tab--index" onclick="indexTabTap()">a-list</button>
     </div>
     <div class="book-viewport">
       <div class="page-panel" id="page-panel">
@@ -540,6 +669,11 @@
     <span class="nav-count" id="nav-count">1 / 4</span>
     <button class="nav-arrow" onclick="stepPage(1)">next ›</button>
   </div>
+</div>
+
+<div class="ticker-bar">
+  <div class="ticker-badge">🚨 live</div>
+  <div class="ticker-track" id="ticker-track"></div>
 </div>
 
 <div id="paparazzi-overlay"><img src="paparazzi.png" alt="" onerror="this.remove()"></div>
@@ -558,7 +692,7 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getDatabase, ref, push, set, onValue, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+  import { getDatabase, ref, push, set, onValue, query, limitToLast, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyABrfzps49T4yKj0IMMmgYO1_qL2JObP_U",
@@ -652,6 +786,131 @@
   }
 
   const MSG_LIMIT = 240;
+  const COMMENT_LIMIT = 140;
+
+  // ── likes are tracked per-device so the same browser can't spam one card ──
+  function getLikedSet() {
+    try { return new Set(JSON.parse(localStorage.getItem('glowbook_liked_v1') || '[]')); }
+    catch (e) { return new Set(); }
+  }
+  function saveLikedSet(set) {
+    try { localStorage.setItem('glowbook_liked_v1', JSON.stringify([...set])); } catch (e) {}
+  }
+
+  // ── likes + comments footer, shared by the feature card and every exclusive card ──
+  function cardFooterHtml(e) {
+    if (!e._key) return ''; // safety: entries without a firebase key can't be liked/commented on
+    const liked = getLikedSet().has(e._key);
+    const cCount = e.comments ? e.comments.length : 0;
+    return `
+      <div class="card-footer" data-key="${e._key}">
+        <div class="card-actions">
+          <button class="like-btn${liked ? ' liked' : ''}" data-key="${e._key}" aria-label="like">
+            <span class="like-emoji">${liked ? '❤️' : '🤍'}</span><span class="like-count">${e.likeCount || 0}</span>
+          </button>
+          <button class="comment-toggle-btn">💬 ${cCount ? cCount + (cCount === 1 ? ' comment' : ' comments') : 'comment'}</button>
+        </div>
+        ${cCount ? `
+        <div class="comment-list">
+          ${e.comments.map(c => `
+            <div class="comment-row">
+              <span class="comment-text">${escapeHtml(c.text)}</span>
+              <span class="comment-byline">— ${c.byline ? escapeHtml(c.byline) : 'anonymous'}</span>
+            </div>`).join('')}
+        </div>` : ''}
+        <div class="comment-compose">
+          <input class="comment-input" maxlength="${COMMENT_LIMIT}" placeholder="add a comment...">
+          <div class="comment-compose-row">
+            <input class="comment-byline-input" maxlength="40" placeholder="sign your name (optional)">
+            <button class="comment-post-btn">post</button>
+          </div>
+          <div class="comment-status"></div>
+        </div>
+      </div>
+    `;
+  }
+
+  // preserve any in-progress comment drafts across a live re-render
+  function captureComposeState(inner) {
+    const state = {};
+    inner.querySelectorAll('.card-footer').forEach(footer => {
+      const compose = footer.querySelector('.comment-compose');
+      if (!compose) return;
+      state[footer.dataset.key] = {
+        open: compose.classList.contains('open'),
+        text: compose.querySelector('.comment-input')?.value || '',
+        byline: compose.querySelector('.comment-byline-input')?.value || ''
+      };
+    });
+    return state;
+  }
+  function restoreComposeState(inner, state) {
+    inner.querySelectorAll('.card-footer').forEach(footer => {
+      const s = state[footer.dataset.key];
+      const compose = footer.querySelector('.comment-compose');
+      if (!s || !compose) return;
+      if (s.open) compose.classList.add('open');
+      const textEl = compose.querySelector('.comment-input');
+      const bylineEl = compose.querySelector('.comment-byline-input');
+      if (textEl) textEl.value = s.text;
+      if (bylineEl) bylineEl.value = s.byline;
+    });
+  }
+
+  // wires up every like button, comment toggle, and comment post button on the current page
+  function wirePersonCard(inner) {
+    inner.querySelectorAll('.like-btn').forEach(btn => {
+      const key = btn.dataset.key;
+      btn.addEventListener('click', () => {
+        const liked = getLikedSet();
+        const isLiked = liked.has(key);
+        const delta = isLiked ? -1 : 1;
+        btn.disabled = true;
+        runTransaction(ref(db, `glowbook/${key}/likeCount`), (cur) => Math.max(0, (cur || 0) + delta))
+          .then(() => {
+            if (isLiked) liked.delete(key); else liked.add(key);
+            saveLikedSet(liked);
+          })
+          .catch(err => console.warn('[glow book] like failed:', err))
+          .finally(() => { btn.disabled = false; });
+      });
+    });
+
+    inner.querySelectorAll('.card-footer').forEach(footer => {
+      const key = footer.dataset.key;
+      const toggleBtn = footer.querySelector('.comment-toggle-btn');
+      const compose = footer.querySelector('.comment-compose');
+      if (toggleBtn && compose) {
+        toggleBtn.addEventListener('click', () => compose.classList.toggle('open'));
+      }
+      const postBtn = footer.querySelector('.comment-post-btn');
+      if (postBtn) {
+        postBtn.addEventListener('click', () => {
+          const textEl = footer.querySelector('.comment-input');
+          const bylineEl = footer.querySelector('.comment-byline-input');
+          const statusEl = footer.querySelector('.comment-status');
+          const text = textEl.value.trim();
+          const byline = bylineEl.value.trim();
+          statusEl.className = 'comment-status'; statusEl.textContent = '';
+          if (!text) { statusEl.textContent = 'say something first!'; statusEl.classList.add('error'); return; }
+          if (containsBlockedWord(text) || containsBlockedWord(byline)) {
+            statusEl.textContent = 'keep it glowing — try rewording that 📸';
+            statusEl.classList.add('error');
+            return;
+          }
+          postBtn.disabled = true;
+          push(ref(db, `glowbook/${key}/comments`), { text, byline, ts: Date.now() })
+            .then(() => { textEl.value = ''; bylineEl.value = ''; })
+            .catch(err => {
+              statusEl.textContent = "couldn't post — try again.";
+              statusEl.classList.add('error');
+              console.warn('[glow book] comment failed:', err);
+            })
+            .finally(() => { postBtn.disabled = false; });
+        });
+      }
+    });
+  }
 
   // ── data state ──
   let glowEntries = [];
@@ -663,6 +922,18 @@
   // their page still exists and is reachable via search/index, they just
   // won't be actively suggested. add more lowercase keys as needed.
   const SUGGEST_EXCLUDE = new Set(['ariana grande']);
+
+  // ── writer's block: opener templates. {name} gets swapped for the subject typed in, or a fallback. ──
+  const WRITER_STARTERS = [
+    { label: 'sources say...', text: 'Sources say {name} ' },
+    { label: 'spotted:', text: 'Spotted: {name} serving ' },
+    { label: 'insiders confirm', text: 'Insiders confirm {name} ' },
+    { label: 'word on the street', text: "Word on the street is {name} " },
+    { label: 'overheard:', text: 'Overheard about {name}: "' },
+    { label: 'breaking:', text: 'Breaking: {name} was just seen ' },
+    { label: 'can we talk about', text: 'Can we talk about how {name} ' },
+    { label: 'exclusive:', text: 'Exclusive: {name} is officially ' },
+  ];
 
   function rebuildPeople() {
     const map = new Map();
@@ -773,6 +1044,40 @@
     if (currentPage === 'rules') document.querySelector('.side-tab--rules').classList.add('current');
     if (currentPage === 'write') document.querySelector('.side-tab--write').classList.add('current');
     if (currentPage === 'index') document.querySelector('.side-tab--index').classList.add('current');
+    renderTicker();
+  }
+
+  // ── breaking news ticker: auto-generated headlines from real filed exclusives ──
+  const TICKER_PREFIXES = ['BREAKING', 'JUST IN', 'EXCLUSIVE', 'RUMOR', 'CONFIRMED', 'DEVELOPING'];
+  const TICKER_FALLBACK_TAGLINES = [
+    () => `the a-list is live — the whole room is about to be talking`,
+    () => `sources confirm: everyone here is somebody`,
+    () => `be the first byline of the day — file an exclusive →`,
+    () => `no one's boring in this newsroom`
+  ];
+  let lastTickerKey = '';
+  function renderTicker() {
+    const track = document.getElementById('ticker-track');
+    if (!track) return;
+
+    let items;
+    if (glowEntries.length) {
+      const recent = glowEntries.slice(0, 14);
+      items = recent.map((e, i) => {
+        const prefix = TICKER_PREFIXES[hashStr(e.name.toLowerCase() + i) % TICKER_PREFIXES.length];
+        const clean = e.message.length > 64 ? e.message.slice(0, 64).trim() + '…' : e.message;
+        return `🚨 ${prefix}: ${e.name.trim()} — “${clean}”`;
+      });
+    } else {
+      items = TICKER_FALLBACK_TAGLINES.map(f => `🚨 ${f()}`);
+    }
+
+    const key = items.join('|');
+    if (key === lastTickerKey) return; // avoid restarting the animation on unrelated re-renders
+    lastTickerKey = key;
+
+    const htmlOnce = items.map(t => `<span class="ticker-item">${escapeHtml(t)}</span>`).join('');
+    track.innerHTML = htmlOnce + htmlOnce; // duplicated for a seamless loop
   }
 
   function renderPage(pageId) {
@@ -788,6 +1093,7 @@
     if (pageId.startsWith('person:')) {
       const key = pageId.slice(7);
       inner.innerHTML = personHtml(key);
+      wirePersonCard(inner);
       const cta = inner.querySelector('.person-cta');
       const p = people.get(key);
       if (cta && p) cta.addEventListener('click', () => prefillAndWrite(p.display));
@@ -810,38 +1116,32 @@
           <span class="wl wl-o2">O</span>
           <span class="wl wl-o3">O</span>
           <span class="wl wl-k">K</span>
-          <div class="kiss-wrap">
-            <svg class="kiss-print-fallback" viewBox="0 0 200 100" aria-hidden="true">
-              <path fill="currentColor" d="M18,58 C16,28 46,10 68,22 C76,6 98,6 102,22 C108,6 130,6 138,22 C160,10 186,28 184,58 C182,84 138,96 100,92 C62,96 20,84 18,58 Z"/>
-              <path fill="currentColor" opacity="0.55" d="M36,58 C36,70 66,80 100,78 C134,80 164,70 164,58 C164,72 132,84 100,84 C68,84 36,72 36,58 Z"/>
-            </svg>
-            <img class="kiss-print-img" src="kissprint.png" alt="kiss print" onerror="this.remove()">
-          </div>
         </div>
       </div>
       <img id="glow-cover-img" src="glow-book.png" alt="The Glow Book" onerror="this.remove()">
-      <div class="cover-tap">tap for today's issue ↓</div>
+      <div class="cover-tap">tap in — everyone's already talking ↓</div>
     </div>`;
   }
 
   function rulesHtml() {
     const rules = [
-      `No burns in here. Compliments only — the breaking, glowing kind.`,
-      `Say the actual thing. "So back" beats "so nice."`,
-      `Sign it, or stay an anonymous source — it still counts as a tip.`,
-      `If you wouldn't want it printed on the front page, save it for later.`,
-      `Everyone gets a file here. Everyone's famous enough.`,
-      `Come back and reread your file on the days you forget you're iconic.`
+      `This is a tabloid column, not a diary. We report on looks, aesthetics, and iconic moments.`,
+      `Act like a red carpet correspondent. Break down the outfit, decode the vibe or compliment something someone said`,
+      `No basic compliments. "Nice shirt" is banned. Give us "Spotted: she's serving 90s grunge."`,
+      `Sign your review, or stay an anonymous critic — it still goes to print.`,
+      `Everyone is on the style radar today. Everyone gets a headline.`,
+      `Come back to the archive when you need proof that you're actually iconic `
     ];
     return `
-      <div class="pg-eyebrow">press rules</div>
-      <h2 class="pg-title">the fine print</h2>
+      <div class="pg-eyebrow">the newsroom</div>
+      <h2 class="pg-title">press rules</h2>
+      <div class="pg-sub">how to file a style report that's actually worth printing</div>
       <div class="rules-stamp">verified source ✓</div>
       <div class="tape-divider"></div>
       <ul class="rules-list">
         ${rules.map((t, i) => `<li class="rule-item"><span class="rule-num">${String(i + 1).padStart(2, '0')}</span><span class="rule-text">${t}</span></li>`).join('')}
       </ul>
-      <div class="rules-footnote">that's it. that's the whole newsroom. no lawyers were needed.</div>
+      <div class="rules-footnote">that's it. you are now the fashion police.</div>
     `;
   }
 
@@ -850,19 +1150,28 @@
     return `
       <div class="pg-eyebrow">file a tip</div>
       <h2 class="pg-title">break the story</h2>
-      <div class="pg-sub">who's making headlines today?</div>
-      ${showChip ? `<button type="button" id="spotlight-btn" class="spotlight-chip">✦ pick someone for me</button>` : ''}
+      <div class="pg-sub">someone's about to become the only thing anyone's talking about</div>
+      ${showChip ? `<button type="button" id="spotlight-btn" class="spotlight-chip">✦ pick who's iconic today</button>` : ''}
       <div class="write-card">
         <div class="write-stamp">Press Tip</div>
         <div class="field-label">the subject</div>
         <div class="name-combo" id="name-combo">
-          <input id="glow-name" maxlength="40" placeholder="who's the story about? (pick or type a name)" autocomplete="off">
+          <input id="glow-name" maxlength="40" placeholder="who's the whole room obsessed with right now?" autocomplete="off">
           <div class="name-suggest" id="name-suggest"></div>
         </div>
-        <div class="field-label">the scoop</div>
-        <textarea id="glow-message" maxlength="240" rows="4" placeholder="what are the sources saying..."></textarea>
+        <div class="wb-row">
+          <div class="field-label" style="margin:0;">the scoop</div>
+          <button type="button" id="wb-toggle-btn" class="wb-toggle">writer's block? ✎</button>
+        </div>
+        <div class="wb-chips" id="wb-chips">
+          ${WRITER_STARTERS.map((s, i) => `<button type="button" class="wb-chip" data-i="${i}">${escapeHtml(s.label)}</button>`).join('')}
+        </div>
+        <textarea id="glow-message" maxlength="240" rows="4" placeholder="what's everyone saying about them..."></textarea>
         <div id="glow-counter">240 left</div>
-        <button id="glow-submit-btn">file the story 📸</button>
+        <div class="field-label">byline</div>
+        <input id="glow-byline" maxlength="40" placeholder="sign your name..." autocomplete="off">
+        <div class="byline-hint">or leave it blank to run as an anonymous source</div>
+        <button id="glow-submit-btn">send it to print 📸</button>
         <div id="glow-status"></div>
       </div>
     `;
@@ -883,7 +1192,7 @@
       if (!matches.length) {
         suggestEl.innerHTML = q
           ? `<div class="name-suggest-empty">no match — "${escapeHtml(filter.trim())}" gets a new file 📸</div>`
-          : `<div class="name-suggest-empty">no one on the roster yet — type any name</div>`;
+          : `<div class="name-suggest-empty">no one on the a-list yet — type any name</div>`;
       } else {
         suggestEl.innerHTML = matches.map(p => `
           <div class="name-suggest-item" data-name="${escapeHtml(p.display)}">
@@ -906,6 +1215,31 @@
         if (!item) return;
         nameEl.value = item.dataset.name;
         suggestEl.classList.remove('open');
+      });
+    }
+
+    const wbToggleBtn = document.getElementById('wb-toggle-btn');
+    const wbChips = document.getElementById('wb-chips');
+    if (wbToggleBtn && wbChips) {
+      wbToggleBtn.addEventListener('click', () => {
+        const open = wbChips.classList.toggle('open');
+        wbToggleBtn.textContent = open ? 'hide starters ✕' : "writer's block? ✎";
+      });
+      wbChips.querySelectorAll('.wb-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+          const starter = WRITER_STARTERS[Number(chip.dataset.i)];
+          if (!starter) return;
+          const subject = nameEl.value.trim() || 'them';
+          const filled = starter.text.replace('{name}', subject);
+          const msgBox = document.getElementById('glow-message');
+          // append to whatever's already there, with a space if needed
+          const existing = msgBox.value;
+          const sep = existing && !existing.endsWith(' ') ? ' ' : '';
+          msgBox.value = (existing + sep + filled).slice(0, MSG_LIMIT);
+          msgBox.dispatchEvent(new Event('input'));
+          msgBox.focus();
+          msgBox.setSelectionRange(msgBox.value.length, msgBox.value.length);
+        });
       });
     }
 
@@ -937,10 +1271,12 @@
       const btn = document.getElementById('glow-submit-btn');
       const name = nameEl.value.trim();
       const message = msgEl.value.trim();
+      const bylineEl = document.getElementById('glow-byline');
+      const byline = bylineEl ? bylineEl.value.trim() : '';
 
       statusEl.className = ''; statusEl.innerHTML = '';
       if (!name || !message) { statusEl.textContent = "need a subject and a quote first!"; statusEl.classList.add('error'); return; }
-      if (containsBlockedWord(name) || containsBlockedWord(message)) {
+      if (containsBlockedWord(name) || containsBlockedWord(message) || containsBlockedWord(byline)) {
         statusEl.textContent = "keep it glowing — try rewording that 📸";
         statusEl.classList.add('error');
         return;
@@ -949,17 +1285,17 @@
       btn.disabled = true;
       statusEl.textContent = "";
 
-      const entry = { name, message, ts: Date.now() };
+      const entry = { name, message, byline, ts: Date.now() };
       push(ref(db, "glowbook"), entry)
         .then(() => {
           statusEl.className = ''; statusEl.classList.add('success');
-          statusEl.textContent = "filed! 📸 it's going to print.";
+          statusEl.textContent = byline ? `filed and signed, ${byline} 📸 it's going to print.` : "filed! 📸 it's going to print.";
           const jumpBtn = document.createElement('button');
           jumpBtn.className = 'status-jump';
           jumpBtn.textContent = `read the file on ${name} →`;
           jumpBtn.addEventListener('click', () => openPerson(name.trim().toLowerCase()));
           statusEl.appendChild(jumpBtn);
-          nameEl.value = ''; msgEl.value = '';
+          nameEl.value = ''; msgEl.value = ''; if (bylineEl) bylineEl.value = '';
           updateCounter();
           btn.classList.add('sent');
           setTimeout(() => btn.classList.remove('sent'), 200);
@@ -977,7 +1313,7 @@
   function indexHtml() {
     const hostPanel = hostMode ? `
       <div class="host-panel">
-        <div class="host-label">🔒 editor-in-chief — add a name to the roster</div>
+        <div class="host-label">🔒 editor-in-chief — add a name to the a-list</div>
         <div class="host-row">
           <input id="host-name-input" maxlength="40" placeholder="add a name...">
           <button id="host-add-btn">add</button>
@@ -987,16 +1323,16 @@
 
     if (!personKeys.length) {
       return `
-        <div class="pg-eyebrow">the roster</div>
+        <div class="pg-eyebrow">the a-list</div>
         <h2 class="pg-title">who's who</h2>
         ${hostPanel}
-        <div class="idx-empty">no headlines yet —<br>be the first to file a story 📸<br><br><a onclick="goTo('write','back')">file one →</a></div>
+        <div class="idx-empty">no headlines yet —<br>be the first name in print 📸<br><br><a onclick="goTo('write','back')">file one →</a></div>
       `;
     }
     return `
-      <div class="pg-eyebrow">the roster</div>
+      <div class="pg-eyebrow">the a-list</div>
       <h2 class="pg-title">who's who</h2>
-      <div class="pg-sub">find your name in lights, or someone else's</div>
+      <div class="pg-sub">every name the whole city can't stop talking about</div>
       ${hostPanel}
       <input id="glow-search" placeholder="search a name...">
       <div class="idx-list" id="idx-list"></div>
@@ -1048,17 +1384,17 @@
 
   function personHtml(key) {
     const p = people.get(key);
-    if (!p) return `<div class="idx-empty">no file on this name yet.<br><br><a onclick="goTo('index','back')">← back to the roster</a></div>`;
+    if (!p) return `<div class="idx-empty">no file on this name yet.<br><br><a onclick="goTo('index','back')">← back to the a-list</a></div>`;
     const [feature, ...rest] = p.entries;
     return `
-      <button class="person-back" onclick="goTo('index','back')">&larr; roster</button>
+      <button class="person-back" onclick="goTo('index','back')">&larr; a-list</button>
       <div class="person-head">
         <div class="person-avatar" style="${avatarWrapStyle(p)}">${avatarInner(p)}</div>
         <div>
-          <div class="person-eyebrow">the file on</div>
+          <div class="person-eyebrow">everyone's talking about</div>
           <div class="person-name">${escapeHtml(p.display)}</div>
           <div class="person-spotted">📍 ${spottedLine(p.display)}</div>
-          <div class="person-count">${p.entries.length} exclusive${p.entries.length === 1 ? '' : 's'} on record</div>
+          <div class="person-count">${p.entries.length} exclusive${p.entries.length === 1 ? '' : 's'} on record — and counting</div>
         </div>
       </div>
       ${feature ? `
@@ -1066,6 +1402,8 @@
           <span class="glow-quote-mark">📸 cover story</span>
           <div class="glow-card-time">filed ${relativeTime(feature.ts)}</div>
           <div class="glow-card-msg">${escapeHtml(feature.message)}</div>
+          <div class="glow-card-byline">— ${feature.byline ? escapeHtml(feature.byline) : 'anonymous source'}</div>
+          ${cardFooterHtml(feature)}
         </div>
       ` : ''}
       <div class="person-cards">
@@ -1073,9 +1411,11 @@
           <div class="glow-card">
             <div class="glow-card-time">EXCLUSIVE • filed ${relativeTime(e.ts)}</div>
             <div class="glow-card-msg">${escapeHtml(e.message)}</div>
+            <div class="glow-card-byline">— ${e.byline ? escapeHtml(e.byline) : 'anonymous source'}</div>
+            ${cardFooterHtml(e)}
           </div>`).join('')}
       </div>
-      <button class="person-cta">file another exclusive on ${escapeHtml(p.display)} →</button>
+      <button class="person-cta">the world wants more — file another exclusive on ${escapeHtml(p.display)} →</button>
     `;
   }
 
@@ -1130,7 +1470,10 @@
       const key = currentPage.slice(7);
       if (people.has(key)) {
         const inner = document.getElementById('page-inner');
+        const composeState = captureComposeState(inner);
         inner.innerHTML = personHtml(key);
+        restoreComposeState(inner, composeState);
+        wirePersonCard(inner);
         const cta = inner.querySelector('.person-cta');
         const p = people.get(key);
         if (cta && p) cta.addEventListener('click', () => prefillAndWrite(p.display));
@@ -1141,7 +1484,14 @@
 
   onValue(glowQuery, (snap) => {
     const val = snap.val() || {};
-    glowEntries = Object.values(val).sort((a, b) => b.ts - a.ts);
+    glowEntries = Object.entries(val).map(([key, v]) => ({
+      ...v,
+      _key: key,
+      likeCount: v.likeCount || 0,
+      comments: v.comments
+        ? Object.entries(v.comments).map(([ck, c]) => ({ ...c, _key: ck })).sort((a, b) => a.ts - b.ts)
+        : []
+    })).sort((a, b) => b.ts - a.ts);
     onDataChange();
   }, (err) => console.warn('[glow book] live sync error — check your Firebase config and database rules:', err));
 
