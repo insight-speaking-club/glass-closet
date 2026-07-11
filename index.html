@@ -119,6 +119,17 @@
   #lookbook-btn svg, #glow-btn svg, #request-btn svg, #mission-btn svg, #inspo-btn svg { width: 16px; height: 16px; }
   #lookbook-btn:active, #glow-btn:active, #request-btn:active, #mission-btn:active, #inspo-btn:active { transform: scale(0.9); background: rgba(26,20,20,0.24); }
 
+  #help-btn {
+    width: 26px; height: 26px; border-radius: 50%;
+    background: transparent; border: none;
+    color: rgba(26,20,20,0.45); text-decoration: none;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: background 0.15s, transform 0.1s, color 0.15s;
+    margin-left: 0.15rem;
+  }
+  #help-btn svg { width: 14px; height: 14px; }
+  #help-btn:active { transform: scale(0.9); background: rgba(26,20,20,0.14); color: rgba(26,20,20,0.7); }
+
   #mission-btn-dot {
     position: absolute; top: -2px; right: -2px;
     width: 9px; height: 9px; border-radius: 50%;
@@ -205,6 +216,68 @@
     100% { clip-path: inset(20% 0 60% 0); transform: translate(-1px, 1px); }
   }
   
+  /* ── GUIDED TOUR ── */
+  #tour-overlay {
+    position: fixed; inset: 0; z-index: 100010; display: none;
+  }
+  #tour-overlay.show { display: block; }
+  #tour-backdrop {
+    position: fixed; inset: 0;
+    background: transparent;
+    cursor: pointer;
+  }
+  #tour-spotlight {
+    position: fixed; pointer-events: none;
+    border-radius: 14px;
+    box-shadow: 0 0 0 9999px rgba(16,13,10,0.72);
+    transition: top 0.35s cubic-bezier(.4,0,.2,1), left 0.35s cubic-bezier(.4,0,.2,1),
+                width 0.35s cubic-bezier(.4,0,.2,1), height 0.35s cubic-bezier(.4,0,.2,1),
+                border-radius 0.35s ease, opacity 0.25s ease;
+    outline: 1.5px solid rgba(212,155,177,0.9);
+    outline-offset: 3px;
+  }
+  #tour-tooltip {
+    position: fixed; z-index: 100011;
+    width: min(78vw, 260px);
+    background: var(--drawer-bg); color: var(--drawer-active);
+    border: 1px solid var(--drawer-border);
+    border-radius: 12px; padding: 0.9rem 1rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    transition: top 0.35s cubic-bezier(.4,0,.2,1), left 0.35s cubic-bezier(.4,0,.2,1);
+  }
+  #tour-tooltip .tt-step {
+    font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 0.55rem;
+    text-transform: uppercase; letter-spacing: 0.14em; color: var(--accent); margin-bottom: 0.3rem;
+  }
+  #tour-tooltip .tt-title {
+    font-family: 'Anton', sans-serif; text-transform: uppercase; letter-spacing: 0.01em;
+    font-size: 1rem; margin-bottom: 0.35rem; line-height: 1.15;
+  }
+  #tour-tooltip .tt-desc {
+    font-family: 'DM Sans', sans-serif; font-size: 0.75rem; line-height: 1.4;
+    color: var(--drawer-muted); margin-bottom: 0.8rem;
+  }
+  #tour-tooltip .tt-row { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; }
+  #tour-skip {
+    font-family: 'DM Sans', sans-serif; font-weight: 500; font-size: 0.65rem;
+    color: var(--drawer-muted); text-decoration: underline; text-underline-offset: 3px;
+    cursor: pointer; background: none; border: none; padding: 0;
+  }
+  #tour-next {
+    font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 0.65rem;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    background: var(--accent); color: #1a1414; border: none; border-radius: 20px;
+    padding: 0.45rem 0.95rem; cursor: pointer;
+  }
+  #tour-next:active { opacity: 0.8; }
+  #tour-dots { display: flex; gap: 4px; margin-top: 0.7rem; }
+  #tour-dots span { width: 4px; height: 4px; border-radius: 50%; background: var(--drawer-border); }
+  #tour-dots span.tour-dot-done { background: var(--accent); }
+
+  @media (max-width: 380px) {
+    #tour-tooltip { width: 82vw; }
+  }
+
   #imessage-notification {
     position: fixed; top: 75px; left: 50%;
     width: min(92vw, 380px);
@@ -307,9 +380,16 @@
   .on-canvas .oc-visual { position: relative; width: 100%; height: 100%; }
   .on-canvas .oc-visual img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; pointer-events: none; display: block; }
   .on-canvas .remove-btn, .on-canvas .resize-handle, .on-canvas .rotate-handle, .on-canvas .rotate-stem { display: none; }
-  .on-canvas.active-item .remove-btn { position: absolute; top: -8px; right: -8px; width: 20px; height: 20px; background: var(--ink); color: var(--bg); border: none; border-radius: 50%; font-size: 0.6rem; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 5; }
+  .on-canvas.active-item .remove-btn { position: absolute; top: -8px; right: -8px; width: 20px; height: 20px; background: var(--ink); color: var(--bg); border: none; border-radius: 50%; font-size: 0.6rem; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 5; touch-action: none; }
   .on-canvas.active-item .resize-handle { position: absolute; bottom: -9px; right: -9px; width: 20px; height: 20px; background: var(--bg); border: 1.5px solid var(--ink); border-radius: 50%; cursor: nwse-resize; z-index: 6; display: flex; align-items: center; justify-content: center; touch-action: none; }
   .on-canvas.active-item .resize-handle::before { content: ''; width: 7px; height: 7px; border-right: 1.5px solid var(--ink); border-bottom: 1.5px solid var(--ink); }
+  /* Invisible hit-slop so the handles are easy to land a thumb on without looking bigger */
+  .on-canvas.active-item .remove-btn::after,
+  .on-canvas.active-item .resize-handle::after,
+  .on-canvas.active-item .rotate-handle::after {
+    content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 44px; height: 44px;
+  }
   .on-canvas.active-item .rotate-stem { position: absolute; top: -28px; left: 50%; width: 1.5px; height: 20px; background: var(--muted); transform: translateX(-50%); z-index: 5; display: block; }
   .on-canvas.active-item .rotate-handle { position: absolute; top: -42px; left: 50%; width: 22px; height: 22px; transform: translateX(-50%); background: var(--bg); border: 1.5px solid var(--ink); border-radius: 50%; cursor: grab; z-index: 6; display: flex; align-items: center; justify-content: center; font-size: 0.62rem; touch-action: none; }
 
@@ -473,6 +553,7 @@
   }
   .ic-tag-celeb { background: rgba(212,155,177,0.18); color: var(--accent); }
   .ic-tag-cartoon { background: rgba(140,180,230,0.18); color: #8cb4e6; }
+  .ic-tag-movie { background: rgba(230,180,120,0.18); color: #e6b478; }
   .ic-tag-mine { background: rgba(140,220,160,0.18); color: #8cdca0; }
   .inspo-delete-btn {
     position: absolute; top: 5px; right: 5px; width: 22px; height: 22px; border-radius: 50%;
@@ -842,10 +923,32 @@
           <path d="M12 20.5s-7.5-4.6-9.8-9.1C.6 8 2 4.8 5.2 4.1c2-.4 3.9.5 4.8 2.2.9-1.7 2.8-2.6 4.8-2.2 3.2.7 4.6 3.9 3 7.3-2.3 4.5-9.8 9.1-9.8 9.1Z"></path>
         </svg>
       </a>
+      <button id="help-btn" onclick="startTour(true)" aria-label="How this works" title="How this works">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="9"></circle>
+          <path d="M9.3 9.3a2.7 2.7 0 1 1 3.9 2.4c-.8.4-1.2 1-1.2 1.9v.3"></path>
+          <circle cx="12" cy="16.8" r="0.15" fill="currentColor" stroke="currentColor" stroke-width="1.3"></circle>
+        </svg>
+      </button>
     </div>
   </div>
   <div id="topbar-row2">
     <span id="topbar-gossip-link" onclick="spillTea()">See latest gossip on Sasha</span>
+  </div>
+</div>
+
+<div id="tour-overlay">
+  <div id="tour-backdrop" onclick="tourNext()"></div>
+  <div id="tour-spotlight"></div>
+  <div id="tour-tooltip">
+    <div class="tt-step" id="tour-step-label"></div>
+    <div class="tt-title" id="tour-title"></div>
+    <div class="tt-desc" id="tour-desc"></div>
+    <div class="tt-row">
+      <button id="tour-skip" onclick="endTour()">Skip</button>
+      <button id="tour-next" onclick="tourNext()">Next</button>
+    </div>
+    <div id="tour-dots"></div>
   </div>
 </div>
 
@@ -1350,7 +1453,7 @@ const categories = [
     id: 'hats', label: 'Hats',
     items: [
       { name: 'Black beret', color: '#111', vibe: 'arty', w: 95, h: 70 },
-      { name: 'Camel beret', color: '#c2903a', vibe: 'parisian', w: 95, h: 70 },
+      { name: 'Camel beret', color: '#c2903a', vibe: 'french girl', w: 95, h: 70 },
       { name: 'Cowboy hat black', color: '#111', vibe: 'dark cowgirl', w: 115, h: 82 },
       { name: 'Cowboy hat tan', color: '#c2903a', vibe: 'camp cowgirl', w: 115, h: 82 },
       { name: 'Wide brim felt black', color: '#111', vibe: 'witchy', w: 120, h: 82 },
@@ -1375,7 +1478,7 @@ const categories = [
       { name: 'Chunky gold chain', color: '#d4a017', vibe: 'boss', w: 85, h: 50 },
       { name: 'Choker black velvet', color: '#111', vibe: 'nineties goth', w: 82, h: 30 },
       { name: 'Diamond choker', color: '#c8c8c8', vibe: 'old Hollywood glam', w: 82, h: 28 },
-      { name: 'Silk scarf neck black', color: '#111', vibe: 'parisian', w: 85, h: 95 },
+      { name: 'Silk scarf neck black', color: '#111', vibe: 'french girl', w: 85, h: 95 },
       { name: 'Silk scarf neck printed', color: '#c87878', vibe: 'retro glam', w: 85, h: 95 },
       { name: 'Statement necklace', color: '#c8c8c8', vibe: 'maximalist', w: 95, h: 60 },
       { name: 'Pendant necklace gold', color: '#d4a017', vibe: 'delicate', w: 75, h: 70 },
@@ -1551,7 +1654,7 @@ const verdicts = {
   'feminine touch': { line: "One small detail, doing all the talking.", sub: "Restraint as its own kind of statement." },
   'femme': { line: "Femme as a weapon, a language, a stance.", sub: "You know exactly what youre doing with it." },
   'femme confident': { line: "No performance. Just presence.", sub: "This look doesn't need an audience to work." },
-  'french girl': { line: "Classically, maddeningly cool.", sub: "The stripes were always going to be the right call." },
+  'french girl': { line: "Classically, maddeningly cool.", sub: "Stripes, a beret, a silk scarf — it was always going to be the right call." },
   'french intellectual': { line: "Reads philosophy on the metro, looks incredible doing it.", sub: "Effortless, and charmingly a little condescending." },
   'glamour': { line: "Old-school shine, no apology for it.", sub: "Built to catch light and hold a room." },
   'going out': { line: "This outfit has somewhere to be at 11pm.", sub: "Daylight has no use for it." },
@@ -1580,7 +1683,6 @@ const verdicts = {
   'old Hollywood': { line: "You arrived. Everyone turned.", sub: "A different, glossier era recognizes you." },
   'old Hollywood glam': { line: "Studio lighting, even outdoors.", sub: "This look has its own publicist." },
   'old money': { line: "Inherited taste, or an impeccable fake.", sub: "Either way, nobody's asking which." },
-  'parisian': { line: "Effortlessly Parisian, in the best possible cliché.", sub: "We mean it as a compliment, and you know it." },
   'perennial chic': { line: "This won't date. It already decided not to.", sub: "A look with no expiration." },
   'polished': { line: "Every edge accounted for.", sub: "Looks easy. Took a mirror and a plan." },
   'power': { line: "The room recalibrates when you walk in.", sub: "This outfit has a seven-point agenda, and it's winning." },
@@ -1719,7 +1821,7 @@ const verdictsUK = {
   'feminine touch': { line: "Одна маленька деталь робить усю роботу.", sub: "Стриманість як власний стейтмент." },
   'femme': { line: "Жіночність як зброя, мова та позиція.", sub: "Ти точно знаєш, що з нею робиш." },
   'femme confident': { line: "Жодної гри. Просто присутність.", sub: "Цьому образу не потрібна аудиторія, щоб працювати." },
-  'french girl': { line: "Класично, до божевілля круто.", sub: "Смужка завжди була правильним рішенням." },
+  'french girl': { line: "Класично, до божевілля круто.", sub: "Смужка, берет, шовковий шарф — це завжди було правильним рішенням." },
   'french intellectual': { line: "Читає філософію в метро, виглядає при цьому неймовірно.", sub: "Легко і чарівно трохи зверхньо." },
   'glamour': { line: "Олдскульний блиск, жодних вибачень.", sub: "Створено, щоб ловити світло і тримати кімнату." },
   'going out': { line: "Цьому вбранню є куди піти об 11 вечора.", sub: "Денне світло йому не потрібне." },
@@ -1748,7 +1850,6 @@ const verdictsUK = {
   'old Hollywood': { line: "Ти прийшла. Усі обернулися.", sub: "Інша, більш глянцева епоха впізнає тебе." },
   'old Hollywood glam': { line: "Студійне освітлення, навіть на вулиці.", sub: "У цього образу є власний піарник." },
   'old money': { line: "Успадкований смак, або бездоганна підробка.", sub: "У будь-якому разі, ніхто не питає, що саме." },
-  'parisian': { line: "Легко паризька, в найкращому значенні кліше.", sub: "Ми вважаємо це компліментом, і ти це знаєш." },
   'perennial chic': { line: "Це не застаріє. Воно вже вирішило цього не робити.", sub: "Образ без терміну придатності." },
   'polished': { line: "Кожен край на своєму місці.", sub: "Виглядає просто. Потребувало дзеркала і плану." },
   'power': { line: "Кімната перекалібровується, коли ти заходиш.", sub: "У цього образу є план із семи пунктів, і він перемагає." },
@@ -2048,9 +2149,111 @@ function init() {
   renderNewsTicker();
   restoreInProgressOutfit();
   updateMissionBadge();
+  preloadAllClosetImages();
+}
+
+// Warms the browser's image cache for every item in every category, right after
+// the first screen has painted, so switching tabs never has to wait on a fetch —
+// the picture is already sitting in cache by the time the grid renders it.
+function preloadAllClosetImages() {
+  const names = [];
+  categories.forEach(cat => cat.items.forEach(item => { if (!isLocked(item)) names.push(item.name); }));
+  let i = 0;
+  function loadNext(deadline) {
+    while (i < names.length && (!deadline || deadline.timeRemaining() > 0)) {
+      const img = new Image();
+      if ('fetchPriority' in img) img.fetchPriority = 'low';
+      img.src = imgPathCandidates(names[i])[0].path;
+      i++;
+    }
+    if (i < names.length) schedule();
+  }
+  function schedule() {
+    if ('requestIdleCallback' in window) requestIdleCallback(loadNext, { timeout: 1000 });
+    else setTimeout(() => loadNext(null), 60);
+  }
+  schedule();
 }
 
 const INPROGRESS_KEY = 'dreamCloset_inProgress';
+
+// ── GUIDED TOUR ──
+const TOUR_KEY = 'dreamCloset_tourSeen';
+const TOUR_STEPS = [
+  { selector: '#canvas', title: 'Your board', desc: "Tap anything below to drop it here, then drag, spin, or resize it to build the fit.", radius: 16, pad: 4 },
+  { selector: '#drawer', title: 'The closet', desc: 'Browse by category or search. Tap a piece to add it, tap again to take it off.', radius: 16, pad: 4 },
+  { selector: '#verdict-btn', title: 'Get my verdict', desc: "Once you've built a fit, this decodes what it says about you — and from there you can join the groupchat to share your fits and verdicts.", radius: 6, pad: 4 },
+  { selector: '#mission-btn', title: 'Secret mission', desc: "Today's little styling challenge. A new one drops daily.", radius: 20, pad: 5 },
+  { selector: '#lookbook-btn', title: 'Lookbook', desc: 'Every fit you save lives here for later.', radius: 20, pad: 5 },
+  { selector: '#inspo-btn', title: 'Inspo board', desc: 'Moodboard references, plus anywhere you can pin your own.', radius: 20, pad: 5 },
+  { selector: '#glow-btn', title: 'The Glow Book', desc: "Your own tabloid — friends leave you anonymous exclusives. Go see what's being said.", radius: 20, pad: 5 },
+  { selector: '#topbar-gossip-link', title: 'The tea', desc: "That's Sasha — this whole closet's namesake. Tap here anytime for the latest gossip.", radius: 6, pad: 4 }
+];
+let tourIdx = 0;
+
+function maybeAutoStartTour() {
+  try { if (localStorage.getItem(TOUR_KEY)) return; } catch (e) {}
+  setTimeout(() => startTour(), 500);
+}
+
+function startTour() {
+  tourIdx = 0;
+  document.getElementById('tour-overlay').classList.add('show');
+  const dots = document.getElementById('tour-dots');
+  dots.innerHTML = TOUR_STEPS.map(() => '<span></span>').join('');
+  showTourStep();
+  window.addEventListener('resize', repositionTourStep);
+}
+
+function repositionTourStep() {
+  if (document.getElementById('tour-overlay').classList.contains('show')) showTourStep();
+}
+
+function showTourStep() {
+  const step = TOUR_STEPS[tourIdx];
+  const target = document.querySelector(step.selector);
+  if (!target || target.offsetParent === null) { tourNext(); return; }
+
+  const rect = target.getBoundingClientRect();
+  const pad = step.pad;
+  const spot = document.getElementById('tour-spotlight');
+  spot.style.top = (rect.top - pad) + 'px';
+  spot.style.left = (rect.left - pad) + 'px';
+  spot.style.width = (rect.width + pad * 2) + 'px';
+  spot.style.height = (rect.height + pad * 2) + 'px';
+  spot.style.borderRadius = step.radius + 'px';
+
+  document.getElementById('tour-step-label').textContent = `Step ${tourIdx + 1} of ${TOUR_STEPS.length}`;
+  document.getElementById('tour-title').textContent = step.title;
+  document.getElementById('tour-desc').textContent = step.desc;
+  document.getElementById('tour-next').textContent = tourIdx === TOUR_STEPS.length - 1 ? 'Got it' : 'Next';
+  document.querySelectorAll('#tour-dots span').forEach((d, i) => d.classList.toggle('tour-dot-done', i <= tourIdx));
+
+  const tooltip = document.getElementById('tour-tooltip');
+  requestAnimationFrame(() => {
+    const tw = tooltip.offsetWidth, th = tooltip.offsetHeight, margin = 14;
+    const spaceBelow = window.innerHeight - (rect.bottom + pad);
+    const top = spaceBelow > th + margin * 2
+      ? rect.bottom + pad + margin
+      : Math.max(margin, rect.top - pad - th - margin);
+    let left = rect.left + rect.width / 2 - tw / 2;
+    left = Math.max(margin, Math.min(left, window.innerWidth - tw - margin));
+    tooltip.style.top = top + 'px';
+    tooltip.style.left = left + 'px';
+  });
+}
+
+function tourNext() {
+  tourIdx++;
+  if (tourIdx >= TOUR_STEPS.length) { endTour(); return; }
+  showTourStep();
+}
+
+function endTour() {
+  document.getElementById('tour-overlay').classList.remove('show');
+  window.removeEventListener('resize', repositionTourStep);
+  try { localStorage.setItem(TOUR_KEY, '1'); } catch (e) {}
+}
 
 function saveInProgressOutfit() {
   try {
@@ -2318,7 +2521,7 @@ function renderGrid(catId, items) {
     const isSashaBow = item.name === "Sasha's bow";
     const vibeCaption = isSashaBow ? "yes, and?" : '';
     card.innerHTML = `<div class="gi-visual"><img alt="${item.name}" title="Vibe: ${item.vibe}"></div><div class="gi-name">${item.name}</div>${vibeCaption ? `<div class="gi-vibe">${vibeCaption}</div>` : ''}`;
-    setupImgFallback(card.querySelector('img'), item.name);
+    setupImgFallback(card.querySelector('img'), item.name, true);
     if (item.color) { const dot = document.createElement('div'); dot.className = 'gi-color-dot'; dot.style.background = item.color; card.appendChild(dot); }
     card.onclick = () => toggleItem(uid, item, item._catId || catId);
     grid.appendChild(card);
@@ -2566,27 +2769,68 @@ function applySpinTransform(spin, state) { spin.style.transform = `rotate(${stat
 function setupTransforms(el, spin, rotateHandle, resizeHandle, state, uid) {
   let mode = null, startX, startY, origLeft, origTop;
   let centerX, centerY, startAngle, startRotation, startDist, startScale;
+  let activePointerId = null, rafPending = false, pendingX = 0, pendingY = 0;
 
   function getCenter() { const rect = el.getBoundingClientRect(); return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 }; }
-  function onDragStart(x, y) { setActive(uid); mode = 'drag'; startX = x; startY = y; origLeft = parseInt(el.style.left)||0; origTop = parseInt(el.style.top)||0; el.style.zIndex = zCounter++; }
-  function onRotateStart(x, y) { setActive(uid); mode = 'rotate'; el.style.zIndex = zCounter++; const c = getCenter(); centerX = c.x; centerY = c.y; startAngle = Math.atan2(y-centerY, x-centerX)*180/Math.PI; startRotation = state.rotation; }
-  function onResizeStart(x, y) { setActive(uid); mode = 'resize'; el.style.zIndex = zCounter++; const c = getCenter(); centerX = c.x; centerY = c.y; startDist = Math.hypot(x-centerX, y-centerY); startScale = state.scale; }
-  function onMove(x, y) {
+
+  function beginGesture(newMode, x, y, capTarget, pointerId) {
+    // Grab this exact pointer for the whole gesture — no matter where the
+    // finger/cursor wanders afterward, only THIS item will keep receiving
+    // its move/up events, so a fast or wide drag can never "hand off" to
+    // whatever happens to be underneath at some later point.
+    try { capTarget.setPointerCapture(pointerId); } catch (e) {}
+    activePointerId = pointerId;
+    setActive(uid);
+    el.style.zIndex = zCounter++;
+    mode = newMode;
+    if (newMode === 'drag') {
+      startX = x; startY = y; origLeft = parseInt(el.style.left)||0; origTop = parseInt(el.style.top)||0;
+    } else if (newMode === 'rotate') {
+      const c = getCenter(); centerX = c.x; centerY = c.y;
+      startAngle = Math.atan2(y-centerY, x-centerX)*180/Math.PI; startRotation = state.rotation;
+    } else if (newMode === 'resize') {
+      const c = getCenter(); centerX = c.x; centerY = c.y;
+      startDist = Math.hypot(x-centerX, y-centerY); startScale = state.scale;
+    }
+  }
+
+  function applyMove(x, y) {
     if (mode === 'drag') { el.style.left = (origLeft+x-startX)+'px'; el.style.top = (origTop+y-startY)+'px'; }
     else if (mode === 'rotate') { const angle = Math.atan2(y-centerY, x-centerX)*180/Math.PI; state.rotation = startRotation+(angle-startAngle); applySpinTransform(spin, state); }
     else if (mode === 'resize') { const dist = Math.hypot(x-centerX, y-centerY); state.scale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, startScale*dist/(startDist||1))); applySpinTransform(spin, state); }
   }
-  function onEnd() { if (mode) saveInProgressOutfit(); mode = null; }
 
-  el.addEventListener('touchstart', e => { if (e.target===rotateHandle||e.target===resizeHandle||e.target.classList.contains('remove-btn')) return; const t=e.touches[0]; onDragStart(t.clientX,t.clientY); }, {passive:true});
-  el.addEventListener('mousedown', e => { if (e.target===rotateHandle||e.target===resizeHandle||e.target.classList.contains('remove-btn')) return; onDragStart(e.clientX,e.clientY); });
-  rotateHandle.addEventListener('touchstart', e => { e.stopPropagation(); const t=e.touches[0]; onRotateStart(t.clientX,t.clientY); }, {passive:true});
-  rotateHandle.addEventListener('mousedown', e => { e.stopPropagation(); onRotateStart(e.clientX,e.clientY); });
-  resizeHandle.addEventListener('touchstart', e => { e.stopPropagation(); const t=e.touches[0]; onResizeStart(t.clientX,t.clientY); }, {passive:true});
-  resizeHandle.addEventListener('mousedown', e => { e.stopPropagation(); onResizeStart(e.clientX,e.clientY); });
-  el.addEventListener('touchmove', e => { if (!mode) return; e.preventDefault(); const t=e.touches[0]; onMove(t.clientX,t.clientY); }, {passive:false});
-  el.addEventListener('touchend', onEnd); window.addEventListener('mousemove', e => { if (mode) onMove(e.clientX,e.clientY); });
-  window.addEventListener('mouseup', () => { if (mode) onEnd(); });
+  function onMove(x, y) {
+    if (!mode) return;
+    pendingX = x; pendingY = y;
+    if (rafPending) return;
+    rafPending = true;
+    requestAnimationFrame(() => { rafPending = false; applyMove(pendingX, pendingY); });
+  }
+
+  function onEnd() { if (mode) saveInProgressOutfit(); mode = null; activePointerId = null; }
+
+  function isHandle(target) { return target===rotateHandle||target===resizeHandle||target.classList.contains('remove-btn'); }
+
+  el.addEventListener('pointerdown', e => {
+    if (isHandle(e.target)) return;
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
+    beginGesture('drag', e.clientX, e.clientY, el, e.pointerId);
+  });
+  rotateHandle.addEventListener('pointerdown', e => { e.stopPropagation(); beginGesture('rotate', e.clientX, e.clientY, rotateHandle, e.pointerId); });
+  resizeHandle.addEventListener('pointerdown', e => { e.stopPropagation(); beginGesture('resize', e.clientX, e.clientY, resizeHandle, e.pointerId); });
+
+  el.addEventListener('pointermove', e => { if (mode && e.pointerId === activePointerId) onMove(e.clientX, e.clientY); });
+  rotateHandle.addEventListener('pointermove', e => { if (mode && e.pointerId === activePointerId) onMove(e.clientX, e.clientY); });
+  resizeHandle.addEventListener('pointermove', e => { if (mode && e.pointerId === activePointerId) onMove(e.clientX, e.clientY); });
+
+  function release(e) { if (e.pointerId === activePointerId) onEnd(); }
+  el.addEventListener('pointerup', release);
+  el.addEventListener('pointercancel', release);
+  rotateHandle.addEventListener('pointerup', release);
+  rotateHandle.addEventListener('pointercancel', release);
+  resizeHandle.addEventListener('pointerup', release);
+  resizeHandle.addEventListener('pointercancel', release);
 }
 
 function toggleDrawer() {
@@ -3271,6 +3515,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     if (allGone) { 
       canvas.style.display = 'none'; 
+      maybeAutoStartTour();
       return; 
     }
     requestAnimationFrame(animateShatter);
