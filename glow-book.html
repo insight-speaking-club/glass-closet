@@ -203,9 +203,9 @@
     object-fit: cover; object-position: center; z-index: 1;
   }
   .kiss-print {
-    position: absolute; top: 14px; right: 18px; z-index: 3;
-    width: 56px; height: auto;
-    transform: rotate(11deg);
+    position: absolute; left: 50%; top: 53%; z-index: 3;
+    width: 52px; height: auto;
+    transform: translate(-50%, -50%) rotate(-9deg);
     opacity: 0.92; pointer-events: none;
   }
   .cover-fallback { position: relative; z-index: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
@@ -1373,10 +1373,10 @@
           <span class="wl wl-o2">O</span>
           <span class="wl wl-o3">O</span>
           <span class="wl wl-k">K</span>
+          <img class="kiss-print" src="kissprint.png" alt="" onerror="this.remove()">
         </div>
       </div>
       <img id="glow-cover-img" src="glow-book.png" alt="The Glow Book" onerror="this.remove()">
-      <img class="kiss-print" src="kissprint.png" alt="" onerror="this.remove()">
       <div class="cover-tap">${t('coverTap')}</div>
     </div>`;
   }
