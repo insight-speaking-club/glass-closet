@@ -69,6 +69,28 @@
   }
   .nb-back:hover { opacity: 1; }
 
+  /* ── language toggle (globe) ── */
+  #lang-toggle-btn {
+    position: fixed; top: 0.9rem; right: 0.9rem; z-index: 10050;
+    width: 38px; height: 38px; border-radius: 50%;
+    background: rgba(20,17,16,0.55);
+    border: 1px solid rgba(247,236,217,0.3);
+    -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; padding: 0;
+    transition: background 0.15s, transform 0.1s;
+  }
+  #lang-toggle-btn:hover { background: rgba(20,17,16,0.75); }
+  #lang-toggle-btn:active { transform: scale(0.92); }
+  #lang-toggle-btn svg { width: 19px; height: 19px; color: var(--paper); }
+  #lang-toggle-btn .lang-flag {
+    position: absolute; bottom: -4px; right: -2px;
+    font-family: 'DM Sans', sans-serif; font-weight: 800; font-size: 0.5rem;
+    letter-spacing: 0.02em; color: var(--ink); background: var(--glow-gold);
+    border-radius: 4px; padding: 1px 4px; line-height: 1.3;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+  }
+
   /* ══════════════ BOOK SHELL ══════════════ */
   .book-shell {
     position: relative;
@@ -651,6 +673,15 @@
 
 <a class="nb-back" href="index.html">&larr; Back to Glass Closet</a>
 
+<button id="lang-toggle-btn" type="button" aria-label="Switch language / Змінити мову" title="Switch language / Змінити мову">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="9"></circle>
+    <line x1="3" y1="12" x2="21" y2="12"></line>
+    <path d="M12 3c2.7 2.8 4.2 6 4.2 9s-1.5 6.2-4.2 9c-2.7-2.8-4.2-6-4.2-9s1.5-6.2 4.2-9z"></path>
+  </svg>
+  <span class="lang-flag" id="lang-flag-label">UA</span>
+</button>
+
 <div class="book-shell">
   <div class="book-frame">
     <div class="side-tabs">
@@ -709,6 +740,255 @@
   const glowQuery = query(ref(db, "glowbook"), limitToLast(500));
   const rosterRef = ref(db, "glowroster");
 
+  // ── language toggle ──
+  let currentLang = 'en';
+  const I18N = {
+    en: {
+      backLink: '← Back to Glass Closet',
+      coverTap: "tap in — everyone's already talking ↓",
+      navBack: '‹ back',
+      navNext: 'next ›',
+      tabPress: 'press',
+      tabFile: 'file',
+      tabIndex: 'a-list',
+      liveBadge: '🚨 live',
+      rulesEyebrow: 'the newsroom',
+      rulesTitle: 'press rules',
+      rulesSub: "how to file a style report that's actually worth printing",
+      rulesStamp: 'verified source ✓',
+      rulesFootnote: "that's it. you are now the fashion police.",
+      rules: [
+        `This is a tabloid column, not a diary. We report on looks, aesthetics, and iconic moments.`,
+        `Act like a red carpet correspondent. Break down the outfit, decode the vibe or compliment something someone said`,
+        `No basic compliments. "Nice shirt" is banned. Give us "Spotted: she's serving 90s grunge."`,
+        `Sign your review, or stay an anonymous critic — it still goes to print.`,
+        `Everyone is on the style radar today. Everyone gets a headline.`,
+        `Come back to the archive when you need proof that you're actually iconic `
+      ],
+      writeEyebrow: 'file a tip',
+      writeTitle: 'break the story',
+      writeSub: "someone's about to become the only thing anyone's talking about",
+      spotlightChip: "✦ pick who's iconic today",
+      spotlightAssigned: (name) => `✦ you're assigned to ${name} — go ahead ↓`,
+      writeStamp: 'Press Tip',
+      fieldSubject: 'the subject',
+      namePlaceholder: "who's the whole room obsessed with right now?",
+      fieldScoop: 'the scoop',
+      wbToggleClosed: "writer's block? ✎",
+      wbToggleOpen: 'hide starters ✕',
+      messagePlaceholder: "what's everyone saying about them...",
+      counterLeft: (n) => `${n} left`,
+      fieldByline: 'byline',
+      bylinePlaceholder: 'sign your name...',
+      bylineHint: 'or leave it blank to run as an anonymous source',
+      submitBtn: 'send it to print 📸',
+      needSubjectError: 'need a subject and a quote first!',
+      blockedWordError: 'keep it glowing — try rewording that 📸',
+      filedSuccess: (byline) => byline ? `filed and signed, ${byline} 📸 it's going to print.` : "filed! 📸 it's going to print.",
+      readFileLink: (name) => `read the file on ${name} →`,
+      sendFailError: "couldn't send — try again.",
+      writerStarters: [
+        { label: 'sources say...', text: 'Sources say {name} ' },
+        { label: 'spotted:', text: 'Spotted: {name} serving ' },
+        { label: 'insiders confirm', text: 'Insiders confirm {name} ' },
+        { label: 'word on the street', text: "Word on the street is {name} " },
+        { label: 'overheard:', text: 'Overheard about {name}: "' },
+        { label: 'breaking:', text: 'Breaking: {name} was just seen ' },
+        { label: 'can we talk about', text: 'Can we talk about how {name} ' },
+        { label: 'exclusive:', text: 'Exclusive: {name} is officially ' },
+      ],
+      idxEyebrow: 'the a-list',
+      idxTitle: "who's who",
+      idxSub: "every name the whole city can't stop talking about",
+      idxSearchPlaceholder: 'search a name...',
+      idxEmpty: `no headlines yet —<br>be the first name in print 📸<br><br><a onclick="goTo('write','back')">file one →</a>`,
+      idxNoMatch: 'no one by that name yet.',
+      hostLabel: '🔒 editor-in-chief — add a name to the a-list',
+      hostPlaceholder: 'add a name...',
+      hostAddBtn: 'add',
+      hostNeedName: 'type a name first',
+      hostBlocked: 'keep it glowing 📸',
+      hostAdded: (name) => `added ${name} ✓`,
+      hostAddFail: "couldn't add — try again",
+      exclusiveWord: (n) => n === 1 ? 'exclusive' : 'exclusives',
+      personBack: '← a-list',
+      everyoneTalking: "everyone's talking about",
+      exclusivesOnRecord: (n) => `${n} exclusive${n === 1 ? '' : 's'} on record — and counting`,
+      coverStory: '📸 cover story',
+      filedTime: (t) => `filed ${t}`,
+      exclusiveFiled: (t) => `EXCLUSIVE • filed ${t}`,
+      anonymousSource: 'anonymous source',
+      anonymous: 'anonymous',
+      personCta: (name) => `the world wants more — file another exclusive on ${name} →`,
+      noFile: `no file on this name yet.<br><br><a onclick="goTo('index','back')">← back to the a-list</a>`,
+      commentPlaceholder: 'add a comment...',
+      commentByline: 'sign your name (optional)',
+      commentPost: 'post',
+      commentBtn: (n) => n ? `💬 ${n} ${n === 1 ? 'comment' : 'comments'}` : '💬 comment',
+      commentEmptyError: 'say something first!',
+      commentFailError: "couldn't post — try again.",
+      justNow: 'just now',
+      minAgo: (n) => `${n}m ago`,
+      hrAgo: (n) => `${n}h ago`,
+      dayAgo: (n) => `${n}d ago`,
+      spottedLines: [
+        (name) => `spotted — ${name} looking effortlessly iconic`,
+        (name) => `caught — ${name} was simply the main character again`,
+        (name) => `seen out — ${name} was radiant, no filter needed`,
+        (name) => `spotted — ${name} living unapologetically iconic`,
+        (name) => `caught — ${name} was in the act of glowing`,
+        (name) => `seen stealing the spotlight — ${name}, as usual`,
+        (name) => `spotted — ${name} turning heads without even trying`,
+        (name) => `caught — ${name} was simply far too likable`,
+        (name) => `seen giving main-character energy — ${name}, unprompted`,
+        (name) => `spotted — sources say ${name} was simply built different`
+      ],
+      tickerPrefixes: ['BREAKING', 'JUST IN', 'EXCLUSIVE', 'RUMOR', 'CONFIRMED', 'DEVELOPING'],
+      tickerFallback: [
+        () => `the a-list is live — the whole room is about to be talking`,
+        () => `sources confirm: everyone here is somebody`,
+        () => `be the first byline of the day — file an exclusive →`,
+        () => `no one's boring in this newsroom`
+      ]
+    },
+    uk: {
+      backLink: '← Назад до Glass Closet',
+      coverTap: 'тапни — усі вже обговорюють ↓',
+      navBack: '‹ назад',
+      navNext: 'далі ›',
+      tabPress: 'преса',
+      tabFile: 'подати',
+      tabIndex: 'список',
+      liveBadge: '🚨 наживо',
+      rulesEyebrow: 'редакція',
+      rulesTitle: 'правила преси',
+      rulesSub: 'як подати стильний репортаж, який справді варто друкувати',
+      rulesStamp: 'перевірене джерело ✓',
+      rulesFootnote: 'от і все. тепер ти модна поліція.',
+      rules: [
+        `Це таблоїдна колонка, а не щоденник. Ми пишемо про образи, естетику та культові моменти.`,
+        `Поводься як кореспондент з червоної доріжки. Розбери образ, розшифруй вайб або зроби комплімент чиїмось словам`,
+        `Ніяких банальних компліментів. «Гарна футболка» — заборонено. Дай нам «Помічено: вона в 90s grunge».`,
+        `Підпиши свій відгук або залишайся анонімним критиком — все одно піде в друк.`,
+        `Сьогодні кожен у центрі стильного радару. Кожен отримує заголовок.`,
+        `Повертайся в архів, коли потрібен доказ, що ти справді культова особистість `
+      ],
+      writeEyebrow: 'подати наводку',
+      writeTitle: 'зроби сенсацію',
+      writeSub: 'хтось от-от стане єдиною темою для розмов',
+      spotlightChip: '✦ обрати, хто культовий сьогодні',
+      spotlightAssigned: (name) => `✦ тобі дістався(лась) ${name} — вперед ↓`,
+      writeStamp: 'Прес-тіп',
+      fieldSubject: 'герой(-їня) новини',
+      namePlaceholder: 'ким зараз одержима вся кімната?',
+      fieldScoop: 'сенсація',
+      wbToggleClosed: 'творчий ступор? ✎',
+      wbToggleOpen: 'сховати підказки ✕',
+      messagePlaceholder: 'що всі кажуть про них...',
+      counterLeft: (n) => `залишилось ${n}`,
+      fieldByline: 'підпис',
+      bylinePlaceholder: 'підпиши своє ім\'я...',
+      bylineHint: 'або залиш порожнім — вийде як анонімне джерело',
+      submitBtn: 'відправити в друк 📸',
+      needSubjectError: 'спочатку потрібні герой і цитата!',
+      blockedWordError: 'тримай позитив — переформулюй 📸',
+      filedSuccess: (byline) => byline ? `подано і підписано, ${byline} 📸 йде в друк.` : 'подано! 📸 йде в друк.',
+      readFileLink: (name) => `читати досьє на ${name} →`,
+      sendFailError: 'не вдалося надіслати — спробуй ще раз.',
+      writerStarters: [
+        { label: 'джерела кажуть...', text: 'Джерела кажуть, {name} ' },
+        { label: 'помічено:', text: 'Помічено: {name} у образі ' },
+        { label: 'інсайдери підтверджують', text: 'Інсайдери підтверджують, {name} ' },
+        { label: 'по чутках', text: 'Кажуть, що {name} ' },
+        { label: 'підслухано:', text: 'Підслухано про {name}: "' },
+        { label: 'терміново:', text: 'Терміново: щойно бачили {name} ' },
+        { label: 'а ви бачили, як', text: 'А ви бачили, як {name} ' },
+        { label: 'ексклюзив:', text: 'Ексклюзив: {name} офіційно ' },
+      ],
+      idxEyebrow: 'список знаменитостей',
+      idxTitle: 'хто є хто',
+      idxSub: 'кожне ім\'я, про яке говорить все місто',
+      idxSearchPlaceholder: 'пошук імені...',
+      idxEmpty: `поки що немає заголовків —<br>стань першим ім'ям у друку 📸<br><br><a onclick="goTo('write','back')">подати →</a>`,
+      idxNoMatch: 'такого імені поки немає.',
+      hostLabel: '🔒 головний(а) редактор(ка) — додати ім\'я до списку',
+      hostPlaceholder: 'додати ім\'я...',
+      hostAddBtn: 'додати',
+      hostNeedName: 'спочатку введи ім\'я',
+      hostBlocked: 'тримай позитив 📸',
+      hostAdded: (name) => `додано ${name} ✓`,
+      hostAddFail: 'не вдалося додати — спробуй ще раз',
+      exclusiveWord: (n) => n === 1 ? 'ексклюзив' : 'ексклюзиви',
+      personBack: '← до списку',
+      everyoneTalking: 'усі говорять про',
+      exclusivesOnRecord: (n) => `${n} ексклюзив${n === 1 ? '' : (n >= 2 && n <= 4 ? 'и' : 'ів')} в архіві — і рахунок продовжується`,
+      coverStory: '📸 головна історія',
+      filedTime: (t) => `подано ${t}`,
+      exclusiveFiled: (t) => `ЕКСКЛЮЗИВ • подано ${t}`,
+      anonymousSource: 'анонімне джерело',
+      anonymous: 'анонім(ка)',
+      personCta: (name) => `світ хоче більше — подай ще один ексклюзив про ${name} →`,
+      noFile: `на це ім'я поки немає досьє.<br><br><a onclick="goTo('index','back')">← назад до списку</a>`,
+      commentPlaceholder: 'додати коментар...',
+      commentByline: 'підпиши своє ім\'я (необов\'язково)',
+      commentPost: 'опублікувати',
+      commentBtn: (n) => n ? `💬 ${n} ${n === 1 ? 'коментар' : 'коментарі'}` : '💬 коментар',
+      commentEmptyError: 'спочатку щось напиши!',
+      commentFailError: 'не вдалося опублікувати — спробуй ще раз.',
+      justNow: 'щойно',
+      minAgo: (n) => `${n} хв тому`,
+      hrAgo: (n) => `${n} год тому`,
+      dayAgo: (n) => `${n} дн тому`,
+      spottedLines: [
+        (name) => `помічено — ${name} виглядає легко і культово`,
+        (name) => `застукано — ${name} знову головна(ий) героїня(й)`,
+        (name) => `бачили — ${name} сяяла(в) без жодного фільтра`,
+        (name) => `помічено — ${name} живе безкомпромісно культово`,
+        (name) => `застукано — ${name} у процесі сяйва`,
+        (name) => `бачили, як краде увагу — ${name}, як завжди`,
+        (name) => `помічено — ${name} привертає погляди без зусиль`,
+        (name) => `застукано — ${name} просто занадто симпатична(ий)`,
+        (name) => `бачили головну енергію — ${name}, без попередження`,
+        (name) => `помічено — джерела кажуть, ${name} просто інша(ий)`
+      ],
+      tickerPrefixes: ['ТЕРМІНОВО', 'ЩОЙНО', 'ЕКСКЛЮЗИВ', 'ЧУТКИ', 'ПІДТВЕРДЖЕНО', 'РОЗВИВАЄТЬСЯ'],
+      tickerFallback: [
+        () => `список знаменитостей наживо — уся кімната от-от заговорить`,
+        () => `джерела підтверджують: тут кожен хтось`,
+        () => `стань першим заголовком дня — подай ексклюзив →`,
+        () => `у цій редакції нема нічого нудного`
+      ]
+    }
+  };
+  function t(key) { return I18N[currentLang][key]; }
+  function translateStaticEls() {
+    const L = I18N[currentLang];
+    const backLink = document.querySelector('.nb-back');
+    if (backLink) backLink.innerHTML = L.backLink.replace('←', '&larr;');
+    const navBackBtn = document.querySelector('.nav-arrow[onclick="stepPage(-1)"]');
+    if (navBackBtn) navBackBtn.textContent = L.navBack;
+    const navNextBtn = document.querySelector('.nav-arrow[onclick="stepPage(1)"]');
+    if (navNextBtn) navNextBtn.textContent = L.navNext;
+    const tabPress = document.querySelector('.side-tab--rules');
+    if (tabPress) tabPress.textContent = L.tabPress;
+    const tabFile = document.querySelector('.side-tab--write');
+    if (tabFile) tabFile.textContent = L.tabFile;
+    const tabIndex = document.querySelector('.side-tab--index');
+    if (tabIndex) tabIndex.textContent = L.tabIndex;
+    const liveBadge = document.querySelector('.ticker-badge');
+    if (liveBadge) liveBadge.textContent = L.liveBadge;
+    const flagLabel = document.getElementById('lang-flag-label');
+    if (flagLabel) flagLabel.textContent = currentLang === 'en' ? 'UA' : 'EN';
+  }
+  window.toggleLangGlow = function() {
+    currentLang = currentLang === 'en' ? 'uk' : 'en';
+    translateStaticEls();
+    lastTickerKey = ''; // force ticker to re-render in the new language
+    renderPage(currentPage);
+    updateChrome();
+  };
+  document.getElementById('lang-toggle-btn').addEventListener('click', toggleLangGlow);
+
   const BLOCKED_WORDS = ["fuck","shit","bitch","slut","whore","ugly","fat","stupid","idiot","kill yourself","kys","hate you"];
   function containsBlockedWord(text) {
     const lower = text.toLowerCase();
@@ -756,33 +1036,22 @@
   }
 
   // ── tabloid captions, deterministic per person so their page reads consistently ──
-  const SPOTTED_LINES = [
-    (name) => `spotted — ${name} looking effortlessly iconic`,
-    (name) => `caught — ${name} was simply the main character again`,
-    (name) => `seen out — ${name} was radiant, no filter needed`,
-    (name) => `spotted — ${name} living unapologetically iconic`,
-    (name) => `caught — ${name} was in the act of glowing`,
-    (name) => `seen stealing the spotlight — ${name}, as usual`,
-    (name) => `spotted — ${name} turning heads without even trying`,
-    (name) => `caught — ${name} was simply far too likable`,
-    (name) => `seen giving main-character energy — ${name}, unprompted`,
-    (name) => `spotted — sources say ${name} was simply built different`
-  ];
   function spottedLine(name) {
     const h = hashStr(name.toLowerCase() + 'spotted');
-    return SPOTTED_LINES[h % SPOTTED_LINES.length](name);
+    const lines = t('spottedLines');
+    return lines[h % lines.length](name);
   }
 
   function relativeTime(ts) {
     const diff = Date.now() - ts;
     const min = Math.floor(diff / 60000);
-    if (min < 1) return 'just now';
-    if (min < 60) return `${min}m ago`;
+    if (min < 1) return t('justNow');
+    if (min < 60) return t('minAgo')(min);
     const hr = Math.floor(min / 60);
-    if (hr < 24) return `${hr}h ago`;
+    if (hr < 24) return t('hrAgo')(hr);
     const day = Math.floor(hr / 24);
-    if (day < 7) return `${day}d ago`;
-    return new Date(ts).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+    if (day < 7) return t('dayAgo')(day);
+    return new Date(ts).toLocaleDateString(currentLang === 'uk' ? 'uk-UA' : undefined, { month: 'short', day: 'numeric' });
   }
 
   const MSG_LIMIT = 240;
@@ -808,21 +1077,21 @@
           <button class="like-btn${liked ? ' liked' : ''}" data-key="${e._key}" aria-label="like">
             <span class="like-emoji">${liked ? '❤️' : '🤍'}</span><span class="like-count">${e.likeCount || 0}</span>
           </button>
-          <button class="comment-toggle-btn">💬 ${cCount ? cCount + (cCount === 1 ? ' comment' : ' comments') : 'comment'}</button>
+          <button class="comment-toggle-btn">${t('commentBtn')(cCount)}</button>
         </div>
         ${cCount ? `
         <div class="comment-list">
           ${e.comments.map(c => `
             <div class="comment-row">
               <span class="comment-text">${escapeHtml(c.text)}</span>
-              <span class="comment-byline">— ${c.byline ? escapeHtml(c.byline) : 'anonymous'}</span>
+              <span class="comment-byline">— ${c.byline ? escapeHtml(c.byline) : t('anonymous')}</span>
             </div>`).join('')}
         </div>` : ''}
         <div class="comment-compose">
-          <input class="comment-input" maxlength="${COMMENT_LIMIT}" placeholder="add a comment...">
+          <input class="comment-input" maxlength="${COMMENT_LIMIT}" placeholder="${escapeHtml(t('commentPlaceholder'))}">
           <div class="comment-compose-row">
-            <input class="comment-byline-input" maxlength="40" placeholder="sign your name (optional)">
-            <button class="comment-post-btn">post</button>
+            <input class="comment-byline-input" maxlength="40" placeholder="${escapeHtml(t('commentByline'))}">
+            <button class="comment-post-btn">${t('commentPost')}</button>
           </div>
           <div class="comment-status"></div>
         </div>
@@ -892,9 +1161,9 @@
           const text = textEl.value.trim();
           const byline = bylineEl.value.trim();
           statusEl.className = 'comment-status'; statusEl.textContent = '';
-          if (!text) { statusEl.textContent = 'say something first!'; statusEl.classList.add('error'); return; }
+          if (!text) { statusEl.textContent = t('commentEmptyError'); statusEl.classList.add('error'); return; }
           if (containsBlockedWord(text) || containsBlockedWord(byline)) {
-            statusEl.textContent = 'keep it glowing — try rewording that 📸';
+            statusEl.textContent = t('blockedWordError');
             statusEl.classList.add('error');
             return;
           }
@@ -902,7 +1171,7 @@
           push(ref(db, `glowbook/${key}/comments`), { text, byline, ts: Date.now() })
             .then(() => { textEl.value = ''; bylineEl.value = ''; })
             .catch(err => {
-              statusEl.textContent = "couldn't post — try again.";
+              statusEl.textContent = t('commentFailError');
               statusEl.classList.add('error');
               console.warn('[glow book] comment failed:', err);
             })
@@ -922,18 +1191,6 @@
   // their page still exists and is reachable via search/index, they just
   // won't be actively suggested. add more lowercase keys as needed.
   const SUGGEST_EXCLUDE = new Set(['ariana grande']);
-
-  // ── writer's block: opener templates. {name} gets swapped for the subject typed in, or a fallback. ──
-  const WRITER_STARTERS = [
-    { label: 'sources say...', text: 'Sources say {name} ' },
-    { label: 'spotted:', text: 'Spotted: {name} serving ' },
-    { label: 'insiders confirm', text: 'Insiders confirm {name} ' },
-    { label: 'word on the street', text: "Word on the street is {name} " },
-    { label: 'overheard:', text: 'Overheard about {name}: "' },
-    { label: 'breaking:', text: 'Breaking: {name} was just seen ' },
-    { label: 'can we talk about', text: 'Can we talk about how {name} ' },
-    { label: 'exclusive:', text: 'Exclusive: {name} is officially ' },
-  ];
 
   function rebuildPeople() {
     const map = new Map();
@@ -1048,35 +1305,29 @@
   }
 
   // ── breaking news ticker: auto-generated headlines from real filed exclusives ──
-  const TICKER_PREFIXES = ['BREAKING', 'JUST IN', 'EXCLUSIVE', 'RUMOR', 'CONFIRMED', 'DEVELOPING'];
-  const TICKER_FALLBACK_TAGLINES = [
-    () => `the a-list is live — the whole room is about to be talking`,
-    () => `sources confirm: everyone here is somebody`,
-    () => `be the first byline of the day — file an exclusive →`,
-    () => `no one's boring in this newsroom`
-  ];
   let lastTickerKey = '';
   function renderTicker() {
     const track = document.getElementById('ticker-track');
     if (!track) return;
 
+    const tickerPrefixes = t('tickerPrefixes');
     let items;
     if (glowEntries.length) {
       const recent = glowEntries.slice(0, 14);
       items = recent.map((e, i) => {
-        const prefix = TICKER_PREFIXES[hashStr(e.name.toLowerCase() + i) % TICKER_PREFIXES.length];
+        const prefix = tickerPrefixes[hashStr(e.name.toLowerCase() + i) % tickerPrefixes.length];
         const clean = e.message.length > 64 ? e.message.slice(0, 64).trim() + '…' : e.message;
         return `🚨 ${prefix}: ${e.name.trim()} — “${clean}”`;
       });
     } else {
-      items = TICKER_FALLBACK_TAGLINES.map(f => `🚨 ${f()}`);
+      items = t('tickerFallback').map(f => `🚨 ${f()}`);
     }
 
-    const key = items.join('|');
+    const key = currentLang + '|' + items.join('|');
     if (key === lastTickerKey) return; // avoid restarting the animation on unrelated re-renders
     lastTickerKey = key;
 
-    const htmlOnce = items.map(t => `<span class="ticker-item">${escapeHtml(t)}</span>`).join('');
+    const htmlOnce = items.map(line => `<span class="ticker-item">${escapeHtml(line)}</span>`).join('');
     track.innerHTML = htmlOnce + htmlOnce; // duplicated for a seamless loop
   }
 
@@ -1119,59 +1370,52 @@
         </div>
       </div>
       <img id="glow-cover-img" src="glow-book.png" alt="The Glow Book" onerror="this.remove()">
-      <div class="cover-tap">tap in — everyone's already talking ↓</div>
+      <div class="cover-tap">${t('coverTap')}</div>
     </div>`;
   }
 
   function rulesHtml() {
-    const rules = [
-      `This is a tabloid column, not a diary. We report on looks, aesthetics, and iconic moments.`,
-      `Act like a red carpet correspondent. Break down the outfit, decode the vibe or compliment something someone said`,
-      `No basic compliments. "Nice shirt" is banned. Give us "Spotted: she's serving 90s grunge."`,
-      `Sign your review, or stay an anonymous critic — it still goes to print.`,
-      `Everyone is on the style radar today. Everyone gets a headline.`,
-      `Come back to the archive when you need proof that you're actually iconic `
-    ];
+    const rules = t('rules');
     return `
-      <div class="pg-eyebrow">the newsroom</div>
-      <h2 class="pg-title">press rules</h2>
-      <div class="pg-sub">how to file a style report that's actually worth printing</div>
-      <div class="rules-stamp">verified source ✓</div>
+      <div class="pg-eyebrow">${t('rulesEyebrow')}</div>
+      <h2 class="pg-title">${t('rulesTitle')}</h2>
+      <div class="pg-sub">${t('rulesSub')}</div>
+      <div class="rules-stamp">${t('rulesStamp')}</div>
       <div class="tape-divider"></div>
       <ul class="rules-list">
-        ${rules.map((t, i) => `<li class="rule-item"><span class="rule-num">${String(i + 1).padStart(2, '0')}</span><span class="rule-text">${t}</span></li>`).join('')}
+        ${rules.map((r, i) => `<li class="rule-item"><span class="rule-num">${String(i + 1).padStart(2, '0')}</span><span class="rule-text">${r}</span></li>`).join('')}
       </ul>
-      <div class="rules-footnote">that's it. you are now the fashion police.</div>
+      <div class="rules-footnote">${t('rulesFootnote')}</div>
     `;
   }
 
   function writeHtml() {
     const showChip = personKeys.length > 0;
     return `
-      <div class="pg-eyebrow">file a tip</div>
-      <h2 class="pg-title">break the story</h2>
-      <div class="pg-sub">someone's about to become the only thing anyone's talking about</div>
-      ${showChip ? `<button type="button" id="spotlight-btn" class="spotlight-chip">✦ pick who's iconic today</button>` : ''}
+      <div class="pg-eyebrow">${t('writeEyebrow')}</div>
+      <h2 class="pg-title">${t('writeTitle')}</h2>
+      <div class="pg-sub">${t('writeSub')}</div>
+      ${showChip ? `<button type="button" id="spotlight-btn" class="spotlight-chip">${t('spotlightChip')}</button>` : ''}
       <div class="write-card">
-        <div class="write-stamp">Press Tip</div>
-        <div class="field-label">the subject</div>
+        <div class="write-stamp">${t('writeStamp')}</div>
+        <div class="field-label">${t('fieldSubject')}</div>
         <div class="name-combo" id="name-combo">
-          <input id="glow-name" maxlength="40" placeholder="who's the whole room obsessed with right now?" autocomplete="off">
+          <input id="glow-name" maxlength="40" placeholder="${escapeHtml(t('namePlaceholder'))}" autocomplete="off">
           <div class="name-suggest" id="name-suggest"></div>
         </div>
         <div class="wb-row">
-          <div class="field-label" style="margin:0;">the scoop</div>
-          <button type="button" id="wb-toggle-btn" class="wb-toggle">writer's block? ✎</button>
+          <div class="field-label" style="margin:0;">${t('fieldScoop')}</div>
+          <button type="button" id="wb-toggle-btn" class="wb-toggle">${t('wbToggleClosed')}</button>
         </div>
         <div class="wb-chips" id="wb-chips">
-          ${WRITER_STARTERS.map((s, i) => `<button type="button" class="wb-chip" data-i="${i}">${escapeHtml(s.label)}</button>`).join('')}
+          ${t('writerStarters').map((s, i) => `<button type="button" class="wb-chip" data-i="${i}">${escapeHtml(s.label)}</button>`).join('')}
         </div>
-        <textarea id="glow-message" maxlength="240" rows="4" placeholder="what's everyone saying about them..."></textarea>
-        <div id="glow-counter">240 left</div>
-        <div class="field-label">byline</div>
-        <input id="glow-byline" maxlength="40" placeholder="sign your name..." autocomplete="off">
-        <div class="byline-hint">or leave it blank to run as an anonymous source</div>
-        <button id="glow-submit-btn">send it to print 📸</button>
+        <textarea id="glow-message" maxlength="240" rows="4" placeholder="${escapeHtml(t('messagePlaceholder'))}"></textarea>
+        <div id="glow-counter">${t('counterLeft')(240)}</div>
+        <div class="field-label">${t('fieldByline')}</div>
+        <input id="glow-byline" maxlength="40" placeholder="${escapeHtml(t('bylinePlaceholder'))}" autocomplete="off">
+        <div class="byline-hint">${t('bylineHint')}</div>
+        <button id="glow-submit-btn">${t('submitBtn')}</button>
         <div id="glow-status"></div>
       </div>
     `;
@@ -1191,14 +1435,18 @@
 
       if (!matches.length) {
         suggestEl.innerHTML = q
-          ? `<div class="name-suggest-empty">no match — "${escapeHtml(filter.trim())}" gets a new file 📸</div>`
-          : `<div class="name-suggest-empty">no one on the a-list yet — type any name</div>`;
+          ? (currentLang === 'uk'
+              ? `<div class="name-suggest-empty">немає збігів — «${escapeHtml(filter.trim())}» отримає нове досьє 📸</div>`
+              : `<div class="name-suggest-empty">no match — "${escapeHtml(filter.trim())}" gets a new file 📸</div>`)
+          : (currentLang === 'uk'
+              ? `<div class="name-suggest-empty">у списку ще нікого немає — введи будь-яке ім'я</div>`
+              : `<div class="name-suggest-empty">no one on the a-list yet — type any name</div>`);
       } else {
         suggestEl.innerHTML = matches.map(p => `
           <div class="name-suggest-item" data-name="${escapeHtml(p.display)}">
             <div class="nsi-avatar" style="${avatarWrapStyle(p)}">${avatarInner(p)}</div>
             <span>${escapeHtml(p.display)}</span>
-            <span class="nsi-count">${p.entries.length} exclusive${p.entries.length === 1 ? '' : 's'}</span>
+            <span class="nsi-count">${p.entries.length} ${t('exclusiveWord')(p.entries.length)}</span>
           </div>`).join('');
       }
       suggestEl.classList.add('open');
@@ -1223,11 +1471,11 @@
     if (wbToggleBtn && wbChips) {
       wbToggleBtn.addEventListener('click', () => {
         const open = wbChips.classList.toggle('open');
-        wbToggleBtn.textContent = open ? 'hide starters ✕' : "writer's block? ✎";
+        wbToggleBtn.textContent = open ? t('wbToggleOpen') : t('wbToggleClosed');
       });
       wbChips.querySelectorAll('.wb-chip').forEach(chip => {
         chip.addEventListener('click', () => {
-          const starter = WRITER_STARTERS[Number(chip.dataset.i)];
+          const starter = t('writerStarters')[Number(chip.dataset.i)];
           if (!starter) return;
           const subject = nameEl.value.trim() || 'them';
           const filled = starter.text.replace('{name}', subject);
@@ -1247,7 +1495,7 @@
     const counterEl = document.getElementById('glow-counter');
     function updateCounter() {
       const left = MSG_LIMIT - msgEl.value.length;
-      counterEl.textContent = `${left} left`;
+      counterEl.textContent = t('counterLeft')(left);
       counterEl.classList.toggle('near-limit', left <= 20);
     }
     msgEl.addEventListener('input', updateCounter);
@@ -1261,7 +1509,7 @@
         nameEl.value = pick;
         suggestEl.classList.remove('open');
         nameEl.focus();
-        needsBtn.textContent = `✦ you're assigned to ${pick} — go ahead ↓`;
+        needsBtn.textContent = t('spotlightAssigned')(pick);
       });
     }
 
@@ -1275,9 +1523,9 @@
       const byline = bylineEl ? bylineEl.value.trim() : '';
 
       statusEl.className = ''; statusEl.innerHTML = '';
-      if (!name || !message) { statusEl.textContent = "need a subject and a quote first!"; statusEl.classList.add('error'); return; }
+      if (!name || !message) { statusEl.textContent = t('needSubjectError'); statusEl.classList.add('error'); return; }
       if (containsBlockedWord(name) || containsBlockedWord(message) || containsBlockedWord(byline)) {
-        statusEl.textContent = "keep it glowing — try rewording that 📸";
+        statusEl.textContent = t('blockedWordError');
         statusEl.classList.add('error');
         return;
       }
@@ -1289,10 +1537,10 @@
       push(ref(db, "glowbook"), entry)
         .then(() => {
           statusEl.className = ''; statusEl.classList.add('success');
-          statusEl.textContent = byline ? `filed and signed, ${byline} 📸 it's going to print.` : "filed! 📸 it's going to print.";
+          statusEl.textContent = t('filedSuccess')(byline);
           const jumpBtn = document.createElement('button');
           jumpBtn.className = 'status-jump';
-          jumpBtn.textContent = `read the file on ${name} →`;
+          jumpBtn.textContent = t('readFileLink')(name);
           jumpBtn.addEventListener('click', () => openPerson(name.trim().toLowerCase()));
           statusEl.appendChild(jumpBtn);
           nameEl.value = ''; msgEl.value = ''; if (bylineEl) bylineEl.value = '';
@@ -1302,7 +1550,7 @@
           playBurst();
         })
         .catch(err => {
-          statusEl.className = ''; statusEl.textContent = "couldn't send — try again.";
+          statusEl.className = ''; statusEl.textContent = t('sendFailError');
           statusEl.classList.add('error');
           console.warn('[glow book] push failed:', err);
         })
@@ -1313,28 +1561,28 @@
   function indexHtml() {
     const hostPanel = hostMode ? `
       <div class="host-panel">
-        <div class="host-label">🔒 editor-in-chief — add a name to the a-list</div>
+        <div class="host-label">${t('hostLabel')}</div>
         <div class="host-row">
-          <input id="host-name-input" maxlength="40" placeholder="add a name...">
-          <button id="host-add-btn">add</button>
+          <input id="host-name-input" maxlength="40" placeholder="${escapeHtml(t('hostPlaceholder'))}">
+          <button id="host-add-btn">${t('hostAddBtn')}</button>
         </div>
         <div id="host-status"></div>
       </div>` : '';
 
     if (!personKeys.length) {
       return `
-        <div class="pg-eyebrow">the a-list</div>
-        <h2 class="pg-title">who's who</h2>
+        <div class="pg-eyebrow">${t('idxEyebrow')}</div>
+        <h2 class="pg-title">${t('idxTitle')}</h2>
         ${hostPanel}
-        <div class="idx-empty">no headlines yet —<br>be the first name in print 📸<br><br><a onclick="goTo('write','back')">file one →</a></div>
+        <div class="idx-empty">${t('idxEmpty')}</div>
       `;
     }
     return `
-      <div class="pg-eyebrow">the a-list</div>
-      <h2 class="pg-title">who's who</h2>
-      <div class="pg-sub">every name the whole city can't stop talking about</div>
+      <div class="pg-eyebrow">${t('idxEyebrow')}</div>
+      <h2 class="pg-title">${t('idxTitle')}</h2>
+      <div class="pg-sub">${t('idxSub')}</div>
       ${hostPanel}
-      <input id="glow-search" placeholder="search a name...">
+      <input id="glow-search" placeholder="${escapeHtml(t('idxSearchPlaceholder'))}">
       <div class="idx-list" id="idx-list"></div>
     `;
   }
@@ -1351,12 +1599,12 @@
         const statusEl = document.getElementById('host-status');
         const name = input.value.trim();
         statusEl.className = ''; statusEl.textContent = '';
-        if (!name) { statusEl.textContent = 'type a name first'; statusEl.classList.add('error'); return; }
-        if (containsBlockedWord(name)) { statusEl.textContent = 'keep it glowing 📸'; statusEl.classList.add('error'); return; }
+        if (!name) { statusEl.textContent = t('hostNeedName'); statusEl.classList.add('error'); return; }
+        if (containsBlockedWord(name)) { statusEl.textContent = t('hostBlocked'); statusEl.classList.add('error'); return; }
         const key = name.toLowerCase();
         set(ref(db, 'glowroster/' + key.replace(/[.#$/\[\]]/g, '_')), name)
-          .then(() => { statusEl.textContent = `added ${name} ✓`; statusEl.classList.add('success'); input.value = ''; input.focus(); })
-          .catch(() => { statusEl.textContent = "couldn't add — try again"; statusEl.classList.add('error'); });
+          .then(() => { statusEl.textContent = t('hostAdded')(name); statusEl.classList.add('success'); input.value = ''; input.focus(); })
+          .catch(() => { statusEl.textContent = t('hostAddFail'); statusEl.classList.add('error'); });
       });
     }
   }
@@ -1366,7 +1614,7 @@
     if (!list) return;
     const query = q.trim().toLowerCase();
     const keys = personKeys.filter(k => !query || k.includes(query));
-    if (!keys.length) { list.innerHTML = `<div class="idx-empty">no one by that name yet.</div>`; return; }
+    if (!keys.length) { list.innerHTML = `<div class="idx-empty">${t('idxNoMatch')}</div>`; return; }
     list.innerHTML = keys.map((k, i) => {
       const p = people.get(k);
       return `
@@ -1374,7 +1622,7 @@
           <span class="idx-rank">${String(i + 1).padStart(2, '0')}</span>
           <div class="idx-avatar" style="${avatarWrapStyle(p)}">${avatarInner(p)}</div>
           <div class="idx-name">${escapeHtml(p.display)}</div>
-          <div class="idx-count">${p.entries.length} exclusive${p.entries.length === 1 ? '' : 's'}</div>
+          <div class="idx-count">${p.entries.length} ${t('exclusiveWord')(p.entries.length)}</div>
         </div>`;
     }).join('');
     list.querySelectorAll('.idx-row').forEach((row, i) => {
@@ -1384,38 +1632,38 @@
 
   function personHtml(key) {
     const p = people.get(key);
-    if (!p) return `<div class="idx-empty">no file on this name yet.<br><br><a onclick="goTo('index','back')">← back to the a-list</a></div>`;
+    if (!p) return `<div class="idx-empty">${t('noFile')}</div>`;
     const [feature, ...rest] = p.entries;
     return `
-      <button class="person-back" onclick="goTo('index','back')">&larr; a-list</button>
+      <button class="person-back" onclick="goTo('index','back')">${t('personBack')}</button>
       <div class="person-head">
         <div class="person-avatar" style="${avatarWrapStyle(p)}">${avatarInner(p)}</div>
         <div>
-          <div class="person-eyebrow">everyone's talking about</div>
+          <div class="person-eyebrow">${t('everyoneTalking')}</div>
           <div class="person-name">${escapeHtml(p.display)}</div>
           <div class="person-spotted">📍 ${spottedLine(p.display)}</div>
-          <div class="person-count">${p.entries.length} exclusive${p.entries.length === 1 ? '' : 's'} on record — and counting</div>
+          <div class="person-count">${t('exclusivesOnRecord')(p.entries.length)}</div>
         </div>
       </div>
       ${feature ? `
         <div class="glow-card glow-card-feature">
-          <span class="glow-quote-mark">📸 cover story</span>
-          <div class="glow-card-time">filed ${relativeTime(feature.ts)}</div>
+          <span class="glow-quote-mark">${t('coverStory')}</span>
+          <div class="glow-card-time">${t('filedTime')(relativeTime(feature.ts))}</div>
           <div class="glow-card-msg">${escapeHtml(feature.message)}</div>
-          <div class="glow-card-byline">— ${feature.byline ? escapeHtml(feature.byline) : 'anonymous source'}</div>
+          <div class="glow-card-byline">— ${feature.byline ? escapeHtml(feature.byline) : t('anonymousSource')}</div>
           ${cardFooterHtml(feature)}
         </div>
       ` : ''}
       <div class="person-cards">
         ${rest.map(e => `
           <div class="glow-card">
-            <div class="glow-card-time">EXCLUSIVE • filed ${relativeTime(e.ts)}</div>
+            <div class="glow-card-time">${t('exclusiveFiled')(relativeTime(e.ts))}</div>
             <div class="glow-card-msg">${escapeHtml(e.message)}</div>
-            <div class="glow-card-byline">— ${e.byline ? escapeHtml(e.byline) : 'anonymous source'}</div>
+            <div class="glow-card-byline">— ${e.byline ? escapeHtml(e.byline) : t('anonymousSource')}</div>
             ${cardFooterHtml(e)}
           </div>`).join('')}
       </div>
-      <button class="person-cta">the world wants more — file another exclusive on ${escapeHtml(p.display)} →</button>
+      <button class="person-cta">${t('personCta')(escapeHtml(p.display))}</button>
     `;
   }
 
@@ -1512,6 +1760,7 @@
   }, { passive: true });
 
   // ── init ──
+  translateStaticEls();
   renderPage('cover');
   updateChrome();
 </script>
