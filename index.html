@@ -1227,19 +1227,6 @@ const categories = [
     ]
   },
   {
-    id: 'iconic-tun', label: 'thank u, next',
-    items: [
-      { name: 'Burn book', color: '#d89eb7', vibe: 'iconic villain era', w: 90, h: 110 },
-      { name: '"A little bit needy" shirt', color: '#f0ede8', vibe: 'thank u, next', w: 105, h: 105 },
-      { name: 'Elle’s courtroom pen', color: '#ff69b4', vibe: 'what like its hard', w: 90, h: 25 },
-      { name: '13 Going on 30 wrapping paper dress', color: '#f7c9dc', vibe: 'thirty flirty and thriving', w: 100, h: 145 },
-      { name: 'Toros cheer uniform', color: '#c8102e', vibe: 'spirit fingers', w: 105, h: 120 },
-      { name: "Ariana's Positions robe", color: '#e8c8d4', vibe: "switchin' the positions", w: 110, h: 145, releaseDate: '2026-09-03' },
-      { name: "Regina's burn book cardigan", color: '#d89eb7', vibe: "that's so fetch", w: 105, h: 115, releaseDate: '2026-09-03' },
-      { name: "Cady's mathlete jacket", color: '#2a4a2a', vibe: 'boo, you whore', w: 110, h: 120, releaseDate: '2026-09-03' }
-    ]
-  },
-  {
     id: 'iconic-movies-tv', label: 'Movies & TV',
     items: [
       { name: 'Cher’s yellow plaid blazer', color: '#ffd700', vibe: 'as if', w: 118, h: 132 },
@@ -1253,7 +1240,13 @@ const categories = [
       { name: "Elle Woods' graduation dress", color: '#ffb6d9', vibe: "what, like it's hard?", w: 110, h: 140, releaseDate: '2026-08-06', unlockAtOutfits: 8 },
       { name: "Andy's Chanel boots", color: '#1a1a1a', vibe: "that's all", w: 95, h: 130, releaseDate: '2026-08-06' },
       { name: "Effie Trinket's reaping coat", color: '#e8b923', vibe: 'may the odds', w: 115, h: 150, releaseDate: '2026-08-13' },
-      { name: "Rachel Green's \"The Rachel\" blazer", color: '#c9a876', vibe: 'could I BE any more iconic', w: 115, h: 120, releaseDate: '2026-08-13' }
+      { name: "Rachel Green's \"The Rachel\" blazer", color: '#c9a876', vibe: 'could I BE any more iconic', w: 115, h: 120, releaseDate: '2026-08-13' },
+      { name: 'Burn book', color: '#d89eb7', vibe: 'iconic villain era', w: 90, h: 110 },
+      { name: 'Elle’s courtroom pen', color: '#ff69b4', vibe: 'what like its hard', w: 90, h: 25 },
+      { name: '13 Going on 30 wrapping paper dress', color: '#f7c9dc', vibe: 'thirty flirty and thriving', w: 100, h: 145 },
+      { name: 'Toros cheer uniform', color: '#c8102e', vibe: 'spirit fingers', w: 105, h: 120 },
+      { name: "Regina's burn book cardigan", color: '#d89eb7', vibe: "that's so fetch", w: 105, h: 115, releaseDate: '2026-09-03' },
+      { name: "Cady's mathlete jacket", color: '#2a4a2a', vibe: 'boo, you whore', w: 110, h: 120, releaseDate: '2026-09-03' }
     ]
   },
   {
@@ -1269,7 +1262,9 @@ const categories = [
       { name: "Rihanna's umbrella-era trench", color: '#2a2a2a', vibe: 'ella ella', w: 115, h: 150, releaseDate: '2026-08-20' },
       { name: "Beyoncé's Single Ladies leotard", color: '#111111', vibe: 'put a ring on it', w: 100, h: 105, releaseDate: '2026-08-20' },
       { name: "Doja Cat's Say So disco set", color: '#c9a2e8', vibe: 'start off slow', w: 105, h: 120, releaseDate: '2026-08-20' },
-      { name: "Olivia Rodrigo's Sour cardigan", color: '#8ea3d9', vibe: "driver's license energy", w: 110, h: 130, releaseDate: '2026-08-27' }
+      { name: "Olivia Rodrigo's Sour cardigan", color: '#8ea3d9', vibe: "driver's license energy", w: 110, h: 130, releaseDate: '2026-08-27' },
+      { name: '"A little bit needy" shirt', color: '#f0ede8', vibe: 'thank u, next', w: 105, h: 105 },
+      { name: "Ariana's Positions robe", color: '#e8c8d4', vibe: "switchin' the positions", w: 110, h: 145, releaseDate: '2026-09-03' }
     ]
   },
   {
@@ -1593,7 +1588,7 @@ const categories = [
 ];
 
 const supercategories = [
-  { name: "Iconic Pieces", cats: ["iconic-club", "iconic-tun", "iconic-movies-tv", "iconic-music", "iconic-cartoons"] },
+  { name: "Iconic Pieces", cats: ["iconic-club", "iconic-movies-tv", "iconic-music", "iconic-cartoons"] },
   { name: "Tops", cats: ["tops-basic", "tops-shirts", "tops-knitwear", "tops-statement"] },
   { name: "Bottoms", cats: ["bottoms-trousers", "bottoms-jeans", "bottoms-skirts"] },
   { name: "Dresses & Jumpsuits", cats: ["dresses"] },
