@@ -108,7 +108,7 @@
     margin-top: 0.45rem;
   }
   #topbar-icon-group { display: flex; gap: 0.5rem; }
-  #lookbook-btn, #glow-btn, #request-btn, #mission-btn, #inspo-btn {
+  #request-btn, #telegram-btn {
     width: 32px; height: 32px; border-radius: 50%;
     background: rgba(26,20,20,0.14); border: none;
     color: rgba(26,20,20,0.75); text-decoration: none;
@@ -116,8 +116,8 @@
     cursor: pointer; transition: background 0.15s, transform 0.1s;
     position: relative;
   }
-  #lookbook-btn svg, #glow-btn svg, #request-btn svg, #mission-btn svg, #inspo-btn svg { width: 16px; height: 16px; }
-  #lookbook-btn:active, #glow-btn:active, #request-btn:active, #mission-btn:active, #inspo-btn:active { transform: scale(0.9); background: rgba(26,20,20,0.24); }
+  #request-btn svg, #telegram-btn svg { width: 16px; height: 16px; }
+  #request-btn:active, #telegram-btn:active { transform: scale(0.9); background: rgba(26,20,20,0.24); }
 
   #help-btn {
     width: 26px; height: 26px; border-radius: 50%;
@@ -131,9 +131,9 @@
   #help-btn:active { transform: scale(0.9); background: rgba(26,20,20,0.14); color: rgba(26,20,20,0.7); }
 
   #mission-btn-dot {
-    position: absolute; top: -2px; right: -2px;
+    position: absolute; top: -3px; right: -6px;
     width: 9px; height: 9px; border-radius: 50%;
-    background: #e0507a; border: 1.5px solid #f7f4f0;
+    background: #e0507a; border: 1.5px solid #1a1414;
     display: none;
   }
   #mission-btn-dot.active { display: block; }
@@ -433,6 +433,24 @@
   #drawer-handle span { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.18em; color: #a8a09b; }
   #drawer-toggle { color: #a8a09b; font-size: 0.75rem; transition: transform 0.2s; }
   #drawer.collapsed #drawer-toggle { transform: rotate(180deg); }
+
+  /* ── BOTTOM TAB BAR ── */
+  #bottom-tab-bar {
+    flex-shrink: 0; display: flex; align-items: stretch;
+    background: #1a1414; border-top: 1px solid rgba(255,255,255,0.08);
+    padding-bottom: env(safe-area-inset-bottom, 0);
+    z-index: 200; position: relative;
+  }
+  .tab-btn {
+    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 0.28rem; padding: 0.55rem 0.4rem 0.5rem; background: none; border: none;
+    cursor: pointer; color: rgba(240,237,232,0.55); transition: color 0.15s, transform 0.1s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .tab-icon-wrap { position: relative; display: flex; }
+  .tab-btn svg { width: 20px; height: 20px; }
+  .tab-btn span.tab-label { font-size: 0.55rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 500; }
+  .tab-btn:active { color: var(--accent); transform: scale(0.95); }
 
   #search-row { padding: 0 1rem 0.5rem; flex-shrink: 0; }
   #search-input { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--drawer-border); border-radius: 3px; padding: 0.4rem 0.8rem; font-family: 'DM Sans', sans-serif; font-size: 0.7rem; color: #ccc; outline: none; }
@@ -898,29 +916,9 @@
   </div>
   <div id="topbar-icon-row">
     <div id="topbar-icon-group">
-      <button id="mission-btn" onclick="openMissionCard()" aria-label="Today's secret mission" title="Today's secret mission">
+      <a id="telegram-btn" href="https://t.me/+UC1vcZZRBWA0ZDg6" target="_blank" rel="noopener" aria-label="Join the Telegram groupchat" title="Join the Telegram groupchat">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="9"></circle>
-          <circle cx="12" cy="12" r="5"></circle>
-          <circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"></circle>
-        </svg>
-        <span id="mission-btn-dot"></span>
-      </button>
-      <button id="lookbook-btn" onclick="openLookbook()" aria-label="Your lookbook" title="Your lookbook">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M4 5.5C4 4.67 4.67 4 5.5 4H11v16H5.5C4.67 20 4 19.33 4 18.5V5.5Z"></path>
-          <path d="M20 5.5C20 4.67 19.33 4 18.5 4H13v16h5.5c.83 0 1.5-.67 1.5-1.5V5.5Z"></path>
-        </svg>
-      </button>
-      <button id="inspo-btn" onclick="openInspoBoard()" aria-label="Inspo board" title="Inspo board">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="3" y="7" width="13" height="13" rx="1.5"></rect>
-          <path d="M8 3.5h10a1.5 1.5 0 0 1 1.5 1.5v10"></path>
-        </svg>
-      </button>
-      <a id="glow-btn" href="glow-book.html" aria-label="The Glow Book" title="The Glow Book">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 20.5s-7.5-4.6-9.8-9.1C.6 8 2 4.8 5.2 4.1c2-.4 3.9.5 4.8 2.2.9-1.7 2.8-2.6 4.8-2.2 3.2.7 4.6 3.9 3 7.3-2.3 4.5-9.8 9.1-9.8 9.1Z"></path>
+          <path d="M3 11.5 20.5 4 17 20 11 15.5 8 18v-4L18 7"></path>
         </svg>
       </a>
       <button id="help-btn" onclick="startTour(true)" aria-label="How this works" title="How this works">
@@ -997,6 +995,38 @@
   </div>
   <div id="cat-tabs"></div>
   <div id="item-grid"></div>
+</div>
+
+<div id="bottom-tab-bar">
+  <button id="mission-btn" class="tab-btn" onclick="openMissionCard()" aria-label="Today's secret mission" title="Today's secret mission">
+    <span class="tab-icon-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="9"></circle>
+        <circle cx="12" cy="12" r="5"></circle>
+        <circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"></circle>
+      </svg>
+      <span id="mission-btn-dot"></span>
+    </span>
+    <span class="tab-label">Mission</span>
+  </button>
+  <button id="lookbook-btn" class="tab-btn" onclick="openLookbook()" aria-label="Your lookbook" title="Your lookbook">
+    <span class="tab-icon-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 5.5C4 4.67 4.67 4 5.5 4H11v16H5.5C4.67 20 4 19.33 4 18.5V5.5Z"></path>
+        <path d="M20 5.5C20 4.67 19.33 4 18.5 4H13v16h5.5c.83 0 1.5-.67 1.5-1.5V5.5Z"></path>
+      </svg>
+    </span>
+    <span class="tab-label">Lookbook</span>
+  </button>
+  <button id="inspo-btn" class="tab-btn" onclick="openInspoBoard()" aria-label="Inspo board" title="Inspo board">
+    <span class="tab-icon-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="7" width="13" height="13" rx="1.5"></rect>
+        <path d="M8 3.5h10a1.5 1.5 0 0 1 1.5 1.5v10"></path>
+      </svg>
+    </span>
+    <span class="tab-label">Inspo</span>
+  </button>
 </div>
 
 <div id="lookbook-overlay">
@@ -2182,11 +2212,11 @@ const TOUR_KEY = 'dreamCloset_tourSeen';
 const TOUR_STEPS = [
   { selector: '#canvas', title: 'Your board', desc: "Tap anything below to drop it here, then drag, spin, or resize it to build the fit.", radius: 16, pad: 4 },
   { selector: '#drawer', title: 'The closet', desc: 'Browse by category or search. Tap a piece to add it, tap again to take it off.', radius: 16, pad: 4 },
-  { selector: '#verdict-btn', title: 'Get my verdict', desc: "Once you've built a fit, this decodes what it says about you — and from there you can join the groupchat to share your fits and verdicts.", radius: 6, pad: 4 },
-  { selector: '#mission-btn', title: 'Secret mission', desc: "Today's little styling challenge. A new one drops daily.", radius: 20, pad: 5 },
-  { selector: '#lookbook-btn', title: 'Lookbook', desc: 'Every fit you save lives here for later.', radius: 20, pad: 5 },
-  { selector: '#inspo-btn', title: 'Inspo board', desc: 'Moodboard references, plus anywhere you can pin your own.', radius: 20, pad: 5 },
-  { selector: '#glow-btn', title: 'The Glow Book', desc: "The group tabloid — file anonymous exclusives on anyone, then look yourself up and see what's being said.", radius: 20, pad: 5 },
+  { selector: '#verdict-btn', title: 'Get my verdict', desc: "Once you've built a fit, this decodes what it says about you.", radius: 6, pad: 4 },
+  { selector: '#telegram-btn', title: 'Join the groupchat', desc: "Tap here anytime to hop into the Telegram groupchat and share your fits and verdicts.", radius: 20, pad: 5 },
+  { selector: '#mission-btn', title: 'Secret mission', desc: "Today's little styling challenge. A new one drops daily.", radius: 10, pad: 4 },
+  { selector: '#lookbook-btn', title: 'Lookbook', desc: 'Every fit you save lives here for later.', radius: 10, pad: 4 },
+  { selector: '#inspo-btn', title: 'Inspo board', desc: 'Moodboard references, plus anywhere you can pin your own.', radius: 10, pad: 4 },
   { selector: '#topbar-gossip-link', title: 'The tea', desc: "That's Sasha — this whole closet's namesake. Tap here anytime for the latest gossip.", radius: 6, pad: 4 }
 ];
 let tourIdx = 0;
