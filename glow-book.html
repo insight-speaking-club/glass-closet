@@ -91,6 +91,81 @@
     box-shadow: 0 1px 3px rgba(0,0,0,0.4);
   }
 
+  /* ── help / tour reopen button ── */
+  #tour-btn {
+    position: fixed; top: 0.9rem; right: 3.5rem; z-index: 10050;
+    width: 38px; height: 38px; border-radius: 50%;
+    background: rgba(20,17,16,0.55);
+    border: 1px solid rgba(247,236,217,0.3);
+    -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; padding: 0; color: var(--paper);
+    font-family: 'Anton', sans-serif; font-size: 1rem;
+    transition: background 0.15s, transform 0.1s;
+  }
+  #tour-btn:hover { background: rgba(20,17,16,0.75); }
+  #tour-btn:active { transform: scale(0.92); }
+
+  /* ── onboarding tour overlay ── */
+  #tour-overlay {
+    display: none; position: fixed; inset: 0; z-index: 20000;
+    background: rgba(20,17,16,0.72);
+    -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px);
+    align-items: center; justify-content: center;
+    padding: 1.4rem;
+  }
+  #tour-overlay.show { display: flex; }
+  .tour-card {
+    position: relative; width: 100%; max-width: 340px;
+    background: #fffaf0; border: 1.5px solid var(--ink);
+    border-radius: 8px; padding: 1.6rem 1.4rem 1.4rem;
+    box-shadow: 6px 6px 0 var(--ink);
+    text-align: center;
+  }
+  .tour-skip {
+    position: absolute; top: 0.7rem; right: 0.85rem;
+    font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 0.62rem;
+    text-transform: uppercase; letter-spacing: 0.06em; color: var(--dim);
+    background: none; border: none; cursor: pointer; text-decoration: underline;
+    padding: 0.2rem;
+  }
+  .tour-icon { font-size: 2.2rem; line-height: 1; margin-bottom: 0.7rem; }
+  .tour-step-label {
+    font-family: 'Anton', sans-serif; font-size: 0.62rem; letter-spacing: 0.1em;
+    color: var(--tab-red); text-transform: uppercase; margin-bottom: 0.4rem;
+  }
+  .tour-title {
+    font-family: 'Anton', sans-serif; text-transform: uppercase; letter-spacing: 0.01em;
+    font-size: 1.25rem; color: var(--ink); margin: 0 0 0.5rem;
+  }
+  .tour-text {
+    font-family: 'Playfair Display', serif; font-style: italic; font-size: 0.95rem;
+    color: var(--glow-wine); line-height: 1.5; margin-bottom: 1.1rem;
+  }
+  .tour-dots { display: flex; justify-content: center; gap: 0.35rem; margin-bottom: 1.1rem; }
+  .tour-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: rgba(28,23,20,0.2); transition: background 0.15s, transform 0.15s;
+  }
+  .tour-dot.active { background: var(--tab-red); transform: scale(1.3); }
+  .tour-nav { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; }
+  .tour-back-btn {
+    font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 0.68rem;
+    text-transform: uppercase; letter-spacing: 0.05em; color: var(--dim);
+    background: none; border: none; cursor: pointer; padding: 0.5rem;
+    visibility: hidden;
+  }
+  .tour-back-btn.visible { visibility: visible; }
+  .tour-next-btn {
+    font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 0.75rem;
+    text-transform: uppercase; letter-spacing: 0.05em; color: var(--paper);
+    background: var(--ink); border: none; border-radius: 50px;
+    padding: 0.55rem 1.2rem; cursor: pointer; box-shadow: 0 4px 10px rgba(28,23,20,0.25);
+    transition: transform 0.1s, background 0.15s;
+  }
+  .tour-next-btn:hover { background: var(--glow-wine); }
+  .tour-next-btn:active { transform: scale(0.96); }
+
   /* ══════════════ BOOK SHELL ══════════════ */
   .book-shell {
     position: relative;
@@ -688,6 +763,12 @@
   <span class="lang-flag" id="lang-flag-label">UA</span>
 </button>
 
+<button id="tour-btn" type="button" aria-label="How this works" title="How this works">?</button>
+
+<div id="tour-overlay">
+  <div class="tour-card" id="tour-card"></div>
+</div>
+
 <div class="book-shell">
   <div class="book-frame">
     <div class="side-tabs">
@@ -758,6 +839,18 @@
       tabFile: 'file',
       tabIndex: 'a-list',
       liveBadge: '🚨 live',
+      tourSkip: 'skip',
+      tourStepLabel: (n, total) => `step ${n} of ${total}`,
+      tourBack: '‹ back',
+      tourNext: 'next ›',
+      tourStart: "let's write one 📸",
+      tourSlides: [
+        { icon: '👋', title: 'Welcome to the Glow Book', text: "Before tonight's over, everyone walks away with their own headline." },
+        { icon: '💭', title: 'Think of someone', text: 'Someone you met tonight. What did you notice — their outfit, their energy, something they said?' },
+        { icon: '📰', title: 'Make it a headline', text: 'Say it like a tabloid reporter caught them doing it. Stuck? Tap "writer\'s block?" for starters like "Spotted:" or "Sources say…"' },
+        { icon: '📬', title: 'Send it, then check yours', text: 'Hit send — then open the A-List, find your own name, and see what people are saying about YOU.' },
+        { icon: '🎤', title: 'Read it out loud', text: "When we call on you, read your favorite one out loud. That's the whole game." }
+      ],
       rulesEyebrow: 'the newsroom',
       rulesTitle: 'press rules',
       rulesSub: "how to file a style report that's actually worth printing",
@@ -866,6 +959,18 @@
       tabFile: 'подати',
       tabIndex: 'список',
       liveBadge: '🚨 наживо',
+      tourSkip: 'пропустити',
+      tourStepLabel: (n, total) => `крок ${n} з ${total}`,
+      tourBack: '‹ назад',
+      tourNext: 'далі ›',
+      tourStart: 'написати перший 📸',
+      tourSlides: [
+        { icon: '👋', title: 'Ласкаво просимо в Glow Book', text: 'До кінця вечора кожен піде звідси зі своїм заголовком.' },
+        { icon: '💭', title: 'Подумай про когось', text: 'Про когось, з ким ти сьогодні спілкувався(лась). Що ти помітив(ла) — образ, вайб, щось сказане?' },
+        { icon: '📰', title: 'Зроби із цього заголовок', text: 'Скажи це як репортер таблоїда, який щойно це помітив. Складно? Тисни «творчий ступор?» — там є підказки на кшталт «Помічено:» чи «Джерела кажуть…»' },
+        { icon: '📬', title: 'Відправ і перевір свій', text: "Натисни «відправити» — тоді відкрий список знаменитостей, знайди своє ім'я і подивись, що пишуть про ТЕБЕ." },
+        { icon: '🎤', title: 'Прочитай уголос', text: 'Коли ми звернемось до тебе — прочитай свій улюблений запис уголос. Це і є вся гра.' }
+      ],
       rulesEyebrow: 'редакція',
       rulesTitle: 'правила преси',
       rulesSub: 'як подати стильний репортаж, який справді варто друкувати',
@@ -1310,7 +1415,61 @@
     renderTicker();
   }
 
-  // ── breaking news ticker: auto-generated headlines from real filed exclusives ──
+  // ── onboarding tour ──
+  const TOUR_SEEN_KEY = 'glowbook_tour_seen_v1';
+  let tourStep = 0;
+
+  function hasSeenTour() {
+    try { return localStorage.getItem(TOUR_SEEN_KEY) === '1'; } catch (e) { return false; }
+  }
+  function markTourSeen() {
+    try { localStorage.setItem(TOUR_SEEN_KEY, '1'); } catch (e) {}
+  }
+
+  function renderTourStep() {
+    const slides = t('tourSlides');
+    const slide = slides[tourStep];
+    const card = document.getElementById('tour-card');
+    const total = slides.length;
+    const isLast = tourStep === total - 1;
+    card.innerHTML = `
+      <button class="tour-skip" id="tour-skip-btn">${t('tourSkip')}</button>
+      <div class="tour-icon">${slide.icon}</div>
+      <div class="tour-step-label">${t('tourStepLabel')(tourStep + 1, total)}</div>
+      <h3 class="tour-title">${slide.title}</h3>
+      <div class="tour-text">${slide.text}</div>
+      <div class="tour-dots">
+        ${slides.map((_, i) => `<span class="tour-dot${i === tourStep ? ' active' : ''}"></span>`).join('')}
+      </div>
+      <div class="tour-nav">
+        <button class="tour-back-btn${tourStep > 0 ? ' visible' : ''}" id="tour-back-btn">${t('tourBack')}</button>
+        <button class="tour-next-btn" id="tour-next-btn">${isLast ? t('tourStart') : t('tourNext')}</button>
+      </div>
+    `;
+    document.getElementById('tour-skip-btn').addEventListener('click', closeTour);
+    document.getElementById('tour-back-btn').addEventListener('click', () => {
+      if (tourStep > 0) { tourStep--; renderTourStep(); }
+    });
+    document.getElementById('tour-next-btn').addEventListener('click', () => {
+      if (isLast) { closeTour(true); return; }
+      tourStep++; renderTourStep();
+    });
+  }
+
+  window.openTour = function() {
+    tourStep = 0;
+    document.getElementById('tour-overlay').classList.add('show');
+    renderTourStep();
+  };
+  function closeTour(goWrite) {
+    document.getElementById('tour-overlay').classList.remove('show');
+    markTourSeen();
+    if (goWrite) flipTo('write', 'fwd');
+  }
+
+  document.getElementById('tour-btn').addEventListener('click', openTour);
+
+
   let lastTickerKey = '';
   function renderTicker() {
     const track = document.getElementById('ticker-track');
@@ -1339,7 +1498,7 @@
 
   function renderPage(pageId) {
     const inner = document.getElementById('page-inner');
-    if (pageId === 'cover') { inner.style.padding = '0'; inner.innerHTML = coverHtml(); inner.style.overflow='hidden'; inner.style.background='none'; inner.querySelector('.pg-cover').addEventListener('click', () => { snapFlash(); flipTo('rules', 'fwd'); }); return; }
+    if (pageId === 'cover') { inner.style.padding = '0'; inner.innerHTML = coverHtml(); inner.style.overflow='hidden'; inner.style.background='none'; inner.querySelector('.pg-cover').addEventListener('click', () => { snapFlash(); if (hasSeenTour()) { flipTo('rules', 'fwd'); } else { setTimeout(openTour, 350); } }); return; }
     inner.style.overflow = 'auto'; inner.style.padding = '1.5rem 1.3rem 2rem';
     inner.style.background = 'var(--paper)';
     inner.style.backgroundImage = "radial-gradient(circle at 15% 0%, rgba(255,255,255,0.55) 0%, transparent 40%), radial-gradient(rgba(28,23,20,0.035) 1px, transparent 1px)";
@@ -1412,9 +1571,9 @@
         </div>
         <div class="wb-row">
           <div class="field-label" style="margin:0;">${t('fieldScoop')}</div>
-          <button type="button" id="wb-toggle-btn" class="wb-toggle">${t('wbToggleClosed')}</button>
+          <button type="button" id="wb-toggle-btn" class="wb-toggle">${t('wbToggleOpen')}</button>
         </div>
-        <div class="wb-chips" id="wb-chips">
+        <div class="wb-chips open" id="wb-chips">
           ${t('writerStarters').map((s, i) => `<button type="button" class="wb-chip" data-i="${i}">${escapeHtml(s.label)}</button>`).join('')}
         </div>
         <textarea id="glow-message" maxlength="240" rows="4" placeholder="${escapeHtml(t('messagePlaceholder'))}"></textarea>
