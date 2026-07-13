@@ -870,21 +870,74 @@
   .verdict-link-btn:hover { background: rgba(212, 155, 177, 0.2); }
   .verdict-link-btn svg { width: 14px; height: 14px; stroke: currentColor; flex-shrink: 0; }
   
-  #verdict-close {
+  #verdict-close, #telegram-close {
     display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.05rem;
     font-family: 'DM Sans', sans-serif; font-weight: 500; font-size: 0.55rem; text-transform: uppercase; letter-spacing: 0.1em;
     background: none; border: none; color: #a8a09b; padding: 0.5rem; cursor: pointer; width: 100%; line-height: 1.3;
     opacity: 0.85; text-decoration: none;
   }
-  #verdict-close .tun-signature {
+  #verdict-close .tun-signature, #telegram-close .tun-signature {
     font-family: 'Anton', sans-serif; text-transform: uppercase; letter-spacing: -0.01em;
     font-size: 0.9rem; line-height: 1; color: #e182f7;
     display: inline-flex; align-items: baseline;
   }
-  #verdict-close .tun-signature .tun-thin {
+  #verdict-close .tun-signature .tun-thin, #telegram-close .tun-signature .tun-thin {
     font-family: 'DM Sans', sans-serif; font-weight: 400; text-transform: none; color: #ffffff;
   }
-  #verdict-close .verdict-close-label { line-height: 1.3; text-decoration: underline; text-underline-offset: 3px; }
+  #verdict-close .verdict-close-label, #telegram-close .verdict-close-label { line-height: 1.3; text-decoration: underline; text-underline-offset: 3px; }
+
+  /* ── TELEGRAM SHARE OVERLAY ── */
+  #telegram-overlay {
+    display: none; position: fixed; inset: 0;
+    background: #100d0a;
+    z-index: 20000 !important; flex-direction: column; align-items: center;
+    justify-content: flex-start; padding: 3rem 1.5rem 2.5rem; text-align: center;
+    overflow-y: auto;
+  }
+  #telegram-overlay.show { display: flex; }
+  #telegram-top { display: flex; flex-direction: column; align-items: center; width: 100%; }
+  #telegram-eyebrow { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.3em; color: #9a9390; margin-bottom: 0.5rem; }
+  #telegram-text { font-family: 'Anton', sans-serif; text-transform: uppercase; letter-spacing: 0.01em; font-size: clamp(2rem, 9vw, 3rem); line-height: 1.05; color: #f7f4f0; margin-bottom: 0.8rem; }
+  #telegram-sub { font-family: 'Playfair Display', serif; font-style: italic; font-size: 1.1rem; color: #a8a09b; line-height: 1.5; max-width: 320px; }
+
+  #telegram-photo-frame {
+    width: min(78vw, 280px); margin: 2rem auto 1.6rem;
+    background: #fdfbf7; padding: 12px 12px 32px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.5), 0 2px 6px rgba(0,0,0,0.3);
+    transform: rotate(-2deg); flex-shrink: 0;
+    position: relative;
+  }
+  #telegram-outfit-preview {
+    position: relative; width: 100%; min-height: 120px;
+    background: #fdfbf7; border-radius: 1px; overflow: hidden;
+    filter: sepia(0.05) contrast(1.02) saturate(1.05);
+  }
+  #telegram-outfit-preview::after {
+    content: ''; position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(ellipse at center, rgba(0,0,0,0) 60%, rgba(20,15,10,0.15) 100%);
+  }
+  #telegram-download-btn {
+    position: absolute; bottom: 10px; right: 18px;
+    width: 26px; height: 26px; border-radius: 50%;
+    background: rgba(26, 22, 18, 0.55);
+    border: none; color: #f7f4f0;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; opacity: 0.7; transition: opacity 0.15s, background 0.15s;
+    z-index: 5;
+  }
+  #telegram-download-btn:hover, #telegram-download-btn:active { opacity: 1; background: rgba(26, 22, 18, 0.8); }
+  #telegram-download-btn svg { width: 13px; height: 13px; stroke: currentColor; fill: none; }
+  #telegram-download-btn.saved svg { display: none; }
+  #telegram-download-btn.saved::after { content: '✓'; font-size: 0.7rem; line-height: 1; }
+
+  #telegram-empty-msg {
+    display: none; font-family: 'Playfair Display', serif; font-style: italic;
+    font-size: 0.95rem; color: #a8a09b; max-width: 280px; margin: 1.5rem auto 0.5rem;
+  }
+  #telegram-overlay.empty #telegram-photo-frame { display: none; }
+  #telegram-overlay.empty #telegram-empty-msg { display: block; }
+
+  #telegram-links { display: flex; gap: 0.6rem; margin: 0.5rem auto 0.4rem; flex-shrink: 0; }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
@@ -909,11 +962,11 @@
   </div>
   <div id="topbar-icon-row">
     <div id="topbar-icon-group">
-      <a id="telegram-btn" href="https://t.me/+UC1vcZZRBWA0ZDg6" target="_blank" rel="noopener" aria-label="Join the Telegram groupchat" title="Join the Telegram groupchat">
+      <button id="telegram-btn" onclick="openTelegramModal()" aria-label="Join the Telegram groupchat" title="Join the Telegram groupchat">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
           <path d="M3 11.5 20.5 4 17 20 11 15.5 8 18v-4L18 7"></path>
         </svg>
-      </a>
+      </button>
       <button id="help-btn" onclick="startTour(true)" aria-label="How this works" title="How this works">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="9"></circle>
@@ -1112,6 +1165,40 @@
     <button id="verdict-close" onclick="closeVerdict()">
       <span class="tun-signature">THANK<span class="tun-thin">U</span><span class="tun-thin">,</span>NEXT</span>
       <span class="verdict-close-label" id="verdict-close-label">Go back to the closet (no pun intended)</span>
+    </button>
+  </div>
+</div>
+
+<div id="telegram-overlay">
+  <div id="telegram-top">
+    <div id="telegram-eyebrow">Take it to the groupchat</div>
+    <div id="telegram-text">Share the fit</div>
+    <div id="telegram-sub">Save your look, then drop it in the chat.</div>
+  </div>
+
+  <div id="telegram-photo-frame">
+    <div id="telegram-outfit-preview"></div>
+    <button id="telegram-download-btn" onclick="downloadOutfitImage(document.getElementById('telegram-outfit-preview'), document.getElementById('telegram-download-btn'), 'glass-closet-look.png')" aria-label="Download">
+      <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 3v12"></path>
+        <path d="M7 10l5 5 5-5"></path>
+        <path d="M5 21h14"></path>
+      </svg>
+    </button>
+  </div>
+  <div id="telegram-empty-msg">The closet's empty — build a look first, then come share it.</div>
+
+  <div id="telegram-links">
+    <a id="telegram-join-link" class="verdict-link-btn" href="https://t.me/+UC1vcZZRBWA0ZDg6" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 20.5 4 17 20 11 15.5 8 18v-4L18 7"></path></svg>
+      <span>Join the groupchat</span>
+    </a>
+  </div>
+
+  <div id="verdict-bottom">
+    <button id="telegram-close" onclick="closeTelegramModal()">
+      <span class="tun-signature">THANK<span class="tun-thin">U</span><span class="tun-thin">,</span>NEXT</span>
+      <span class="verdict-close-label">Go back to the closet (no pun intended)</span>
     </button>
   </div>
 </div>
@@ -2866,9 +2953,9 @@ function calculateVerdict() {
   return { key: top, ...(verdicts[top] || verdicts['default']) };
 }
 
-function buildOutfitPreview() {
+function buildOutfitPreview(previewEl) {
   const canvas = document.getElementById('canvas');
-  const preview = document.getElementById('verdict-outfit-preview');
+  const preview = previewEl || document.getElementById('verdict-outfit-preview');
   preview.innerHTML = '';
   preview.style.position = 'relative';
 
@@ -2940,9 +3027,9 @@ function buildOutfitPreview() {
   });
 }
 
-function downloadOutfitImage() {
-  const preview = document.getElementById('verdict-outfit-preview');
-  const btn = document.getElementById('download-outfit-btn');
+function downloadOutfitImage(previewEl, btnEl, filename) {
+  const preview = previewEl || document.getElementById('verdict-outfit-preview');
+  const btn = btnEl || document.getElementById('download-outfit-btn');
   if (!preview || typeof html2canvas === 'undefined') return;
 
   html2canvas(preview, {
@@ -2951,12 +3038,14 @@ function downloadOutfitImage() {
     useCORS: true
   }).then(canvas => {
     const link = document.createElement('a');
-    link.download = 'glass-closet-look.png';
+    link.download = filename || 'glass-closet-look.png';
     link.href = canvas.toDataURL('image/png');
     link.click();
 
-    btn.classList.add('saved');
-    setTimeout(() => btn.classList.remove('saved'), 1800);
+    if (btn) {
+      btn.classList.add('saved');
+      setTimeout(() => btn.classList.remove('saved'), 1800);
+    }
   }).catch(err => {
     console.warn('[download] html2canvas capture failed:', err);
   });
@@ -3373,6 +3462,23 @@ function closeVerdict() {
   document.getElementById('verdict-overlay').classList.remove('show'); 
 }
 function shareToTelegram() { window.open('https://t.me/+UC1vcZZRBWA0ZDg6', '_blank'); }
+
+function openTelegramModal() {
+  const overlay = document.getElementById('telegram-overlay');
+  const hasOutfit = Object.keys(onCanvas).some(uid => !onCanvas[uid].isRef);
+
+  overlay.classList.toggle('empty', !hasOutfit);
+  overlay.classList.add('show');
+
+  if (hasOutfit) {
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      buildOutfitPreview(document.getElementById('telegram-outfit-preview'));
+    }));
+  }
+}
+function closeTelegramModal() {
+  document.getElementById('telegram-overlay').classList.remove('show');
+}
 
 init();
 
