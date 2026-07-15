@@ -1310,7 +1310,7 @@ const categories = [
     items: [
       { name: 'I ❤ Insight shirt', color: '#1a1a1a', vibe: 'club kid', w: 105, h: 105 },
       { name: "Sasha's bow", color: '#111', vibe: 'yes, and?', w: 80, h: 70 },
-      { name: 'Bunny ears', color: '#111', vibe: 'dangerous woman', w: 85, h: 65 },
+      { name: 'Bunny ears', color: '#111', vibe: 'dangerous woman', w: 85, h: 65, img: 'sashas-bunny-ears' },
       { name: 'Heart locket', color: '#d4a017', vibe: 'sentimental', w: 55, h: 65 },
       { name: "Sasha's bunny pin", color: '#e8b8c8', vibe: 'club kid', w: 45, h: 45 },
       { name: "Nelly's cat pin", color: '#2a2a2a', vibe: 'club kid', w: 45, h: 45 }
@@ -1337,7 +1337,7 @@ const categories = [
   {
     id: 'iconic-music', label: 'Music',
     items: [
-      { name: 'Bunny ears', color: '#111', vibe: 'dangerous woman', w: 85, h: 65 },
+      { name: 'Dangerous woman mask', color: '#111', vibe: 'dangerous woman', w: 85, h: 65, img: 'bunny-ears' },
       { name: 'Sabrina’s platform boots', color: '#111', vibe: 'taste maker', w: 110, h: 125 },
       { name: 'Ariana’s oversized pastel hoodie', color: '#ffc0cb', vibe: 'sweetener', w: 125, h: 130 },
       { name: 'Brat green mini dress', color: '#8bce00', vibe: 'bumpin that', w: 100, h: 140 },
@@ -2085,12 +2085,12 @@ function imgPathCandidates(name) {
   const slug = slugify(name);
   return IMG_EXTENSIONS.map(ext => ({ path: IMG_DIR + slug + '.' + ext, ext, slug }));
 }
-function setupImgFallback(imgEl, name, eager) {
+function setupImgFallback(imgEl, name, eager, imgSlugOverride) {
   imgEl.loading = eager ? 'eager' : 'lazy';
   imgEl.decoding = 'async';
   if ('fetchPriority' in imgEl) imgEl.fetchPriority = eager ? 'high' : 'low';
   imgEl.width = 200; imgEl.height = 200;
-  const candidates = imgPathCandidates(name); let i = 0;
+  const candidates = imgPathCandidates(imgSlugOverride || name); let i = 0;
   imgEl.src = candidates[i].path;
   imgEl.onerror = function() { imgEl.src = `https://placehold.co/200x200/e8e4df/9a9390.png?text=${encodeURIComponent(name)}`; imgEl.onerror = null; };
 }
@@ -2613,7 +2613,7 @@ function renderGrid(catId, items) {
     const isSashaBow = item.name === "Sasha's bow";
     const vibeCaption = isSashaBow ? "yes, and?" : '';
     card.innerHTML = `<div class="gi-visual"><img alt="${item.name}" title="Vibe: ${item.vibe}"></div><div class="gi-name">${item.name}</div>${vibeCaption ? `<div class="gi-vibe">${vibeCaption}</div>` : ''}`;
-    setupImgFallback(card.querySelector('img'), item.name, true);
+    setupImgFallback(card.querySelector('img'), item.name, true, item.img);
     if (item.color) { const dot = document.createElement('div'); dot.className = 'gi-color-dot'; dot.style.background = item.color; card.appendChild(dot); }
     card.onclick = () => toggleItem(uid, item, item._catId || catId);
     grid.appendChild(card);
@@ -2821,7 +2821,7 @@ function addToCanvas(uid, item, catId, restoreData) {
   applySpinTransform(spin, state);
   const inner = document.createElement('div'); inner.className = 'oc-visual';
   inner.innerHTML = `<img alt="${item.name}" title="Vibe: ${item.vibe}" style="width:100%;height:100%;object-fit:contain;">`;
-  setupImgFallback(inner.querySelector('img'), item.name, true);
+  setupImgFallback(inner.querySelector('img'), item.name, true, item.img);
   spin.appendChild(inner); el.appendChild(spin);
   const rm = document.createElement('button'); rm.className = 'remove-btn'; rm.textContent = '✕';
   rm.onclick = (e) => { e.stopPropagation(); removeFromCanvas(uid); }; el.appendChild(rm);
@@ -3009,7 +3009,7 @@ function buildOutfitPreview(previewEl) {
     const imgClone = document.createElement('img');
     imgClone.alt = entry.item.name;
     imgClone.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:contain;';
-    setupImgFallback(imgClone, entry.item.name, true);
+    setupImgFallback(imgClone, entry.item.name, true, entry.item.img);
 
     spinClone.appendChild(imgClone);
     clone.appendChild(spinClone);
