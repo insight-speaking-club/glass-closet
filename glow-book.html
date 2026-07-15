@@ -329,41 +329,6 @@
   .byline-hint { font-style: italic; font-size: 0.68rem; color: var(--dim); margin: 0 0 0.9rem 0.1rem; }
   .glow-card-byline { font-weight: 700; font-size: 0.66rem; letter-spacing: 0.03em; color: var(--rose-3); margin-top: 0.4rem; text-align: right; opacity: 0.85; }
 
-  .card-footer { margin-top: 0.6rem; padding-top: 0.5rem; border-top: 1px dashed var(--rose-1); }
-  .card-actions { display: flex; align-items: center; gap: 0.5rem; }
-  .like-btn, .comment-toggle-btn {
-    display: inline-flex; align-items: center; gap: 0.3rem; font-weight: 700; font-size: 0.72rem;
-    color: var(--ink); background: #fff; border: 1px solid var(--rose-2); border-radius: 50px;
-    padding: 0.3rem 0.65rem; cursor: pointer; transition: transform 0.1s, background 0.15s, border-color 0.15s;
-  }
-  .like-btn:hover, .comment-toggle-btn:hover { background: var(--rose-1); }
-  .like-btn:active, .comment-toggle-btn:active { transform: scale(0.95); }
-  .like-btn.liked { border-color: var(--rose-3); background: var(--rose-1); }
-  .like-btn:disabled { opacity: 0.7; cursor: default; }
-  .like-emoji { font-size: 0.85rem; }
-  .comment-list { display: flex; flex-direction: column; gap: 0.4rem; margin: 0.55rem 0 0.15rem; }
-  .comment-row { background: rgba(255,255,255,0.6); border-radius: 8px; padding: 0.4rem 0.55rem; }
-  .comment-text { display: block; font-size: 0.78rem; color: var(--ink); line-height: 1.35; }
-  .comment-byline { display: block; font-weight: 700; font-size: 0.6rem; letter-spacing: 0.03em; color: var(--rose-3); text-align: right; margin-top: 0.15rem; opacity: 0.8; }
-  .comment-compose { display: none; margin-top: 0.55rem; }
-  .comment-compose.open { display: block; }
-  .comment-input, .comment-byline-input {
-    background: #fff; border: 1px solid var(--rose-2); border-radius: 8px; color: var(--ink);
-    font-family: 'DM Sans', sans-serif; outline: none; transition: border-color 0.15s;
-  }
-  .comment-input { width: 100%; font-size: 0.8rem; padding: 0.5rem 0.65rem; margin-bottom: 0.35rem; }
-  .comment-compose-row { display: flex; gap: 0.4rem; }
-  .comment-byline-input { flex: 1; min-width: 0; font-size: 0.78rem; padding: 0.45rem 0.6rem; }
-  .comment-input:focus, .comment-byline-input:focus { border-color: var(--rose-3); }
-  .comment-post-btn {
-    flex-shrink: 0; font-weight: 700; font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.04em;
-    background: var(--rose-3); color: #fff; border: none; border-radius: 50px;
-    padding: 0.45rem 0.9rem; cursor: pointer; transition: opacity 0.15s, transform 0.1s;
-  }
-  .comment-post-btn:active { transform: scale(0.96); }
-  .comment-post-btn:disabled { opacity: 0.6; cursor: default; }
-  .comment-status { font-weight: 600; font-size: 0.72rem; margin-top: 0.3rem; min-height: 1.1em; }
-  .comment-status.error { color: var(--rose-3); }
   #glow-submit-btn {
     width: 100%; font-family: 'Cinzel', serif; font-size: 1rem; letter-spacing: 0.03em; text-transform: uppercase;
     background: var(--rose-3); color: #fff; border: none; padding: 0.7rem; border-radius: 50px; cursor: pointer;
@@ -416,11 +381,6 @@
   }
   .glow-card-time { font-weight: 700; font-size: 0.56rem; color: var(--rose-3); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.35rem; }
   .glow-card-msg { font-family: 'Playfair Display', serif; font-style: italic; font-weight: 700; font-size: 1.05rem; line-height: 1.34; color: var(--ink); }
-  .glow-card-feature { background: none; border: none; box-shadow: none; padding: 0.3rem 0 1.1rem; margin-bottom: 0.3rem; }
-  .glow-card-feature::before { content: none; }
-  .glow-card-feature .glow-quote-mark { font-family: 'Cinzel', serif; font-size: 0.6rem; letter-spacing: 0.05em; text-transform: uppercase; color: #fff; background: var(--rose-3); line-height: 1; display: inline-block; padding: 0.22rem 0.5rem; margin-bottom: 0.5rem; border-radius: 50px; }
-  .glow-card-feature .glow-card-time { color: var(--rose-3); font-weight: 800; }
-  .glow-card-feature .glow-card-msg { font-size: 1.4rem; line-height: 1.32; color: var(--ink); }
   .person-cta { display: block; text-align: center; margin-top: 1.2rem; font-weight: 700; font-size: 0.78rem; color: var(--rose-3); text-decoration: underline; cursor: pointer; background: none; border: none; width: 100%; }
 
   @keyframes glow-burst-heart { 0% { opacity: 0; transform: translate(-50%, -50%) scale(0.4); } 35% { opacity: 1; transform: translate(-50%, -70%) scale(1.15); } 100% { opacity: 0; transform: translate(-50%, -110%) scale(1); } }
@@ -562,7 +522,7 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getDatabase, ref, push, set, onValue, query, limitToLast, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+  import { getDatabase, ref, push, set, onValue, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyABrfzps49T4yKj0IMMmgYO1_qL2JObP_U",
@@ -668,18 +628,10 @@
       personBack: '← names',
       everyoneTalking: 'written for',
       exclusivesOnRecord: (n) => `${n} compliment${n === 1 ? '' : 's'} — and counting`,
-      coverStory: '💌 favorite note',
       filedTime: (t) => `left ${t}`,
-      exclusiveFiled: (t) => `left ${t}`,
-      anonymousSource: 'anonymous', anonymous: 'anonymous',
+      anonymousSource: 'anonymous',
       personCta: (name) => `leave another compliment for ${name} →`,
       noFile: `nothing written for this name yet.<br><br><a onclick="goTo('index','back')">← back to names</a>`,
-      commentPlaceholder: 'add a note...',
-      commentByline: 'sign your name (optional)',
-      commentPost: 'post',
-      commentBtn: (n) => n ? `💬 ${n} ${n === 1 ? 'note' : 'notes'}` : '💬 add a note',
-      commentEmptyError: 'say something first!',
-      commentFailError: "couldn't post — try again.",
       justNow: 'just now',
       minAgo: (n) => `${n}m ago`, hrAgo: (n) => `${n}h ago`, dayAgo: (n) => `${n}d ago`,
       warmLines: [
@@ -775,18 +727,10 @@
       personBack: '← імена',
       everyoneTalking: 'написано для',
       exclusivesOnRecord: (n) => `${n} ${ukPlural(n, 'комплімент', 'компліменти', 'компліментів')} — і це ще не все`,
-      coverStory: '💌 улюблена нотатка',
       filedTime: (t) => `залишено ${t}`,
-      exclusiveFiled: (t) => `залишено ${t}`,
-      anonymousSource: 'анонім(ка)', anonymous: 'анонім(ка)',
+      anonymousSource: 'анонім(ка)',
       personCta: (name) => `залиш ще один комплімент для ${name} →`,
       noFile: `для цього імені ще нічого не написано.<br><br><a onclick="goTo('index','back')">← назад до імен</a>`,
-      commentPlaceholder: 'додати нотатку...',
-      commentByline: `підпиши своє ім'я (необов'язково)`,
-      commentPost: 'опублікувати',
-      commentBtn: (n) => n ? `💬 ${n} ${ukPlural(n, 'нотатка', 'нотатки', 'нотаток')}` : '💬 додати нотатку',
-      commentEmptyError: 'спочатку щось напиши!',
-      commentFailError: 'не вдалося опублікувати — спробуй ще раз.',
       justNow: 'щойно',
       minAgo: (n) => `${n} хв тому`, hrAgo: (n) => `${n} год тому`, dayAgo: (n) => `${n} дн тому`,
       warmLines: [
@@ -921,119 +865,6 @@
   }
 
   const MSG_LIMIT = 240;
-  const COMMENT_LIMIT = 140;
-
-  function getLikedSet() {
-    try { return new Set(JSON.parse(localStorage.getItem('glowbook_liked_v1') || '[]')); }
-    catch (e) { return new Set(); }
-  }
-  function saveLikedSet(set) {
-    try { localStorage.setItem('glowbook_liked_v1', JSON.stringify([...set])); } catch (e) {}
-  }
-
-  function cardFooterHtml(e) {
-    if (!e._key) return '';
-    const liked = getLikedSet().has(e._key);
-    const cCount = e.comments ? e.comments.length : 0;
-    return `
-      <div class="card-footer" data-key="${e._key}">
-        <div class="card-actions">
-          <button class="like-btn${liked ? ' liked' : ''}" data-key="${e._key}" aria-label="like">
-            <span class="like-emoji">${liked ? '❤️' : '🤍'}</span><span class="like-count">${e.likeCount || 0}</span>
-          </button>
-          <button class="comment-toggle-btn">${t('commentBtn')(cCount)}</button>
-        </div>
-        ${cCount ? `
-        <div class="comment-list">
-          ${e.comments.map(c => `
-            <div class="comment-row">
-              <span class="comment-text">${escapeHtml(c.text)}</span>
-              <span class="comment-byline">— ${c.byline ? escapeHtml(c.byline) : t('anonymous')}</span>
-            </div>`).join('')}
-        </div>` : ''}
-        <div class="comment-compose">
-          <input class="comment-input" maxlength="${COMMENT_LIMIT}" placeholder="${escapeHtml(t('commentPlaceholder'))}">
-          <div class="comment-compose-row">
-            <input class="comment-byline-input" maxlength="40" placeholder="${escapeHtml(t('commentByline'))}">
-            <button class="comment-post-btn">${t('commentPost')}</button>
-          </div>
-          <div class="comment-status"></div>
-        </div>
-      </div>
-    `;
-  }
-
-  function captureComposeState(inner) {
-    const state = {};
-    inner.querySelectorAll('.card-footer').forEach(footer => {
-      const compose = footer.querySelector('.comment-compose');
-      if (!compose) return;
-      state[footer.dataset.key] = {
-        open: compose.classList.contains('open'),
-        text: compose.querySelector('.comment-input')?.value || '',
-        byline: compose.querySelector('.comment-byline-input')?.value || ''
-      };
-    });
-    return state;
-  }
-  function restoreComposeState(inner, state) {
-    inner.querySelectorAll('.card-footer').forEach(footer => {
-      const s = state[footer.dataset.key];
-      const compose = footer.querySelector('.comment-compose');
-      if (!s || !compose) return;
-      if (s.open) compose.classList.add('open');
-      const textEl = compose.querySelector('.comment-input');
-      const bylineEl = compose.querySelector('.comment-byline-input');
-      if (textEl) textEl.value = s.text;
-      if (bylineEl) bylineEl.value = s.byline;
-    });
-  }
-
-  function wirePersonCard(inner) {
-    inner.querySelectorAll('.like-btn').forEach(btn => {
-      const key = btn.dataset.key;
-      btn.addEventListener('click', () => {
-        const liked = getLikedSet();
-        const isLiked = liked.has(key);
-        const delta = isLiked ? -1 : 1;
-        btn.disabled = true;
-        runTransaction(ref(db, `glowbook/${key}/likeCount`), (cur) => Math.max(0, (cur || 0) + delta))
-          .then(() => { if (isLiked) liked.delete(key); else liked.add(key); saveLikedSet(liked); })
-          .catch(err => console.warn('[glow book] like failed:', err))
-          .finally(() => { btn.disabled = false; });
-      });
-    });
-
-    inner.querySelectorAll('.card-footer').forEach(footer => {
-      const key = footer.dataset.key;
-      const toggleBtn = footer.querySelector('.comment-toggle-btn');
-      const compose = footer.querySelector('.comment-compose');
-      if (toggleBtn && compose) toggleBtn.addEventListener('click', () => compose.classList.toggle('open'));
-      const postBtn = footer.querySelector('.comment-post-btn');
-      if (postBtn) {
-        postBtn.addEventListener('click', () => {
-          const textEl = footer.querySelector('.comment-input');
-          const bylineEl = footer.querySelector('.comment-byline-input');
-          const statusEl = footer.querySelector('.comment-status');
-          const text = textEl.value.trim();
-          const byline = bylineEl.value.trim();
-          statusEl.className = 'comment-status'; statusEl.textContent = '';
-          if (!text) { statusEl.textContent = t('commentEmptyError'); statusEl.classList.add('error'); return; }
-          if (containsBlockedWord(text) || containsBlockedWord(byline)) {
-            statusEl.textContent = t('blockedWordError'); statusEl.classList.add('error'); return;
-          }
-          postBtn.disabled = true;
-          push(ref(db, `glowbook/${key}/comments`), { text, byline, ts: Date.now() })
-            .then(() => { textEl.value = ''; bylineEl.value = ''; })
-            .catch(err => {
-              statusEl.textContent = t('commentFailError'); statusEl.classList.add('error');
-              console.warn('[glow book] comment failed:', err);
-            })
-            .finally(() => { postBtn.disabled = false; });
-        });
-      }
-    });
-  }
 
   let glowEntries = [];
   let rosterMap = {};
@@ -1231,7 +1062,6 @@
     if (pageId.startsWith('person:')) {
       const key = pageId.slice(7);
       inner.innerHTML = personHtml(key);
-      wirePersonCard(inner);
       const cta = inner.querySelector('.person-cta');
       const p = people.get(key);
       if (cta && p) cta.addEventListener('click', () => prefillAndWrite(p.display));
@@ -1544,7 +1374,6 @@
   function personHtml(key) {
     const p = people.get(key);
     if (!p) return `<div class="idx-empty">${t('noFile')}</div>`;
-    const [feature, ...rest] = p.entries;
     return `
       <button class="person-back" onclick="goTo('index','back')">${t('personBack')}</button>
       <div class="person-head">
@@ -1555,22 +1384,12 @@
           <div class="person-spotted">💗 ${warmLine(p.display)}</div>
         </div>
       </div>
-      ${feature ? `
-        <div class="glow-card glow-card-feature">
-          <span class="glow-quote-mark">${t('coverStory')}</span>
-          <div class="glow-card-time">${t('filedTime')(relativeTime(feature.ts))}</div>
-          <div class="glow-card-msg">${escapeHtml(feature.message)}</div>
-          <div class="glow-card-byline">— ${feature.byline ? escapeHtml(feature.byline) : t('anonymousSource')}</div>
-          ${cardFooterHtml(feature)}
-        </div>
-      ` : ''}
       <div class="person-cards">
-        ${rest.map(e => `
+        ${p.entries.map(e => `
           <div class="glow-card">
-            <div class="glow-card-time">${t('exclusiveFiled')(relativeTime(e.ts))}</div>
+            <div class="glow-card-time">${t('filedTime')(relativeTime(e.ts))}</div>
             <div class="glow-card-msg">${escapeHtml(e.message)}</div>
             <div class="glow-card-byline">— ${e.byline ? escapeHtml(e.byline) : t('anonymousSource')}</div>
-            ${cardFooterHtml(e)}
           </div>`).join('')}
       </div>
       <button class="person-cta">${t('personCta')(escapeHtml(p.display))}</button>
@@ -1584,10 +1403,7 @@
       const key = currentPage.slice(7);
       if (people.has(key)) {
         const inner = document.getElementById('page-inner');
-        const composeState = captureComposeState(inner);
         inner.innerHTML = personHtml(key);
-        restoreComposeState(inner, composeState);
-        wirePersonCard(inner);
         const cta = inner.querySelector('.person-cta');
         const p = people.get(key);
         if (cta && p) cta.addEventListener('click', () => prefillAndWrite(p.display));
@@ -1598,10 +1414,7 @@
 
   onValue(glowQuery, (snap) => {
     const val = snap.val() || {};
-    glowEntries = Object.entries(val).map(([key, v]) => ({
-      ...v, _key: key, likeCount: v.likeCount || 0,
-      comments: v.comments ? Object.entries(v.comments).map(([ck, c]) => ({ ...c, _key: ck })).sort((a, b) => a.ts - b.ts) : []
-    })).sort((a, b) => b.ts - a.ts);
+    glowEntries = Object.entries(val).map(([key, v]) => ({ ...v, _key: key })).sort((a, b) => b.ts - a.ts);
     onDataChange();
   }, (err) => console.warn('[glow book] live sync error — check your Firebase config and database rules:', err));
 
