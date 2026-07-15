@@ -10,7 +10,7 @@
 <meta property="og:type" content="website">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💌</text></svg>">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Playfair+Display:ital,wght@0,700;1,700&family=DM+Sans:wght@400;500;700;800&family=Parisienne&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Playfair+Display:ital,wght@0,700;1,700&family=DM+Sans:wght@400;500;700;800&display=swap');
 
   :root {
     --ink: #2b1e22;
@@ -280,9 +280,9 @@
     position: relative; margin-top: 0.5rem;
   }
   .write-card::before {
-    content: '♥ with love'; position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
-    font-weight: 700; font-size: 0.6rem; letter-spacing: 0.06em; text-transform: uppercase;
-    color: #fff; background: var(--rose-3); padding: 0.28rem 0.7rem; border-radius: 50px;
+    content: '♥'; position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+    font-weight: 700; font-size: 0.75rem; letter-spacing: 0.06em;
+    color: #fff; background: var(--rose-3); padding: 0.3rem 0.55rem; border-radius: 50px;
     box-shadow: 0 3px 7px rgba(0,0,0,0.2); white-space: nowrap;
   }
   .field-label { font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.68rem; color: var(--rose-3); margin: 0 0 0.3rem 0.1rem; }
@@ -428,7 +428,7 @@
   #glow-burst.play { display: block; animation: glow-burst-heart 0.9s ease-out; }
   #glow-flash {
     position: fixed; inset: 0; pointer-events: none; z-index: 41; display: none;
-    background: radial-gradient(circle at 50% 40%, rgba(255,247,240,0.55) 0%, rgba(224,168,173,0.32) 42%, rgba(94,54,120,0) 75%);
+    background: radial-gradient(circle at 50% 40%, rgba(255,247,240,0.55) 0%, rgba(224,168,173,0.32) 42%, rgba(168,69,109,0) 75%);
   }
   @keyframes glow-flash-pop { 0% { opacity: 0; } 35% { opacity: 0.9; } 100% { opacity: 0; } }
   #glow-flash.play { display: block; animation: glow-flash-pop 0.5s ease-out; }
@@ -465,35 +465,20 @@
   #sound-toggle-btn { right: 6.1rem; }
   #sound-toggle-btn svg { width: 19px; height: 19px; }
 
-  /* ══════════════ COVER BOW (first-visit reveal — video/gif placeholder + magical wash) ══════════════ */
+  /* ══════════════ COVER BOW (first-visit reveal — soft color wash) ══════════════ */
   .cover-bow {
     position: absolute; inset: 0; z-index: 5; overflow: hidden;
     display: flex; align-items: center; justify-content: center;
     pointer-events: none; background: var(--cover-rose-3);
   }
-  .bow-video {
-    position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
-    opacity: 0.92;
-  }
   .bow-gradient {
     position: absolute; inset: 0;
-    background: linear-gradient(160deg, rgba(224,168,173,0.62) 0%, rgba(168,69,109,0.55) 45%, rgba(94,54,120,0.65) 100%);
-    mix-blend-mode: multiply;
+    background: linear-gradient(160deg, rgba(243,217,222,0.85) 0%, rgba(224,168,173,0.75) 50%, rgba(168,69,109,0.6) 100%);
   }
   .bow-gradient::after {
     content: ''; position: absolute; inset: 0;
-    background: radial-gradient(circle at 50% 45%, rgba(255,255,255,0.18) 0%, transparent 60%);
+    background: radial-gradient(circle at 50% 45%, rgba(255,255,255,0.28) 0%, transparent 60%);
   }
-  .bow-word {
-    position: relative; z-index: 2; text-align: center; padding: 0 1.2rem;
-    font-family: 'Parisienne', cursive; font-size: 2.5rem; line-height: 1.1; color: #fff;
-    text-shadow: 0 4px 20px rgba(94,54,120,0.55);
-    opacity: 0;
-  }
-  @media (prefers-reduced-motion: no-preference) {
-    .bow-word { animation: bow-word-in 1s ease-out 0.25s forwards; }
-  }
-  @keyframes bow-word-in { 0% { opacity: 0; transform: translateY(10px) scale(0.96); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
   .cover-bow.untying { animation: bow-fade-out 0.85s ease-in forwards; }
   @keyframes bow-fade-out { 0% { opacity: 1; } 100% { opacity: 0; } }
 
@@ -607,7 +592,6 @@
     en: {
       backLink: '← Back to Glass Closet',
       coverTap: 'tap in — open the book ↓',
-      bowWord: 'for you',
       navBack: '‹ back', navNext: 'next ›',
       tabTips: 'tips', tabWrite: 'write', tabIndex: 'names',
       tourSkip: 'skip',
@@ -715,7 +699,6 @@
     uk: {
       backLink: '← Назад до Glass Closet',
       coverTap: 'тапни, щоб відкрити ↓',
-      bowWord: 'для тебе',
       navBack: '‹ назад', navNext: 'далі ›',
       tabTips: 'поради', tabWrite: 'написати', tabIndex: 'імена',
       tourSkip: 'пропустити',
@@ -1227,8 +1210,6 @@
           if (hasSeenTour()) { flipTo('tips', 'fwd'); } else { setTimeout(openTour, 350); }
         }
         if (bowEl && !bowEl.classList.contains('untying')) {
-          const bowVideo = document.getElementById('bow-video');
-          if (bowVideo) { try { bowVideo.currentTime = 0; } catch (e) {} bowVideo.play().catch(() => {}); }
           playSfx('sfx-untie');
           bowEl.classList.add('untying');
           setTimeout(() => { markOpened(); proceed(); }, 1400);
@@ -1274,9 +1255,7 @@
       <img id="glow-cover-img" src="glow-book.png" alt="The Glow Book" onerror="this.remove()">
       ${showBow ? `
       <div class="cover-bow" id="cover-bow">
-        <video class="bow-video" id="bow-video" src="box-open.mp4" muted playsinline preload="auto" onerror="this.style.display='none'"></video>
         <div class="bow-gradient"></div>
-        <div class="bow-word">${t('bowWord')}</div>
       </div>` : ''}
       <div class="cover-tap">${t('coverTap')}</div>
     </div>`;
