@@ -238,24 +238,47 @@
   }
   #tour-tooltip {
     position: fixed; z-index: 100011;
-    width: min(78vw, 260px);
+    width: min(80vw, 280px);
     background: var(--drawer-bg); color: var(--drawer-active);
     border: 1px solid var(--drawer-border);
-    border-radius: 12px; padding: 0.9rem 1rem;
+    border-radius: 14px; padding: 0.85rem 1rem 1rem;
     box-shadow: 0 10px 30px rgba(0,0,0,0.4);
     transition: top 0.35s cubic-bezier(.4,0,.2,1), left 0.35s cubic-bezier(.4,0,.2,1);
   }
+  #tour-tooltip .tt-head {
+    display: flex; align-items: center; gap: 0.65rem; margin-bottom: 0.6rem;
+  }
+  #tour-tooltip .tt-avatar {
+    width: 46px; height: 46px; border-radius: 50%; object-fit: cover;
+    object-position: top center; flex-shrink: 0;
+    background: linear-gradient(135deg, #edc3cf 0%, #d49bb1 55%, #bb7f97 100%);
+    border: 1.5px solid var(--accent);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+  }
+  #tour-tooltip .tt-bubble { min-width: 0; }
   #tour-tooltip .tt-step {
     font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 0.55rem;
-    text-transform: uppercase; letter-spacing: 0.14em; color: var(--accent); margin-bottom: 0.3rem;
+    text-transform: uppercase; letter-spacing: 0.14em; color: var(--accent); margin-bottom: 0.2rem;
   }
   #tour-tooltip .tt-title {
     font-family: 'Anton', sans-serif; text-transform: uppercase; letter-spacing: 0.01em;
-    font-size: 1rem; margin-bottom: 0.35rem; line-height: 1.15;
+    font-size: 1rem; line-height: 1.15;
   }
   #tour-tooltip .tt-desc {
-    font-family: 'DM Sans', sans-serif; font-size: 0.75rem; line-height: 1.4;
-    color: var(--drawer-muted); margin-bottom: 0.8rem;
+    position: relative;
+    font-family: 'DM Sans', sans-serif; font-size: 0.78rem; line-height: 1.45;
+    color: var(--drawer-active); margin-bottom: 0.85rem;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--drawer-border);
+    border-radius: 10px; padding: 0.6rem 0.7rem;
+  }
+  #tour-tooltip .tt-desc::before {
+    content: ''; position: absolute; top: -6px; left: 20px;
+    width: 10px; height: 10px;
+    background: rgba(255,255,255,0.05);
+    border-left: 1px solid var(--drawer-border);
+    border-top: 1px solid var(--drawer-border);
+    transform: rotate(45deg);
   }
   #tour-tooltip .tt-row { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; }
   #tour-skip {
@@ -976,17 +999,20 @@
       </button>
     </div>
   </div>
-  <div id="topbar-row2">
-    <span id="topbar-gossip-link" onclick="spillTea()">See latest gossip on Sasha</span>
-  </div>
+  <div id="topbar-row2"></div>
 </div>
 
 <div id="tour-overlay">
   <div id="tour-backdrop" onclick="tourNext()"></div>
   <div id="tour-spotlight"></div>
   <div id="tour-tooltip">
-    <div class="tt-step" id="tour-step-label"></div>
-    <div class="tt-title" id="tour-title"></div>
+    <div class="tt-head">
+      <img id="tour-avatar" class="tt-avatar" src="" alt="Sasha">
+      <div class="tt-bubble">
+        <div class="tt-step" id="tour-step-label"></div>
+        <div class="tt-title" id="tour-title"></div>
+      </div>
+    </div>
     <div class="tt-desc" id="tour-desc"></div>
     <div class="tt-row">
       <button id="tour-skip" onclick="endTour()">Skip</button>
@@ -2272,14 +2298,13 @@ const INPROGRESS_KEY = 'dreamCloset_inProgress';
 // ── GUIDED TOUR ──
 const TOUR_KEY = 'dreamCloset_tourSeen';
 const TOUR_STEPS = [
-  { selector: '#canvas', title: 'Your board', desc: "Tap anything below to drop it here, then drag, spin, or resize it to build the fit.", radius: 16, pad: 4 },
-  { selector: '#drawer', title: 'The closet', desc: 'Browse by category or search. Tap a piece to add it, tap again to take it off.', radius: 16, pad: 4 },
-  { selector: '#verdict-btn', title: 'Get my verdict', desc: "Once you've built a fit, this decodes what it says about you.", radius: 6, pad: 4 },
-  { selector: '#telegram-btn', title: 'Join the groupchat', desc: "Tap here anytime to hop into the Telegram groupchat and share your fits and verdicts.", radius: 20, pad: 5 },
-  { selector: '#mission-btn', title: 'Secret mission', desc: "Today's little styling challenge. A new one drops daily.", radius: 10, pad: 4 },
-  { selector: '#lookbook-btn', title: 'Lookbook', desc: 'Every fit you save lives here for later.', radius: 10, pad: 4 },
-  { selector: '#inspo-btn', title: 'Inspo board', desc: 'Moodboard references, plus anywhere you can pin your own.', radius: 10, pad: 4 },
-  { selector: '#topbar-gossip-link', title: 'The tea', desc: "That's Sasha — this whole closet's namesake. Tap here anytime for the latest gossip.", radius: 6, pad: 4 }
+  { selector: '#canvas', title: 'Your board', desc: "Tap anything below to drop it here, then drag, spin, or resize it to build the fit.", radius: 16, pad: 4, img: 'sasha-guide.png' },
+  { selector: '#drawer', title: 'The closet', desc: 'Browse by category or search. Tap a piece to add it, tap again to take it off.', radius: 16, pad: 4, img: 'sasha-guide.png' },
+  { selector: '#verdict-btn', title: 'Get my verdict', desc: "Once you've built a fit, this decodes what it says about you.", radius: 6, pad: 4, img: 'sasha-guide-thinking.png' },
+  { selector: '#telegram-btn', title: 'Join the groupchat', desc: "Tap here anytime to hop into the Telegram groupchat and share your fits and verdicts.", radius: 20, pad: 5, img: 'sasha-guide.png' },
+  { selector: '#mission-btn', title: 'Secret mission', desc: "Today's little styling challenge. A new one drops daily.", radius: 10, pad: 4, img: 'sasha-guide-thinking.png' },
+  { selector: '#lookbook-btn', title: 'Lookbook', desc: 'Every fit you save lives here for later.', radius: 10, pad: 4, img: 'sasha-guide.png' },
+  { selector: '#inspo-btn', title: 'Inspo board', desc: 'Moodboard references, plus anywhere you can pin your own.', radius: 10, pad: 4, img: 'sasha-guide.png' }
 ];
 let tourIdx = 0;
 
@@ -2318,6 +2343,9 @@ function showTourStep() {
   document.getElementById('tour-step-label').textContent = `Step ${tourIdx + 1} of ${TOUR_STEPS.length}`;
   document.getElementById('tour-title').textContent = step.title;
   document.getElementById('tour-desc').textContent = step.desc;
+  const avatar = document.getElementById('tour-avatar');
+  if (step.img) { avatar.src = step.img; avatar.style.display = ''; }
+  else { avatar.style.display = 'none'; }
   document.getElementById('tour-next').textContent = tourIdx === TOUR_STEPS.length - 1 ? 'Got it' : 'Next';
   document.querySelectorAll('#tour-dots span').forEach((d, i) => d.classList.toggle('tour-dot-done', i <= tourIdx));
 
