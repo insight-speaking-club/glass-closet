@@ -15,9 +15,9 @@
   :root {
     --ink: #2b1e22;
     --paper: #faf1ec;
-    --rose-1: #f3d9de;   /* pale blush */
-    --rose-2: #e0a8ad;   /* mid dusty rose */
-    --rose-3: #a8456d;   /* deep rose / wine — main accent */
+    --rose-1: #f3d9de;
+    --rose-2: #e0a8ad;
+    --rose-3: #a8456d;
     --gold: #c98f7c;
     --glow-pink: #eb9dbd;
     --glow-gold: #c98f7c;
@@ -52,17 +52,8 @@
 
   a { color: inherit; }
 
-  .nb-back {
-    display: inline-flex; align-items: center; gap: 0.3rem;
-    font-weight: 700; font-size: 0.65rem;
-    text-transform: uppercase; letter-spacing: 0.08em; color: var(--paper);
-    text-decoration: none; margin-bottom: 0.6rem;
-    opacity: 0.7; transition: opacity 0.15s;
-  }
-  .nb-back:hover { opacity: 1; }
-
-  #lang-toggle-btn, #tour-btn {
-    position: fixed; top: 0.9rem; z-index: 10050;
+  #lang-toggle-btn {
+    position: fixed; top: 0.9rem; right: 0.9rem; z-index: 10050;
     width: 38px; height: 38px; border-radius: 50%;
     background: rgba(43,30,34,0.55);
     border: 1px solid rgba(250,241,236,0.3);
@@ -71,9 +62,8 @@
     cursor: pointer; padding: 0; color: var(--paper);
     transition: background 0.15s, transform 0.1s;
   }
-  #lang-toggle-btn:hover, #tour-btn:hover { background: rgba(43,30,34,0.75); }
-  #lang-toggle-btn:active, #tour-btn:active { transform: scale(0.92); }
-  #lang-toggle-btn { right: 0.9rem; }
+  #lang-toggle-btn:hover { background: rgba(43,30,34,0.75); }
+  #lang-toggle-btn:active { transform: scale(0.92); }
   #lang-toggle-btn svg { width: 19px; height: 19px; }
   #lang-toggle-btn .lang-flag {
     position: absolute; bottom: -4px; right: -2px;
@@ -82,60 +72,19 @@
     border-radius: 4px; padding: 1px 4px; line-height: 1.3;
     box-shadow: 0 1px 3px rgba(0,0,0,0.4);
   }
-  #tour-btn { right: 3.5rem; font-family: 'Cinzel', serif; font-size: 1rem; }
 
-  #tour-overlay {
-    display: none; position: fixed; inset: 0; z-index: 20000;
-    background: rgba(43,30,34,0.72);
-    -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px);
-    align-items: center; justify-content: center;
-    padding: 1.4rem;
+  /* ══════════════ MUTE BUTTON (discreet) ══════════════ */
+  #sound-toggle-btn {
+    position: fixed; top: 1.05rem; right: 3.85rem; z-index: 10050;
+    width: 26px; height: 26px; border-radius: 50%;
+    background: transparent; border: none;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; padding: 0; color: var(--paper);
+    opacity: 0.4; transition: opacity 0.15s, transform 0.1s;
   }
-  #tour-overlay.show { display: flex; }
-  .tour-card {
-    position: relative; width: 100%; max-width: 340px;
-    background: #fffaf6; border: 1.5px solid var(--rose-3);
-    border-radius: 14px; padding: 1.6rem 1.4rem 1.4rem;
-    box-shadow: 0 14px 34px rgba(43,30,34,0.28);
-    text-align: center;
-  }
-  .tour-skip {
-    position: absolute; top: 0.7rem; right: 0.85rem;
-    font-weight: 700; font-size: 0.62rem;
-    text-transform: uppercase; letter-spacing: 0.06em; color: var(--dim);
-    background: none; border: none; cursor: pointer; text-decoration: underline;
-    padding: 0.2rem;
-  }
-  .tour-icon { font-size: 2.2rem; line-height: 1; margin-bottom: 0.7rem; }
-  .tour-step-label {
-    font-family: 'Cinzel', serif; font-size: 0.62rem; letter-spacing: 0.1em;
-    color: var(--rose-3); text-transform: uppercase; margin-bottom: 0.4rem;
-  }
-  .tour-title {
-    font-family: 'Cinzel', serif; text-transform: uppercase; letter-spacing: 0.01em;
-    font-size: 1.25rem; color: var(--ink); margin: 0 0 0.5rem;
-  }
-  .tour-text {
-    font-family: 'Playfair Display', serif; font-style: italic; font-size: 0.95rem;
-    color: var(--rose-3); line-height: 1.5; margin-bottom: 1.1rem;
-  }
-  .tour-dots { display: flex; justify-content: center; gap: 0.35rem; margin-bottom: 1.1rem; }
-  .tour-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(43,30,34,0.2); transition: background 0.15s, transform 0.15s; }
-  .tour-dot.active { background: var(--rose-3); transform: scale(1.3); }
-  .tour-nav { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; }
-  .tour-back-btn {
-    font-weight: 700; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--dim);
-    background: none; border: none; cursor: pointer; padding: 0.5rem; visibility: hidden;
-  }
-  .tour-back-btn.visible { visibility: visible; }
-  .tour-next-btn {
-    font-weight: 700; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--paper);
-    background: var(--rose-3); border: none; border-radius: 50px;
-    padding: 0.55rem 1.2rem; cursor: pointer; box-shadow: 0 4px 10px rgba(168,69,109,0.35);
-    transition: transform 0.1s, background 0.15s;
-  }
-  .tour-next-btn:hover { background: #8a3a5b; }
-  .tour-next-btn:active { transform: scale(0.96); }
+  #sound-toggle-btn:hover { opacity: 0.75; }
+  #sound-toggle-btn:active { transform: scale(0.9); }
+  #sound-toggle-btn svg { width: 14px; height: 14px; }
 
   /* ══════════════ BOOK SHELL ══════════════ */
   .book-shell { position: relative; width: 100%; max-width: 420px; }
@@ -196,7 +145,7 @@
   .side-tab--index { background: var(--ink); color: var(--rose-1); }
   .side-tab.current { outline: 2px solid var(--ink); outline-offset: -2px; }
 
-  /* ══════════════ COVER (unchanged) ══════════════ */
+  /* ══════════════ COVER ══════════════ */
   .pg-cover {
     height: 100%; position: relative; display: flex; align-items: center; justify-content: center;
     background: var(--cover-rose-2);
@@ -228,7 +177,7 @@
   @media (prefers-reduced-motion: no-preference) { .cover-tap { animation: tap-bounce 1.8s ease-in-out infinite; } }
   @keyframes tap-bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(4px); } }
 
-  /* ══════════════ BACK COVER (new) ══════════════ */
+  /* ══════════════ BACK COVER ══════════════ */
   .pg-backcover {
     height: 100%; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center;
     background: radial-gradient(circle at 50% 30%, var(--cover-rose-1) 0%, var(--cover-rose-3) 75%);
@@ -256,7 +205,7 @@
   .pg-title { font-family: 'Cinzel', serif; text-transform: uppercase; letter-spacing: 0.01em; font-size: 1.6rem; color: var(--ink); margin: 0 0 0.2rem; }
   .pg-sub { font-family: 'Playfair Display', serif; font-style: italic; font-size: 0.95rem; color: var(--rose-3); margin-bottom: 1.1rem; }
 
-  /* ══════════════ TIPS PAGE ══════════════ */
+  /* ══════════════ RULES/TIPS PAGE ══════════════ */
   .tips-divider { height: 2px; background: var(--rose-1); margin: 0.3rem 0 1.1rem; border-radius: 2px; }
   .idea-chips { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1.3rem; }
   .idea-chip {
@@ -272,6 +221,45 @@
   }
   .tip-text { font-family: 'Playfair Display', serif; font-style: italic; font-size: 0.98rem; line-height: 1.42; color: var(--ink); padding-top: 0.15rem; }
   .tips-footnote { margin-top: 1rem; font-style: italic; font-size: 0.72rem; color: var(--dim); border-top: 1.5px dashed var(--rose-1); padding-top: 0.8rem; }
+  .tips-next-btn {
+    width: 100%; margin-top: 0.6rem; font-family: 'Cinzel', serif; font-size: 0.95rem; letter-spacing: 0.03em; text-transform: uppercase;
+    background: var(--rose-3); color: #fff; border: none; padding: 0.65rem; border-radius: 50px; cursor: pointer;
+    box-shadow: 0 6px 16px rgba(168,69,109,0.35); transition: transform 0.1s;
+  }
+  .tips-next-btn:active { transform: scale(0.98); }
+
+  /* ══════════════ REGISTER (SIGN THE BOOK) PAGE ══════════════ */
+  .register-wrap { height: 100%; display: flex; flex-direction: column; justify-content: center; text-align: center; }
+  .register-mark { font-size: 1.9rem; margin-bottom: 0.6rem; }
+  .register-poem {
+    font-family: 'Playfair Display', serif; font-style: italic; font-size: 1.02rem; line-height: 1.55;
+    color: var(--ink); margin-bottom: 1.4rem; padding: 0 0.2rem;
+  }
+  .register-card {
+    background: #fffaf6; border: 1.5px solid var(--rose-3); border-radius: 12px;
+    padding: 1.2rem 1rem; box-shadow: 0 10px 24px rgba(43,30,34,0.14);
+  }
+  #register-name-input {
+    width: 100%; background: #fff; border: 1px solid var(--rose-2); border-radius: 8px; color: var(--ink);
+    font-family: 'DM Sans', sans-serif; font-size: 0.95rem; padding: 0.65rem 0.8rem; outline: none;
+    text-align: center; margin-bottom: 0.8rem; transition: border-color 0.15s;
+  }
+  #register-name-input:focus { border-color: var(--rose-3); }
+  #register-btn {
+    width: 100%; font-family: 'Cinzel', serif; font-size: 0.95rem; letter-spacing: 0.03em; text-transform: uppercase;
+    background: var(--rose-3); color: #fff; border: none; padding: 0.65rem; border-radius: 50px; cursor: pointer;
+    box-shadow: 0 6px 16px rgba(168,69,109,0.35); transition: opacity 0.15s, transform 0.1s;
+  }
+  #register-btn:disabled { opacity: 0.6; cursor: default; }
+  #register-btn:active { transform: scale(0.98); }
+  #register-status { font-weight: 600; font-size: 0.8rem; margin-top: 0.6rem; text-align: center; min-height: 1.2em; }
+  #register-status.success { color: #6d8f5f; }
+  #register-status.error { color: var(--rose-3); }
+  .register-skip {
+    display: block; margin: 0.9rem auto 0; text-align: center; font-weight: 700; font-size: 0.72rem;
+    text-transform: uppercase; letter-spacing: 0.05em; color: var(--dim); text-decoration: underline;
+    background: none; border: none; cursor: pointer;
+  }
 
   /* ══════════════ WRITE PAGE ══════════════ */
   .write-card {
@@ -393,7 +381,7 @@
   @keyframes glow-flash-pop { 0% { opacity: 0; } 35% { opacity: 0.9; } 100% { opacity: 0; } }
   #glow-flash.play { display: block; animation: glow-flash-pop 0.5s ease-out; }
 
-  /* ══════════════ MAGIC FIELD (subtle ambient glow + sparkles) ══════════════ */
+  /* ══════════════ MAGIC FIELD ══════════════ */
   #magic-field { position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 1; }
   .magic-glow {
     position: absolute; width: 140%; height: 140%; left: -20%; top: -20%;
@@ -418,14 +406,10 @@
     50%      { opacity: var(--peak, 0.8); transform: scale(1); }
   }
   .book-shell { z-index: 2; }
-  #lang-toggle-btn, #tour-btn, #sound-toggle-btn { z-index: 10050; }
+  #lang-toggle-btn, #sound-toggle-btn { z-index: 10050; }
   @media (prefers-reduced-motion: reduce) { #magic-field, .magic-glow, .magic-sparkle { display: none; animation: none; } }
 
-  /* ══════════════ MUTE BUTTON ══════════════ */
-  #sound-toggle-btn { right: 6.1rem; }
-  #sound-toggle-btn svg { width: 19px; height: 19px; }
-
-  /* ══════════════ COVER BOW (first-visit reveal — soft color wash) ══════════════ */
+  /* ══════════════ COVER BOW ══════════════ */
   .cover-bow {
     position: absolute; inset: 0; z-index: 5; overflow: hidden;
     display: flex; align-items: center; justify-content: center;
@@ -457,8 +441,6 @@
 
 <div id="magic-field"></div>
 
-<a class="nb-back" href="index.html">&larr; Back to Glass Closet</a>
-
 <button id="lang-toggle-btn" type="button" aria-label="Switch language / Змінити мову" title="Switch language / Змінити мову">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
     <circle cx="12" cy="12" r="9"></circle>
@@ -467,8 +449,6 @@
   </svg>
   <span class="lang-flag" id="lang-flag-label">UA</span>
 </button>
-
-<button id="tour-btn" type="button" aria-label="How this works" title="How this works">?</button>
 
 <button id="sound-toggle-btn" type="button" aria-label="Mute sound" title="Mute sound">
   <svg id="sound-icon-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
@@ -486,8 +466,6 @@
 <audio id="sfx-untie" preload="auto"><source src="untie.mp3" type="audio/mpeg"></audio>
 <audio id="sfx-seal" preload="auto"><source src="seal.mp3" type="audio/mpeg"></audio>
 
-<div id="tour-overlay"><div class="tour-card" id="tour-card"></div></div>
-
 <div class="book-shell">
   <div class="book-frame">
     <div class="side-tabs">
@@ -503,7 +481,7 @@
   </div>
   <div class="book-nav">
     <button class="nav-arrow" onclick="stepPage(-1)">‹ back</button>
-    <span class="nav-count" id="nav-count">1 / 4</span>
+    <span class="nav-count" id="nav-count">1 / 5</span>
     <button class="nav-arrow" onclick="stepPage(1)">next ›</button>
   </div>
 </div>
@@ -550,35 +528,34 @@
   let currentLang = 'en';
   const I18N = {
     en: {
-      backLink: '← Back to Glass Closet',
       coverTap: 'tap in — open the book ↓',
       navBack: '‹ back', navNext: 'next ›',
       tabTips: 'tips', tabWrite: 'write', tabIndex: 'names',
-      tourSkip: 'skip',
-      tourStepLabel: (n, total) => `step ${n} of ${total}`,
-      tourBack: '‹ back', tourNext: 'next ›', tourStart: "let's write one 💌",
-      tourSlides: [
-        { icon: '👋', title: 'Welcome to the Glow Book', text: 'By the end of tonight, everyone should know exactly how loved they are.' },
-        { icon: '💭', title: 'Think of someone', text: 'Someone you talked to tonight. What did you notice — something they said, did, or how they made you feel?' },
-        { icon: '💌', title: 'Write it down', text: 'Say exactly what you mean. Stuck? Tap "need a starter?" for lines like "I loved how you…"' },
-        { icon: '📖', title: 'Send it, then check yours', text: 'Hit send — then open Names, find yourself, and see what people left for you.' },
-        { icon: '💋', title: 'Read it out loud', text: "When we call on you, read your favorite one out loud. That's the whole game." }
-      ],
-      tipsEyebrow: 'before you write',
-      tipsTitle: 'how to glow',
-      tipsSub: 'a few notes on writing a compliment someone will actually keep',
-      whatTitle: 'what to compliment',
+      tipsEyebrow: 'the rules',
+      tipsTitle: 'how this works',
+      tipsSub: 'simple as that',
+      whatTitle: 'need an idea? compliment...',
       whatChips: ['their smile or laugh', 'something they said tonight', 'their outfit, or a small detail', 'the energy they bring', 'a kind thing they did', 'a skill or talent', 'their style', 'how they made you feel', 'their confidence', 'something only you noticed'],
-      howTitle: 'how to write one',
+      howTitle: 'the rules',
       tips: [
-        `Be specific — name the exact thing, not just "you look nice."`,
+        `Be specific. Not "you look nice" — say what exactly.`,
         `Say why it mattered, not just what you noticed.`,
-        `Compliment the person, not only the outfit — kindness, energy, and effort count too.`,
-        `Keep it kind and real. No backhanded compliments.`,
-        `Sign it, or stay anonymous — either way, it still counts.`,
+        `Be kind and honest. No backhanded compliments.`,
+        `Sign it or stay anonymous — both count.`,
         `Come back later and read what people left for you.`
       ],
       tipsFootnote: "that's it. now go make someone's night.",
+      tipsNextBtn: 'got it →',
+      registerMark: '🕊️',
+      registerPoem: 'Leave your name here, so when someone thinks of you tonight, they know exactly where to find you.',
+      registerPlaceholder: 'your name...',
+      registerBtn: 'sign the book',
+      registerSealing: 'signing…',
+      registerNeedName: 'a name first, please',
+      registerBlocked: 'keep it kind 💗',
+      registerSuccess: (name) => `you're in the book, ${name} 💌`,
+      registerFail: "couldn't sign — try again",
+      registerSkip: 'skip for now →',
       writeEyebrow: 'leave one',
       writeTitle: 'write a compliment',
       writeSub: "someone's about to feel really, really loved",
@@ -649,35 +626,34 @@
       backCoverTap: 'tap to start again ↓'
     },
     uk: {
-      backLink: '← Назад до Glass Closet',
       coverTap: 'тапни, щоб відкрити ↓',
       navBack: '‹ назад', navNext: 'далі ›',
       tabTips: 'поради', tabWrite: 'написати', tabIndex: 'імена',
-      tourSkip: 'пропустити',
-      tourStepLabel: (n, total) => `крок ${n} з ${total}`,
-      tourBack: '‹ назад', tourNext: 'далі ›', tourStart: 'написати перший 💌',
-      tourSlides: [
-        { icon: '👋', title: 'Ласкаво просимо в Glow Book', text: 'До кінця вечора кожен має знати, наскільки він(вона) любимий(а).' },
-        { icon: '💭', title: 'Подумай про когось', text: 'Про когось, з ким ти сьогодні спілкувався(лась). Що ти помітив(ла) — слова, вчинок, відчуття?' },
-        { icon: '💌', title: 'Напиши це', text: 'Скажи саме те, що маєш на увазі. Складно? Тисни «потрібна підказка?» — там є фрази на кшталт «Мені сподобалось, як ти…»' },
-        { icon: '📖', title: 'Відправ і перевір свій', text: 'Натисни «відправити» — тоді відкрий «Імена», знайди себе і подивись, що тобі залишили.' },
-        { icon: '💋', title: 'Прочитай уголос', text: 'Коли ми звернемось до тебе — прочитай свій улюблений запис уголос. Це і є вся гра.' }
-      ],
-      tipsEyebrow: 'перед тим як писати',
-      tipsTitle: 'як зробити комплімент',
-      tipsSub: `кілька порад, як написати комплімент, який справді запам'ятають`,
-      whatTitle: 'що можна відзначити',
+      tipsEyebrow: 'правила',
+      tipsTitle: 'як це працює',
+      tipsSub: 'усе просто',
+      whatTitle: 'потрібна ідея? відзнач...',
       whatChips: ['усмішку чи сміх', 'щось сказане сьогодні', 'образ або деталь', 'енергію, яку вони несуть', 'добрий вчинок', 'талант чи вміння', 'їхній стиль', 'те, як вони змусили тебе почуватися', 'їхню впевненість', 'те, що помітив(ла) тільки ти'],
-      howTitle: 'як написати комплімент',
+      howTitle: 'правила',
       tips: [
-        `Будь конкретним(ою) — назви саме те, що помітив(ла), а не просто «гарно виглядаєш».`,
+        `Будь конкретним(ою). Не «гарно виглядаєш» — а що саме.`,
         `Скажи, чому це було важливо, а не лише що ти помітив(ла).`,
-        `Хвали людину, а не тільки образ — доброта, енергія й старання теж важливі.`,
-        `Будь щирим(ою) і добрим(ою). Без прихованих шпильок.`,
-        `Підпишись або залишайся анонімом — все одно має значення.`,
+        `Будь добрим(ою) і чесним(ою). Без прихованих шпильок.`,
+        `Підпишись або залишайся анонімом — обидва варіанти важливі.`,
         `Повернись пізніше й прочитай, що написали тобі.`
       ],
       tipsFootnote: 'от і все. тепер іди й зроби комусь вечір кращим.',
+      tipsNextBtn: 'зрозуміло →',
+      registerMark: '🕊️',
+      registerPoem: 'Залиш тут своє ім\'я — щоб коли хтось згадає про тебе сьогодні, знав, де тебе знайти.',
+      registerPlaceholder: `твоє ім'я...`,
+      registerBtn: 'підписати книгу',
+      registerSealing: 'підписуємо…',
+      registerNeedName: `спочатку введи ім'я`,
+      registerBlocked: 'будь добрим(ою) 💗',
+      registerSuccess: (name) => `ти в книзі, ${name} 💌`,
+      registerFail: 'не вдалося підписати — спробуй ще раз',
+      registerSkip: 'пропустити →',
       writeEyebrow: 'залиш комплімент',
       writeTitle: 'напиши комплімент',
       writeSub: 'хтось от-от відчує себе дуже улюбленим(ою)',
@@ -751,8 +727,6 @@
   function t(key) { return I18N[currentLang][key]; }
   function translateStaticEls() {
     const L = I18N[currentLang];
-    const backLink = document.querySelector('.nb-back');
-    if (backLink) backLink.innerHTML = L.backLink.replace('←', '&larr;');
     const navBackBtn = document.querySelector('.nav-arrow[onclick="stepPage(-1)"]');
     if (navBackBtn) navBackBtn.textContent = L.navBack;
     const navNextBtn = document.querySelector('.nav-arrow[onclick="stepPage(1)"]');
@@ -801,6 +775,10 @@
   // ── first-visit "opened" flag (for the bow reveal) ──
   function hasOpenedBefore() { try { return localStorage.getItem('glowbook_opened_v1') === '1'; } catch (e) { return false; } }
   function markOpened() { try { localStorage.setItem('glowbook_opened_v1', '1'); } catch (e) {} }
+
+  // ── "registered" flag so returning visitors skip the sign page ──
+  function hasRegisteredBefore() { try { return localStorage.getItem('glowbook_registered_v1') === '1'; } catch (e) { return false; } }
+  function markRegistered() { try { localStorage.setItem('glowbook_registered_v1', '1'); } catch (e) {} }
 
   const BLOCKED_WORDS = ["fuck","shit","bitch","slut","whore","ugly","fat","stupid","idiot","kill yourself","kys","hate you"];
   function containsBlockedWord(text) {
@@ -902,7 +880,7 @@
   }
 
   function pagesList() {
-    return ['cover', 'tips', 'write', 'index', ...personKeys.map(k => 'person:' + k), 'backcover'];
+    return ['cover', 'tips', 'register', 'write', 'index', ...personKeys.map(k => 'person:' + k), 'backcover'];
   }
 
   let currentPage = 'cover';
@@ -974,49 +952,6 @@
     if (currentPage === 'index') document.querySelector('.side-tab--index').classList.add('current');
   }
 
-  const TOUR_SEEN_KEY = 'glowbook_tour_seen_v1';
-  let tourStep = 0;
-  function hasSeenTour() { try { return localStorage.getItem(TOUR_SEEN_KEY) === '1'; } catch (e) { return false; } }
-  function markTourSeen() { try { localStorage.setItem(TOUR_SEEN_KEY, '1'); } catch (e) {} }
-
-  function renderTourStep() {
-    const slides = t('tourSlides');
-    const slide = slides[tourStep];
-    const card = document.getElementById('tour-card');
-    const total = slides.length;
-    const isLast = tourStep === total - 1;
-    card.innerHTML = `
-      <button class="tour-skip" id="tour-skip-btn">${t('tourSkip')}</button>
-      <div class="tour-icon">${slide.icon}</div>
-      <div class="tour-step-label">${t('tourStepLabel')(tourStep + 1, total)}</div>
-      <h3 class="tour-title">${slide.title}</h3>
-      <div class="tour-text">${slide.text}</div>
-      <div class="tour-dots">${slides.map((_, i) => `<span class="tour-dot${i === tourStep ? ' active' : ''}"></span>`).join('')}</div>
-      <div class="tour-nav">
-        <button class="tour-back-btn${tourStep > 0 ? ' visible' : ''}" id="tour-back-btn">${t('tourBack')}</button>
-        <button class="tour-next-btn" id="tour-next-btn">${isLast ? t('tourStart') : t('tourNext')}</button>
-      </div>
-    `;
-    document.getElementById('tour-skip-btn').addEventListener('click', closeTour);
-    document.getElementById('tour-back-btn').addEventListener('click', () => { if (tourStep > 0) { tourStep--; renderTourStep(); } });
-    document.getElementById('tour-next-btn').addEventListener('click', () => {
-      if (isLast) { closeTour(true); return; }
-      tourStep++; renderTourStep();
-    });
-  }
-
-  window.openTour = function() {
-    tourStep = 0;
-    document.getElementById('tour-overlay').classList.add('show');
-    renderTourStep();
-  };
-  function closeTour(goWrite) {
-    document.getElementById('tour-overlay').classList.remove('show');
-    markTourSeen();
-    if (goWrite) flipTo('write', 'fwd');
-  }
-  document.getElementById('tour-btn').addEventListener('click', openTour);
-
   function popFlash() {
     const flash = document.getElementById('glow-flash');
     flash.classList.remove('play');
@@ -1038,7 +973,7 @@
       inner.querySelector('.pg-cover').addEventListener('click', () => {
         function proceed() {
           popFlash();
-          if (hasSeenTour()) { flipTo('tips', 'fwd'); } else { setTimeout(openTour, 350); }
+          flipTo('tips', 'fwd');
         }
         if (bowEl && !bowEl.classList.contains('untying')) {
           playSfx('sfx-untie');
@@ -1056,7 +991,8 @@
       return;
     }
     inner.style.overflow = 'auto'; inner.style.padding = '1.5rem 1.3rem 2rem'; inner.style.background = 'var(--paper)';
-    if (pageId === 'tips') return void (inner.innerHTML = tipsHtml());
+    if (pageId === 'tips') { inner.innerHTML = tipsHtml(); wireTips(); return; }
+    if (pageId === 'register') { inner.innerHTML = registerHtml(); wireRegister(); return; }
     if (pageId === 'write') { inner.innerHTML = writeHtml(); wireWrite(); return; }
     if (pageId === 'index') { inner.innerHTML = indexHtml(); wireIndex(); return; }
     if (pageId.startsWith('person:')) {
@@ -1121,15 +1057,78 @@
   function tipsHtml() {
     return `
       <div class="pg-eyebrow">${t('tipsEyebrow')}</div>
+      <h2 class="pg-title">${t('tipsTitle')}</h2>
       <div class="pg-sub">${t('tipsSub')}</div>
       <div class="tips-divider"></div>
-      <div class="tips-subhead">${t('whatTitle')}</div>
-      <div class="idea-chips">${t('whatChips').map(c => `<span class="idea-chip">${escapeHtml(c)}</span>`).join('')}</div>
       <div class="tips-subhead">${t('howTitle')}</div>
       <ul class="tips-list">
         ${t('tips').map((r, i) => `<li class="tip-item"><span class="tip-num">${i + 1}</span><span class="tip-text">${r}</span></li>`).join('')}
       </ul>
+      <div class="tips-subhead">${t('whatTitle')}</div>
+      <div class="idea-chips">${t('whatChips').map(c => `<span class="idea-chip">${escapeHtml(c)}</span>`).join('')}</div>
+      <button type="button" id="tips-next-btn" class="tips-next-btn">${t('tipsNextBtn')}</button>
     `;
+  }
+
+  function wireTips() {
+    const btn = document.getElementById('tips-next-btn');
+    if (btn) btn.addEventListener('click', () => goTo(hasRegisteredBefore() ? 'write' : 'register', 'fwd'));
+  }
+
+  function registerHtml() {
+    return `
+      <div class="register-wrap">
+        <div class="register-mark">${t('registerMark')}</div>
+        <div class="register-poem">${t('registerPoem')}</div>
+        <div class="register-card">
+          <input id="register-name-input" maxlength="40" placeholder="${escapeHtml(t('registerPlaceholder'))}" autocomplete="off">
+          <button id="register-btn">${t('registerBtn')}</button>
+          <div id="register-status"></div>
+        </div>
+        <button type="button" class="register-skip" id="register-skip-btn">${t('registerSkip')}</button>
+      </div>
+    `;
+  }
+
+  function wireRegister() {
+    const input = document.getElementById('register-name-input');
+    const btn = document.getElementById('register-btn');
+    const statusEl = document.getElementById('register-status');
+    const skipBtn = document.getElementById('register-skip-btn');
+
+    if (skipBtn) skipBtn.addEventListener('click', () => goTo('write', 'fwd'));
+
+    if (btn) {
+      btn.addEventListener('click', () => {
+        const name = input.value.trim();
+        statusEl.className = ''; statusEl.textContent = '';
+        if (!name) { statusEl.textContent = t('registerNeedName'); statusEl.classList.add('error'); return; }
+        if (containsBlockedWord(name)) { statusEl.textContent = t('registerBlocked'); statusEl.classList.add('error'); return; }
+
+        btn.disabled = true;
+        const originalLabel = t('registerBtn');
+        btn.textContent = t('registerSealing');
+
+        const key = name.toLowerCase();
+        set(ref(db, 'glowroster/' + key.replace(/[.#$/\[\]]/g, '_')), name)
+          .then(() => {
+            markRegistered();
+            statusEl.className = ''; statusEl.classList.add('success');
+            statusEl.textContent = t('registerSuccess')(name);
+            playSfx('sfx-seal');
+            popFlash();
+            setTimeout(() => goTo('write', 'fwd'), 900);
+          })
+          .catch(() => {
+            statusEl.className = ''; statusEl.textContent = t('registerFail');
+            statusEl.classList.add('error');
+          })
+          .finally(() => {
+            btn.disabled = false;
+            btn.textContent = originalLabel;
+          });
+      });
+    }
   }
 
   function writeHtml() {
