@@ -57,6 +57,42 @@
     cursor: pointer; transition: opacity 0.4s ease;
   }
 
+  /* ── FIRST-VISIT INTRO (no shatter — that shows up starting the 2nd visit) ── */
+  #intro-simple-overlay {
+    display: none;
+    position: fixed; inset: 0; z-index: 100001;
+    flex-direction: column; align-items: center; justify-content: flex-start;
+    background: #100d0a;
+    padding: 4rem 1.5rem 2.5rem; text-align: center;
+    transition: opacity 0.4s ease;
+  }
+  #intro-simple-overlay.show { display: flex; }
+  #intro-simple-avatar {
+    width: 84px; height: 84px; border-radius: 50%; object-fit: cover;
+    margin: 0 auto 1.4rem; display: block; box-shadow: 0 4px 18px rgba(0,0,0,0.4);
+  }
+  #intro-simple-eyebrow {
+    font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.3em;
+    color: #9a9390; margin-bottom: 0.5rem;
+  }
+  #intro-simple-title {
+    font-family: 'Anton', sans-serif; text-transform: uppercase; letter-spacing: 0.01em;
+    font-size: clamp(2rem, 9vw, 3rem); line-height: 1.05; color: #f7f4f0; margin-bottom: 0.8rem;
+  }
+  #intro-simple-sub {
+    font-family: 'Playfair Display', serif; font-style: italic; font-size: 1.1rem;
+    color: #a8a09b; line-height: 1.5; max-width: 320px; margin: 0 auto 2.2rem;
+  }
+  #intro-simple-btn {
+    font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 0.68rem;
+    text-transform: uppercase; letter-spacing: 0.12em; background: var(--accent);
+    color: var(--ink); border: none; padding: 0.65rem 1.6rem; border-radius: 2px;
+    cursor: pointer; transition: opacity 0.15s;
+    box-shadow: 1px 2px 4px rgba(0,0,0,0.25);
+  }
+  #intro-simple-btn:hover { opacity: 0.85; }
+  #intro-simple-btn:active { transform: scale(0.97); }
+
   /* ── TOP BAR ── */
   #topbar {
     display: flex; flex-direction: column;
@@ -66,7 +102,7 @@
     border-bottom: 1px solid rgba(0,0,0,0.08); flex-shrink: 0; z-index: 10000;
     position: relative;
   }
-  #topbar-row1 { display: flex; align-items: center; justify-content: space-between; }
+  #topbar-row1 { display: flex; align-items: flex-start; justify-content: space-between; }
 
   #topbar-row2 { margin-top: 0.4rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
   #topbar-gossip-link {
@@ -75,6 +111,20 @@
     cursor: pointer; width: fit-content; letter-spacing: 0.01em;
   }
   #topbar-gossip-link:hover { color: rgba(26,20,20,0.8); }
+
+  #emergency-timer {
+    display: flex; align-items: baseline; gap: 0.4rem; margin-left: auto;
+  }
+  #timer-label {
+    font-family: 'DM Sans', sans-serif; font-weight: 500; font-size: 0.6rem;
+    text-transform: uppercase; letter-spacing: 0.12em; color: rgba(26,20,20,0.55);
+  }
+  #timer-display {
+    font-family: 'Anton', sans-serif; font-size: 0.95rem; letter-spacing: 0.02em;
+    color: var(--ink); font-variant-numeric: tabular-nums;
+  }
+  #timer-display.urgent { color: #bb7f97; animation: timer-pulse 1s ease-in-out infinite; }
+  @keyframes timer-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
   #topbar-title-container {
     position: relative;
@@ -94,21 +144,37 @@
     flex-shrink: 0;
   }
 
+  #topbar-cta-group { display: flex; flex-direction: column; align-items: flex-end; gap: 0.35rem; flex-shrink: 0; }
+
   #verdict-btn {
-    font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 0.68rem;
-    text-transform: uppercase; letter-spacing: 0.12em; background: #1a1414;
-    color: #fff; border: none; padding: 0.5rem 1rem; border-radius: 2px;
+    font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 0.56rem;
+    text-transform: uppercase; letter-spacing: 0.1em; background: var(--ink);
+    color: #fff; border: none; padding: 0.38rem 0.65rem; border-radius: 2px;
     cursor: pointer; transition: opacity 0.15s;
     box-shadow: 1px 2px 4px rgba(0,0,0,0.2);
+    flex-shrink: 0;
   }
   #verdict-btn:hover { opacity: 0.75; }
+
+  #telegram-btn {
+    font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 0.68rem;
+    text-transform: uppercase; letter-spacing: 0.1em; background: var(--accent);
+    color: var(--ink); border: none; padding: 0.55rem 0.9rem; border-radius: 2px;
+    cursor: pointer; transition: opacity 0.15s, transform 0.1s;
+    box-shadow: 1px 2px 4px rgba(0,0,0,0.2);
+    display: flex; align-items: center; gap: 0.35rem;
+    flex-shrink: 0;
+  }
+  #telegram-btn svg { width: 13px; height: 13px; }
+  #telegram-btn:hover { opacity: 0.85; }
+  #telegram-btn:active { transform: scale(0.96); }
 
   #topbar-icon-row {
     display: flex; justify-content: flex-end; align-items: center; gap: 0.5rem;
     margin-top: 0.45rem;
   }
   #topbar-icon-group { display: flex; gap: 0.5rem; }
-  #request-btn, #telegram-btn {
+  #request-btn {
     width: 32px; height: 32px; border-radius: 50%;
     background: rgba(26,20,20,0.14); border: none;
     color: rgba(26,20,20,0.75); text-decoration: none;
@@ -116,8 +182,8 @@
     cursor: pointer; transition: background 0.15s, transform 0.1s;
     position: relative;
   }
-  #request-btn svg, #telegram-btn svg { width: 16px; height: 16px; }
-  #request-btn:active, #telegram-btn:active { transform: scale(0.9); background: rgba(26,20,20,0.24); }
+  #request-btn svg { width: 16px; height: 16px; }
+  #request-btn:active { transform: scale(0.9); background: rgba(26,20,20,0.24); }
 
   #help-btn {
     width: 26px; height: 26px; border-radius: 50%;
@@ -909,7 +975,7 @@
   }
   #verdict-close .verdict-close-label, #telegram-close .verdict-close-label { line-height: 1.3; text-decoration: underline; text-underline-offset: 3px; }
 
-  /* ── TELEGRAM SHARE OVERLAY ── */
+  /* ── TELEGRAM SHARE OVERLAY (kept simple: one instruction, the photo, two buttons) ── */
   #telegram-overlay {
     display: none; position: fixed; inset: 0;
     background: #100d0a;
@@ -919,13 +985,12 @@
   }
   #telegram-overlay.show { display: flex; }
   #telegram-top { display: flex; flex-direction: column; align-items: center; width: 100%; }
-  #telegram-eyebrow { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.3em; color: #9a9390; margin-bottom: 0.5rem; }
   #telegram-text { font-family: 'Anton', sans-serif; text-transform: uppercase; letter-spacing: 0.01em; font-size: clamp(2rem, 9vw, 3rem); line-height: 1.05; color: #f7f4f0; margin-bottom: 0.8rem; }
   #telegram-sub { font-family: 'Playfair Display', serif; font-style: italic; font-size: 1.1rem; color: #a8a09b; line-height: 1.5; max-width: 320px; }
 
   #telegram-photo-frame {
-    width: min(78vw, 280px); margin: 2rem auto 1.6rem;
-    background: #fdfbf7; padding: 12px 12px 32px;
+    width: min(78vw, 280px); margin: 2rem auto 1.8rem;
+    background: #fdfbf7; padding: 12px;
     box-shadow: 0 12px 30px rgba(0,0,0,0.5), 0 2px 6px rgba(0,0,0,0.3);
     transform: rotate(-2deg); flex-shrink: 0;
     position: relative;
@@ -939,19 +1004,6 @@
     content: ''; position: absolute; inset: 0; pointer-events: none;
     background: radial-gradient(ellipse at center, rgba(0,0,0,0) 60%, rgba(20,15,10,0.15) 100%);
   }
-  #telegram-download-btn {
-    position: absolute; bottom: 10px; right: 18px;
-    width: 26px; height: 26px; border-radius: 50%;
-    background: rgba(26, 22, 18, 0.55);
-    border: none; color: #f7f4f0;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer; opacity: 0.7; transition: opacity 0.15s, background 0.15s;
-    z-index: 5;
-  }
-  #telegram-download-btn:hover, #telegram-download-btn:active { opacity: 1; background: rgba(26, 22, 18, 0.8); }
-  #telegram-download-btn svg { width: 13px; height: 13px; stroke: currentColor; fill: none; }
-  #telegram-download-btn.saved svg { display: none; }
-  #telegram-download-btn.saved::after { content: '✓'; font-size: 0.7rem; line-height: 1; }
 
   #telegram-empty-msg {
     display: none; font-family: 'Playfair Display', serif; font-style: italic;
@@ -960,7 +1012,68 @@
   #telegram-overlay.empty #telegram-photo-frame { display: none; }
   #telegram-overlay.empty #telegram-empty-msg { display: block; }
 
-  #telegram-links { display: flex; gap: 0.6rem; margin: 0.5rem auto 0.4rem; flex-shrink: 0; }
+  #telegram-actions { display: flex; flex-direction: column; gap: 0.6rem; width: 100%; max-width: 300px; margin: 0.4rem auto 0.6rem; flex-shrink: 0; }
+  .telegram-action-btn {
+    display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+    font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 0.72rem;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    padding: 0.75rem 1rem; border-radius: 3px; cursor: pointer;
+    text-decoration: none; border: none; transition: opacity 0.15s, transform 0.1s;
+  }
+  .telegram-action-btn:active { transform: scale(0.98); }
+  .telegram-action-btn svg { width: 15px; height: 15px; stroke: currentColor; fill: none; flex-shrink: 0; }
+  #telegram-download-btn { background: rgba(212, 155, 177, 0.12); border: 1px solid var(--accent); color: var(--accent); }
+  #telegram-download-btn:hover { background: rgba(212, 155, 177, 0.22); }
+  #telegram-download-btn.saved .dl-label::after { content: ' — saved ✓'; }
+  #telegram-join-link { background: var(--accent); color: var(--ink); }
+  #telegram-join-link:hover { opacity: 0.85; }
+
+  /* ── TIME'S UP OVERLAY ── */
+  #timesup-overlay {
+    display: none; position: fixed; inset: 0;
+    background: #100d0a;
+    z-index: 25000 !important; flex-direction: column; align-items: center;
+    justify-content: center; padding: 2.5rem 1.5rem; text-align: center;
+  }
+  #timesup-overlay.show { display: flex; }
+  #timesup-eyebrow { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.3em; color: #9a9390; margin-bottom: 0.5rem; }
+  #timesup-title { font-family: 'Anton', sans-serif; text-transform: uppercase; letter-spacing: 0.01em; font-size: clamp(2rem, 9vw, 3rem); line-height: 1.05; color: #f7f4f0; margin-bottom: 0.8rem; }
+  #timesup-sub { font-family: 'Playfair Display', serif; font-style: italic; font-size: 1.1rem; color: #a8a09b; line-height: 1.5; max-width: 320px; margin: 0 auto 2.2rem; }
+  #timesup-actions { display: flex; flex-direction: column; gap: 0.6rem; width: 100%; max-width: 300px; margin: 0 auto; }
+  #timesup-send-btn {
+    font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 0.72rem;
+    text-transform: uppercase; letter-spacing: 0.1em; background: var(--accent);
+    color: var(--ink); border: none; padding: 0.75rem 1rem; border-radius: 3px;
+    cursor: pointer; transition: opacity 0.15s, transform 0.1s;
+  }
+  #timesup-send-btn:hover { opacity: 0.85; }
+  #timesup-send-btn:active { transform: scale(0.98); }
+  #timesup-dismiss-btn {
+    font-family: 'DM Sans', sans-serif; font-weight: 500; font-size: 0.62rem;
+    text-transform: uppercase; letter-spacing: 0.1em; color: #a8a09b;
+    background: none; border: none; text-decoration: underline; text-underline-offset: 3px;
+    cursor: pointer; padding: 0.4rem; margin-top: 0.2rem;
+  }
+
+  /* ── START NOW GATE (between the tour and the countdown) ── */
+  #startnow-overlay {
+    display: none; position: fixed; inset: 0;
+    background: #100d0a;
+    z-index: 25000 !important; flex-direction: column; align-items: center;
+    justify-content: center; padding: 2.5rem 1.5rem; text-align: center;
+  }
+  #startnow-overlay.show { display: flex; }
+  #startnow-eyebrow { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.3em; color: #9a9390; margin-bottom: 0.5rem; }
+  #startnow-title { font-family: 'Anton', sans-serif; text-transform: uppercase; letter-spacing: 0.01em; font-size: clamp(2rem, 9vw, 3rem); line-height: 1.05; color: #f7f4f0; margin-bottom: 0.8rem; }
+  #startnow-sub { font-family: 'Playfair Display', serif; font-style: italic; font-size: 1.1rem; color: #a8a09b; line-height: 1.5; max-width: 320px; margin: 0 auto 2.2rem; }
+  #startnow-btn {
+    font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 0.75rem;
+    text-transform: uppercase; letter-spacing: 0.12em; background: var(--accent);
+    color: var(--ink); border: none; padding: 0.75rem 1.8rem; border-radius: 3px;
+    cursor: pointer; transition: opacity 0.15s, transform 0.1s;
+  }
+  #startnow-btn:hover { opacity: 0.85; }
+  #startnow-btn:active { transform: scale(0.97); }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
@@ -975,21 +1088,35 @@
   </div>
 </div>
 
+<!-- First-time-only intro: no glass shatter, that's saved for the second visit onward -->
+<div id="intro-simple-overlay">
+  <div id="intro-simple-card">
+    <img id="intro-simple-avatar" src="sasha-guide.png" alt="" onerror="this.style.display='none'">
+    <p id="intro-simple-eyebrow">You've got a</p>
+    <h1 id="intro-simple-title">STYLE<br>EMERGENCY</h1>
+    <p id="intro-simple-sub">Grab your partner. Build the fit. Send it to the group chat.</p>
+    <button id="intro-simple-btn" onclick="dismissSimpleIntro()">Let's go</button>
+  </div>
+</div>
+
 <div id="topbar">
   <div id="topbar-row1">
     <div id="topbar-title-container">
       <img src="glasscloset.png" alt="Glass Closet" style="max-height: 25px; width: auto;" onerror="this.style.display='none'">
       <img src="kissprint.png" alt="" class="kiss-print">
     </div>
-    <button id="verdict-btn" onclick="showVerdict()">Get my verdict</button>
-  </div>
-  <div id="topbar-icon-row">
-    <div id="topbar-icon-group">
-      <button id="telegram-btn" onclick="openTelegramModal()" aria-label="Join the Telegram groupchat" title="Join the Telegram groupchat">
+    <div id="topbar-cta-group">
+      <button id="telegram-btn" onclick="openTelegramModal()" aria-label="Join the Vogue Committee groupchat" title="Join the Vogue Committee groupchat">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
           <path d="M3 11.5 20.5 4 17 20 11 15.5 8 18v-4L18 7"></path>
         </svg>
+        Join Vogue Committee
       </button>
+      <button id="verdict-btn" onclick="showVerdict()">Fit Check</button>
+    </div>
+  </div>
+  <div id="topbar-icon-row">
+    <div id="topbar-icon-group">
       <button id="help-btn" onclick="startTour(true)" aria-label="How this works" title="How this works">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="9"></circle>
@@ -999,7 +1126,12 @@
       </button>
     </div>
   </div>
-  <div id="topbar-row2"></div>
+  <div id="topbar-row2">
+    <div id="emergency-timer">
+      <span id="timer-label">Style Emergency ends in</span>
+      <span id="timer-display">7:00</span>
+    </div>
+  </div>
 </div>
 
 <div id="tour-overlay">
@@ -1197,27 +1329,27 @@
 
 <div id="telegram-overlay">
   <div id="telegram-top">
-    <div id="telegram-eyebrow">Take it to the groupchat</div>
-    <div id="telegram-text">Share the fit</div>
-    <div id="telegram-sub">Save your look, then drop it in the chat.</div>
+    <div id="telegram-text">Send it in</div>
+    <div id="telegram-sub">Download your look, then send it to the Vogue Committee.</div>
   </div>
 
   <div id="telegram-photo-frame">
     <div id="telegram-outfit-preview"></div>
-    <button id="telegram-download-btn" onclick="downloadOutfitImage(document.getElementById('telegram-outfit-preview'), document.getElementById('telegram-download-btn'), 'glass-closet-look.png')" aria-label="Download">
+  </div>
+  <div id="telegram-empty-msg">The closet's empty — build a look first, then come share it.</div>
+
+  <div id="telegram-actions">
+    <button id="telegram-download-btn" class="telegram-action-btn" onclick="downloadOutfitImage(document.getElementById('telegram-outfit-preview'), document.getElementById('telegram-download-btn'), 'glass-closet-look.png')">
       <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M12 3v12"></path>
         <path d="M7 10l5 5 5-5"></path>
         <path d="M5 21h14"></path>
       </svg>
+      <span class="dl-label">Download your look</span>
     </button>
-  </div>
-  <div id="telegram-empty-msg">The closet's empty — build a look first, then come share it.</div>
-
-  <div id="telegram-links">
-    <a id="telegram-join-link" class="verdict-link-btn" href="https://t.me/+UC1vcZZRBWA0ZDg6" target="_blank" rel="noopener">
+    <a id="telegram-join-link" class="telegram-action-btn" href="https://t.me/+UC1vcZZRBWA0ZDg6" target="_blank" rel="noopener">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 20.5 4 17 20 11 15.5 8 18v-4L18 7"></path></svg>
-      <span>Join the groupchat</span>
+      Send your outfit here
     </a>
   </div>
 
@@ -1229,8 +1361,28 @@
   </div>
 </div>
 
+<div id="timesup-overlay">
+  <div id="timesup-eyebrow">Time's up</div>
+  <div id="timesup-title">To the table</div>
+  <div id="timesup-sub">Grab your partner and head to the table to present your case — but send your outfit to the Vogue Committee first.</div>
+  <div id="timesup-actions">
+    <button id="timesup-send-btn" onclick="closeTimesUp(); openTelegramModal();">Send your outfit here</button>
+    <button id="timesup-dismiss-btn" onclick="closeTimesUp()">Give me a minute</button>
+  </div>
+</div>
+
+<div id="startnow-overlay">
+  <div id="startnow-eyebrow">Ready?</div>
+  <div id="startnow-title">Start the clock</div>
+  <div id="startnow-sub">You and your partner have 7 minutes to build the fit. Hit start when you're ready.</div>
+  <button id="startnow-btn" onclick="beginEmergencyTimer()">Start now</button>
+</div>
+
 <script>
 // ── SOUND FX ──
+// All sound effects are muted from the start. Flip this to false (and add a
+// toggle in the UI) if audio should ever be turned back on.
+const SOUND_MUTED = true;
 const GOSSIP_BEAT_SRC = 'item-select.mp3';
 const TRUE_ITEM_SELECT_SRC = 'true-item-select.mp3';
 const SHUTTER_SRC = 'shutter.mp3';
@@ -1252,7 +1404,8 @@ preloadSoundCheck(TRUE_ITEM_SELECT_SRC, 'item-add sound');
 preloadSoundCheck(SHUTTER_SRC, 'shutter sound');
 
 const gossipBeatAudio = new Audio(GOSSIP_BEAT_SRC);
-gossipBeatAudio.volume = 0.28; 
+gossipBeatAudio.volume = 0.28;
+gossipBeatAudio.muted = SOUND_MUTED;
 
 // Continues playing without cutting off.
 function playGossipBeatSnippet() {
@@ -1275,6 +1428,7 @@ function playTrueItemSelectSound() {
   try {
     const a = new Audio(TRUE_ITEM_SELECT_SRC);
     a.volume = 0.5;
+    a.muted = SOUND_MUTED;
     const p = a.play();
     if (p && p.catch) {
       p.catch(err => console.warn('[sound fx] item-select playback blocked/failed:', err.message));
@@ -1286,6 +1440,7 @@ function playTrueItemSelectSound() {
 
 const shutterAudio = new Audio(SHUTTER_SRC);
 shutterAudio.volume = 0.6;
+shutterAudio.muted = SOUND_MUTED;
 function playShutterSound() {
   try {
     shutterAudio.pause();
@@ -1745,1961 +1900,4 @@ const verdicts = {
   'cosy rich': { line: "Expensive blankets, quietly bigger feelings.", sub: "Warm color, warmer bank balance." },
   'dangerous': { line: "Looks like trouble. Reads like intention.", sub: "Nothing about this outfit is an accident." },
   'dangerous romantic': { line: "Love letters written in something sharper than ink.", sub: "Beautiful, and a little bit of a warning." },
-  'dangerous woman': { line: "You came, you saw, you left with the album.", sub: "Soft on the surface. A whole era underneath." },
-  'dark cowgirl': { line: "The frontier, after dark.", sub: "Boots that have clearly seen things." },
-  'dark romantic': { line: "Beautiful and faintly ominous.", sub: "This is journal-entry dressing, and the entry is very good." },
-  'delicate': { line: "Small details doing enormous work.", sub: "Subtlety as a flex." },
-  'director': { line: "You're not in the scene. You're framing it.", sub: "Glasses on, opinions louder than the dialogue." },
-  'downtown': { line: "Cool without trying, which took a lot of trying.", sub: "Looks like 2am and a good decision." },
-  'downtown art': { line: "Studio-visit dressing, gallery-opening confidence.", sub: "Paint-splatter energy without the paint." },
-  'downtown artist': { line: "Tinted glasses, untinted opinions.", sub: "Looks like you make something nobody's seen yet." },
-  'downtown intellectual': { line: "Canvas tote, sharper argument inside.", sub: "Looks like you read the whole article, not just the headline." },
-  'dramatic': { line: "Subtle was never the assignment.", sub: "Every seam here is doing a monologue." },
-  'dramatic entrance': { line: "The door opened, and so did the conversation.", sub: "You don't walk into rooms. You announce them." },
-  'edgy': { line: "A little sharp around the edges, on purpose.", sub: "Smooth would have been boring." },
-  'editorial': { line: "You've clearly been shot by someone whose name I should know.", sub: "This look belongs in print, not just in public." },
-  'effortless': { line: "Looks like you didn't think about it.", sub: "We both know you did. It worked." },
-  'effortless chic': { line: "Carelessly perfect, which took real work.", sub: "The most elusive look there is." },
-  'effortlessly powerful': { line: "Power dressing without the dressing-up part.", sub: "Authority that never had to raise its voice." },
-  'effortlessly sexy': { line: "Confidence doing most of the heavy lifting.", sub: "The clothes are just along for the ride." },
-  'eighties revival': { line: "Shoulders first, questions later.", sub: "Power dressing's most dramatic decade, reissued." },
-  'evening': { line: "Daylight was never going to be enough for this.", sub: "Built for rooms with better lighting." },
-  'evening editorial': { line: "Shot at midnight, printed in gloss.", sub: "This isn't an outfit, it's a spread." },
-  'evening femme': { line: "Soft lighting was made for exactly this.", sub: "Glamour with somewhere to be." },
-  'extremely online': { line: "This fit has a whole fandom.", sub: "Built for screenshots, not just sidewalks." },
-  'fashion insider': { line: "You knew before the campaign even dropped.", sub: "Logo recognized only by people who'd know." },
-  'fashion literate': { line: "You read fashion the way some people read novels.", sub: "Footnotes included, references intentional." },
-  'fashion-forward': { line: "Six months ahead and not waiting for company.", sub: "Everyone else will catch up eventually." },
-  'feminine danger': { line: "Pretty is doing a lot of the threatening here.", sub: "Sheer, soft, and not to be underestimated." },
-  'feminine touch': { line: "One small detail, doing all the talking.", sub: "Restraint as its own kind of statement." },
-  'femme': { line: "Femme as a weapon, a language, a stance.", sub: "You know exactly what youre doing with it." },
-  'femme confident': { line: "No performance. Just presence.", sub: "This look doesn't need an audience to work." },
-  'french girl': { line: "Classically, maddeningly cool.", sub: "Stripes, a beret, a silk scarf — it was always going to be the right call." },
-  'french intellectual': { line: "Reads philosophy on the metro, looks incredible doing it.", sub: "Effortless, and charmingly a little condescending." },
-  'glamour': { line: "Old-school shine, no apology for it.", sub: "Built to catch light and hold a room." },
-  'going out': { line: "This outfit has somewhere to be at 11pm.", sub: "Daylight has no use for it." },
-  'intellectual': { line: "You dress like you have opinions about architecture.", sub: "Smart, deliberate, a little intimidating." },
-  'intellectually productive': { line: "Dressed for the deep-focus playlist.", sub: "Looks like four tabs open and a finished thesis." },
-  'italian summer': { line: "Linen, gold, and zero urgency.", sub: "Built for a coastline you haven't found yet." },
-  'literary': { line: "Your outfit is basically a first edition.", sub: "Well-read, well-dressed, slightly unavailable." },
-  'literary weekend': { line: "Cabin, book, sweater, repeat.", sub: "Looks like the plot thickens slowly, and on purpose." },
-  'maximalist': { line: "More is more is more is more.", sub: "You are the look. The look is you." },
-  'maximalist angel': { line: "Soft chaos with very good lighting.", sub: "Too much, in exactly the right direction." },
-  'maximalist evening': { line: "Subtlety took the night off.", sub: "Built to be seen from across the room." },
-  'maximalist villain': { line: "A coat, a plan, a cinematic entrance.", sub: "Villain arc, but make it fashion." },
-  'minimalist': { line: "Everything unnecessary already got edited out.", sub: "What's left is doing all the work." },
-  'minimalist power': { line: "Quiet lines, loud results.", sub: "No embellishment needed when the cut is correct." },
-  'mysterious': { line: "No one knows you, and you like it that way.", sub: "Long coat, no explanation, perfect." },
-  'nineties': { line: "The nineties were right about almost everything.", sub: "Slip, silver, and cool air." },
-  'nineties cool': { line: "Slouchy on purpose, sharp underneath.", sub: "Looks borrowed. Definitely isn't." },
-  'nineties goth': { line: "Velvet choker, permanent eye-roll.", sub: "Dark, a little bored, completely correct." },
-  'nineties revival': { line: "You brought the decade back without the disclaimer.", sub: "Chrome, low-rise, no notes." },
-  'nocturnal': { line: "Daylight just isn't your jurisdiction.", sub: "This look only really exists after dark." },
-  'nocturnal glamour': { line: "You were made for after dark.", sub: "Daytime hasn't earned this outfit yet." },
-  'off-duty': { line: "Technically not working. Visibly still winning.", sub: "The good kind of low effort." },
-  'off-duty cool': { line: "Looks thrown on. Wasn't.", sub: "The laziest-looking outfit took the most thought." },
-  'off-duty editorial': { line: "Looks like a candid. Was fully styled.", sub: "Off the clock, on the record." },
-  'off-duty luxury': { line: "Resting, but in cashmere.", sub: "Even doing nothing, this outfit is working." },
-  'old Hollywood': { line: "You arrived. Everyone turned.", sub: "A different, glossier era recognizes you." },
-  'old Hollywood glam': { line: "Studio lighting, even outdoors.", sub: "This look has its own publicist." },
-  'old money': { line: "Inherited taste, or an impeccable fake.", sub: "Either way, nobody's asking which." },
-  'perennial chic': { line: "This won't date. It already decided not to.", sub: "A look with no expiration." },
-  'polished': { line: "Every edge accounted for.", sub: "Looks easy. Took a mirror and a plan." },
-  'power': { line: "The room recalibrates when you walk in.", sub: "This outfit has a seven-point agenda, and it's winning." },
-  'power androgyny': { line: "Neither — and therefore everything.", sub: "Shoulders, fluidity, the confidence of someone who picked their own rules." },
-  'power dressing': { line: "Dressed for a negotiation you're going to win.", sub: "Every line in this outfit means business." },
-  'power femme': { line: "Femininity here isn't softness. It's precision.", sub: "Every detail is a choice, and you made them all." },
-  'power jewellery': { line: "Small pieces, outsized authority.", sub: "Metal doing the talking your face doesn't have to." },
-  'powerful': { line: "This outfit doesn't ask for the room. It takes it.", sub: "Quietly, completely, no discussion." },
-  'practical chic': { line: "Built to survive the day and still look deliberate.", sub: "Function first. But style never left the building." },
-  'practical cool': { line: "Built to actually do something.", sub: "Looks effortless because it has to be." },
-  'preppy subverted': { line: "A uniform with a small rebellion stitched in.", sub: "Old rules, new owner." },
-  'princess energy': { line: "Tulle entered the chat.", sub: "Soft, a little extra, entirely unbothered by 'too much.'" },
-  'punk adjacent': { line: "Close enough to the riot to feel it.", sub: "Not a full uprising. But you're definitely on the flyer." },
-  'punk heritage': { line: "This plaid remembers where it came from.", sub: "Tailored rebellion with a long memory." },
-  'quiet': { line: "Says almost nothing, but means every detail.", sub: "Restraint, deployed correctly." },
-  'quiet luxury': { line: "Expensive, but without the announcement.", sub: "The most intimidating kind of wealth." },
-  'quiet luxury peak': { line: "The version people try to copy and can't.", sub: "No logos needed. None of this needs a logo." },
-  'quiet subversion': { line: "Looks correct. But not quite.", sub: "The rules were followed just enough to break one cleanly." },
-  'quietly powerful': { line: "Doesn't raise its voice. Doesn't need to.", sub: "The kind of power that never explains itself." },
-  'rabbit hole': { line: "You followed the white rabbit and didn't ask questions.", sub: "Curiouser is the whole point." },
-  'ready for anything': { line: "Equipped for a plan that hasn't happened yet.", sub: "Practical, prepared, weirdly stylish about it." },
-  'regency romantic': { line: "Empire waist, modern audacity.", sub: "Looks like a period drama that knows it's a period drama." },
-  'retro glam': { line: "Borrowed the era and improved it.", sub: "Vintage shine, modern nerve." },
-  'retro glamour': { line: "Old film, new leading role.", sub: "This look has its own opening credits." },
-  'rich girl': { line: "Looks expensive. And couldn't care less.", sub: "Gold doesn't need a signature." },
-  'riot grrrl': { line: "Loud, proud, a little threatening.", sub: "You dress like the patriarchy owes you money." },
-  'rock': { line: "Leather, attitude, a soundtrack only you can hear.", sub: "Volume at max before you've even spoken." },
-  'rock evening': { line: "Backstage energy, front-row look.", sub: "Built for a night that's going to be loud." },
-  'romantic intellectual': { line: "Poetry, but perfectly tailored.", sub: "Feelings with footnotes." },
-  'school-to-stage': { line: "Uniform on the outside, performance underneath.", sub: "Looks like detention. Reads like a debut." },
-  'sculptural': { line: "Less an outfit, more a structure you're wearing.", sub: "Architecture got dressed and went outside." },
-  'sculptural minimalism': { line: "The shape did all the work. The color stayed quiet.", sub: "Looks carved, not sewn." },
-  'seventies': { line: "The right decade, finally.", sub: "Brown, camel, and absolute confidence." },
-  'seventies cool': { line: "Sun-bleached and somehow still sharp.", sub: "Looks like it was borrowed from an album cover." },
-  'sentimental': { line: "Wears her heart exactly where you can see it.", sub: "A little bit yearbook, a little bit forever." },
-  'sharp': { line: "Every line on this outfit has something to say.", sub: "Crisp, precise, a little dangerous." },
-  'soft': { line: "Gentle, but never accidental.", sub: "Comfort, dressed up exactly as much as needed." },
-  'soft butch': { line: "Comfortable and completely calculated.", sub: "You make ease look like a whole lifestyle." },
-  'soft danger': { line: "Sweet until you look twice.", sub: "Beauty doing quiet, serious work here." },
-  'soft elegance': { line: "Nothing here is shouting, and everything is right.", sub: "Elegance that doesn't need volume." },
-  'soft romantic': { line: "Looks like a love letter, reads like restraint.", sub: "Romance, deliberately left gentle." },
-  'sporty chic': { line: "Athletic cut, zero intention of running anywhere.", sub: "Built for the bench, not the track." },
-  'sporty-chic': { line: "Athletic fabric, everyday pace.", sub: "Looks fast. Moves at brunch speed." },
-  'summer icon': { line: "This look is the season's highlight.", sub: "White, bright, and not going anywhere." },
-  'summer minimalist': { line: "Less fabric, same amount of intention.", sub: "Heat-proof and still thought through." },
-  'summertime': { line: "Warm-weather's favorite outfit.", sub: "Built for long days and even longer light." },
-  'theatrical': { line: "You didn't come here to blend in with the crowd.", sub: "The exit is a look. The look is the exit." },
-  'theatrical femme': { line: "Soft, but staged.", sub: "Every detail here has its own blocking." },
-  'theatrical goth': { line: "Tragedy, but make it tulle.", sub: "Looks like act three." },
-  'theatrical maximalist': { line: "Feathers, drama, a full production.", sub: "This look needs a curtain call." },
-  'theatrical soft': { line: "Gentle, but still wants an audience.", sub: "Softness here doesn't mean restraint." },
-  'tomboy': { line: "Borrowed the cap, kept the edge.", sub: "Comfortable in every sense of the word." },
-  'utilitarian chic': { line: "Function with very good taste.", sub: "Pockets you actually use, looks you didn't expect." },
-  'utility': { line: "Built like it's about to get dirty.", sub: "Every strap and buckle earned its place." },
-  'victorian goth': { line: "Mourning dress, modern grudge.", sub: "High collar, higher standards." },
-  'weaponised femininity': { line: "Soft on the outside. Absolute menace within.", sub: "Pretty in a way that makes people reconsider their choices." },
-  'winter intellectual': { line: "Cold weather, warmer opinions.", sub: "Looks like you read in front of a fireplace, on purpose." },
-  'witchy': { line: "Spellbound, intentionally.", sub: "This look knows something you don't." },
-  'generosity era': { line: "Generosity is a lifestyle, darling.", sub: "You'd give someone the dress off your back — after a full alterations pass, obviously." },
-  'nature\'s touch': { line: "Grown, not manufactured.", sub: "Petals, ribbon, and a little bit of forest magic. Effortless in the way that takes real effort." },
-  'magic winx': { line: "Believix achieved.", sub: "You didn't just get dressed. You transformed." },
-  'tune it out': { line: "Main character, headphones in.", sub: "Sparkly, sharp-edged, and completely unbothered by the noise." },
-  'no tears left to cry': { line: "Right off the earth, dust myself off.", sub: "You already survived the hard part. Now you're just twirling." },
-  'default': { line: "Unmistakably, unrepeatably you.", sub: "This combination doesn't have a name yet. It will." },
-};
-
-const verdictsUK = {
-  'yes, and?': { line: "Так, і що?", sub: "Ти це зробила. Більше питань немає." },
-  'club kid': { line: "Уже за межею пояснень.", sub: "Футболка вже сказала все, що треба." },
-  'iconic villain era': { line: "Невстояти перед саботажем.", sub: "Ти перетворила розіграш із Регіною Джордж на масовий тренд. Завтра всі прийдуть із вирізами на топах." },
-  'what like its hard': { line: "Той, хто сказав, що рожевий — це несмак, помилявся.", sub: "Гарвардський юридичний, але зроби це фЕШОН." },
-  'thirty flirty and thriving': { line: "Тридцять, кокетливо і на висоті.", sub: "Загадала бажання на золотий пил і прокинулась у мрії. Обгортковий папір ще ніколи не мав такого вигляду." },
-  'spirit fingers': { line: "Пальчики-іскорки, повна віддача.", sub: "Енергія капітанки, хореографія черлідингу, і жодного місця для другого місця." },
-  'taste maker': { line: "Мотив образу — розбите серце.", sub: "Чоботи на платформі достатньо високі, щоб дивитися згори вниз на твого колишнього. Коротко, солодко, смертельно." },
-  'sweetener': { line: "God is a woman, і вона носить пастель.", sub: "Оверсайз силует, енергія високого хвоста і нуль толерантності до чужої драми." },
-  'as if': { line: "Дуже важливий дизайнер.", sub: "Ти не довіряєш дзеркалам, ти довіряєш полароїдам. Бездоганно підібрано." },
-  'queen bee': { line: "Тепер можеш іти.", sub: "Диктаторка смаку. Колготки — це не штани, а ця їдальня — не демократія. Схиліть голови." },
-  'a little bit dramatic': { line: "Вона взагалі тут не вчиться.", sub: "Ти вдягнула футболку. Тепер маєш право сказати цю фразу. Ось і вся угода." },
-  'thank u, next': { line: "Один навчив мене любові, інший — терпінню, а цей образ навчив мене відпускати.", sub: "Вдячна, незворушна, вдягнена для несподіваного повороту сюжету." },
-  'i go both ways': { line: "Я і туди, і сюди.", sub: "Солодка на вигляд, дещо хижа всередині. Ти точно знала, що робить цей топ." },
-  'it-girl immunity': { line: "Мені треба йти.", sub: "Ти повністю проігнорувала дрес-код, пропустила дедлайн і все одно опинилася на головній сторінці." },
-  'couldnt help but wonder': { line: "У пошуках кохання та вінтажних брендів.", sub: "Твої туфлі коштують дорожче за оренду, ти мислиш монологами, і тебе це влаштовує." },
-  'bumpin that': { line: "Енергія 360 party girl.", sub: "Розмазана підводка, розряджений телефон і абсолютно безкомпромісне ставлення до життя." },
-  'are you wearing the': { line: "Ті самі чоботи від Chanel? Так.", sub: "Ти продала душу подіуму, і, чесно кажучи? Це був чудовий обмін." },
-  'cerulean': { line: "Це не просто синій.", sub: "Це справжній лазуровий. І ти точно знаєш, скільки мільйонів доларів він представляє." },
-  'Y2K downtown': { line: "Низька посадка і нуль турбот.", sub: "Ти пропустила відродження тренду і звернулася прямо до першоджерела." },
-  'Y2K revival': { line: "Подорож у часі без зайвого багажу.", sub: "Шпильки-метелики за бажанням, впевненість — обов'язкова." },
-  'academic': { line: "Шлях до професури, але без посади.", sub: "Ти одягаєшся так, ніби виноски цікавіші за сам есей." },
-  'all eyes on you': { line: "У кімнаті лише один фокус.", sub: "І це далеко не люстра." },
-  'androgynous': { line: "Жодні рамки не підходять, тому ти створила свої.", sub: "Крій, якому абсолютно байдуже на чужі очікування." },
-  'art student': { line: "Захищена від критики та свідома цього.", sub: "Виглядає як концепт. Читається як впевненість." },
-  'artsy': { line: "Енергія відкриття галереї на кожен день.", sub: "Ти носиш аксесуари так, ніби це знайдені арт-об'єкти." },
-  'arty': { line: "Трохи незавершено, і це абсолютно навмисно.", sub: "Такий образ зазвичай потребує кураторського тексту-пояснення." },
-  'autumn rich': { line: "Погода для кашеміру, постава старих грошей.", sub: "Ти одягаєшся так, ніби листя змінило колір спеціально для тебе." },
-  'autumn witchy': { line: "Магія, але з ідеальним кроєм.", sub: "Рівні пропорції врожаю та прокляття." },
-  'bold femme': { line: "М'якість не означає тишу.", sub: "Цей образ має власну думку і не збирається її приховувати." },
-  'borrowed from the boys': { line: "Вкрала силует, залишила за собою перевагу.", sub: "Чоловічий одяг, перекладений без дозволу." },
-  'borrowed genius': { line: "Виглядаєш так, ніби найрозумніша людина щойно вийшла.", sub: "Оверсайз навмисно, недооцінка ніколи." },
-  'boss': { line: "Ніхто не буде перевіряти твою перепустку двічі.", sub: "Твій піджак вже сказав останнє слово." },
-  'camp cowgirl': { line: "Родео, але на подіумі.", sub: "Ти повірила в образ, і він переміг." },
-  'cerebral': { line: "Читається як дисертація, виглядає як вайб.", sub: "Тиха, гостра, трохи недосяжна." },
-  'city power': { line: "Лінія горизонту погоджується з твоїм вбранням.", sub: "Створено для залів засідань і маршрутів після них." },
-  'classic': { line: "Поза часом, зухвало справжня.", sub: "Тренди колись наздоженуть. Ти навіть не помітиш." },
-  'classic chic': { line: "Образ, якому ніколи не потрібно нічого пояснювати.", sub: "Відполіровано, просто, правильно." },
-  'classic dyke': { line: "Живий архів естетики.", sub: "Десятиліття історії стилю щойно схвально кивнули." },
-  'cool': { line: "Непохитна і якимось чином все ще вчасно.", sub: "Ти робиш так, щоб мінімальні зусилля виглядали як ціла філософія." },
-  'cool Americana': { line: "Відкрита дорога, денім і жодних вибачень.", sub: "Створено для пікапа, якого в тебе, можливо, навіть немає." },
-  'cosy editorial': { line: "Достатньо м'яко для дивана, достатньо гостро для зйомки.", sub: "Комфорт із власним стилістом." },
-  'cosy rich': { line: "Дорогі ковдри, тихо великі почуття.", sub: "Теплі кольори, ще тепліший банківський рахунок." },
-  'dangerous': { line: "Виглядає як проблема. Читається як намір.", sub: "Нічого в цьому образі не є випадковістю." },
-  'dangerous romantic': { line: "Любовні листи, написані чимось гострішим за чорнило.", sub: "Красиво, але це вже попередження." },
-  'dangerous woman': { line: "Ти прийшла, побачила, пішла з альбомом.", sub: "М'яка на поверхні. Ціла епоха всередині." },
-  'dark cowgirl': { line: "Дикий Захід після настання темряви.", sub: "Чоботи, які явно бачили багато." },
-  'dark romantic': { line: "Прекрасна і злегка зловісна.", sub: "Це одяг для щоденника, і запис дуже гарний." },
-  'delicate': { line: "Дрібні деталі роблять величезну роботу.", sub: "Витонченість як демонстрація сили." },
-  'director': { line: "Ти не в сцені. Ти її вибудовуєш.", sub: "Окуляри на місці, погляди гучніші за діалог." },
-  'downtown': { line: "Крута без зусиль, на що пішло багато зусиль.", sub: "Виглядає як друга ночі і хороше рішення." },
-  'downtown art': { line: "Одяг для студії, впевненість для галереї.", sub: "Енергія бризок фарби без самої фарби." },
-  'downtown artist': { line: "Тоновані окуляри, нетоновані думки.", sub: "Виглядаєш так, ніби створюєш те, чого ще ніхто не бачив." },
-  'downtown intellectual': { line: "Полотняний шопер, гостріший аргумент всередині.", sub: "Виглядаєш так, ніби читаєш статтю повністю, а не лише заголовок." },
-  'dramatic': { line: "Тонкість ніколи не була в завданні.", sub: "Кожен шов тут веде монолог." },
-  'dramatic entrance': { line: "Двері відчинилися, і розмова теж.", sub: "Ти не заходиш у кімнати. Ти проголошуєш свою присутність." },
-  'edgy': { line: "Трохи гостро на краях, навмисно.", sub: "Гладко було б просто нудно." },
-  'editorial': { line: "Тебе явно знімав хтось, чиє ім'я я повинна знати.", sub: "Цей образ належить глянцю, а не просто вулиці." },
-  'effortless': { line: "Виглядає так, ніби ти навіть не думала.", sub: "Ми обидві знаємо, що думала. Це спрацювало." },
-  'effortless chic': { line: "Безтурботно ідеально, що вимагало реальної роботи.", sub: "Найбільш невловимий образ з усіх існуючих." },
-  'effortlessly powerful': { line: "Владний стиль без фази одягання.", sub: "Авторитет, якому ніколи не доводилося підвищувати голос." },
-  'effortlessly sexy': { line: "Впевненість робить більшу частину роботи.", sub: "Одяг просто йде поруч." },
-  'eighties revival': { line: "Спочатку плечі, запитання потім.", sub: "Найдраматичніше десятиліття power dressing повертається." },
-  'evening': { line: "Денного світла ніколи б не вистачило для цього.", sub: "Створено для кімнат з кращим освітленням." },
-  'evening editorial': { line: "Знято опівночі, надруковано в глянці.", sub: "Це не просто вбрання, це розворот." },
-  'evening femme': { line: "М'яке освітлення було створено саме для цього.", sub: "Гламур, якому є куди піти." },
-  'extremely online': { line: "У цього лука є цілий фандом.", sub: "Створено для скріншотів, а не просто тротуарів." },
-  'fashion insider': { line: "Ти знала ще до виходу кампейну.", sub: "Логотип, який розпізнають лише свої." },
-  'fashion literate': { line: "Ти читаєш моду так, як деякі читають романи.", sub: "Виноски включені, відсилання навмисні." },
-  'fashion-forward': { line: "На шість місяців попереду і не чекаєш на компанію.", sub: "Всі інші колись наздоженуть." },
-  'feminine danger': { line: "Краса тут робить багато тихої погрози.", sub: "Прозоро, ніжно і точно не для недооцінки." },
-  'feminine touch': { line: "Одна маленька деталь робить усю роботу.", sub: "Стриманість як власний стейтмент." },
-  'femme': { line: "Жіночність як зброя, мова та позиція.", sub: "Ти точно знаєш, що з нею робиш." },
-  'femme confident': { line: "Жодної гри. Просто присутність.", sub: "Цьому образу не потрібна аудиторія, щоб працювати." },
-  'french girl': { line: "Класично, до божевілля круто.", sub: "Смужка, берет, шовковий шарф — це завжди було правильним рішенням." },
-  'french intellectual': { line: "Читає філософію в метро, виглядає при цьому неймовірно.", sub: "Легко і чарівно трохи зверхньо." },
-  'glamour': { line: "Олдскульний блиск, жодних вибачень.", sub: "Створено, щоб ловити світло і тримати кімнату." },
-  'going out': { line: "Цьому вбранню є куди піти об 11 вечора.", sub: "Денне світло йому не потрібне." },
-  'intellectual': { line: "Ти одягаєшся так, ніби маєш думку про архітектуру.", sub: "Розумна, виважена, трохи лякає." },
-  'intellectually productive': { line: "Одягнена для плейлиста глибокого фокусу.", sub: "Виглядає як чотири відкриті вкладки і завершена дисертація." },
-  'italian summer': { line: "Льон, золото і жодного поспіху.", sub: "Створено для узбережжя, яке ти ще не знайшла." },
-  'literary': { line: "Твій образ – це буквально перше видання.", sub: "Начитана, добре вдягнена, трохи недоступна." },
-  'literary weekend': { line: "Будиночок, книга, светр, повторити.", sub: "Виглядає так, ніби сюжет закручується повільно і навмисно." },
-  'maximalist': { line: "Більше – це більше, і більше, і більше.", sub: "Ти і є образ. Образ і є ти." },
-  'maximalist angel': { line: "М'який хаос із дуже хорошим освітленням.", sub: "Занадто багато, але в абсолютно правильному напрямку." },
-  'maximalist evening': { line: "Стриманість взяла вихідний.", sub: "Створено, щоб тебе побачили з іншого кінця кімнати." },
-  'maximalist villain': { line: "Пальто, план і кінематографічний вихід.", sub: "Арка лиходійки, але фЕШОН." },
-  'minimalist': { line: "Усе зайве вже було вирізано.", sub: "Те, що залишилося, робить усю роботу." },
-  'minimalist power': { line: "Тихі лінії, гучні результати.", sub: "Не потрібні прикраси, коли крій правильний." },
-  'mysterious': { line: "Ніхто тебе не знає, і тобі це подобається.", sub: "Довге пальто, жодних пояснень, ідеально." },
-  'nineties': { line: "Дев'яності мали рацію майже в усьому.", sub: "Сліп, срібло і прохолодне повітря." },
-  'nineties cool': { line: "Спеціально недбало, гостро всередині.", sub: "Виглядає як позичене. Точно ні." },
-  'nineties goth': { line: "Оксамитовий чокер, перманентний закот очей.", sub: "Темна, трохи знуджена, абсолютно ідеальна." },
-  'nineties revival': { line: "Ти повернула десятиліття без жодних 'але'.", sub: "Хром, низька посадка, ніяких зауважень." },
-  'nocturnal': { line: "Денне світло просто не твоя юрисдикція.", sub: "Цей образ насправді існує лише після настання темряви." },
-  'nocturnal glamour': { line: "Ти була створена для пізньої ночі.", sub: "День ще не заслужив на цей образ." },
-  'off-duty': { line: "Технічно не працюєш. Але візуально перемагаєш.", sub: "Той правильний тип мінімальних зусиль." },
-  'off-duty cool': { line: "Виглядає так, ніби просто накинуто. Це не так.", sub: "На найбільш лінивий образ пішло найбільше думок." },
-  'off-duty editorial': { line: "Виглядає як випадкове фото. Було повністю стилізовано.", sub: "Поза роботою, але під запис." },
-  'off-duty luxury': { line: "Відпочиває, але в кашемірі.", sub: "Навіть нічого не роблячи, це вбрання працює." },
-  'old Hollywood': { line: "Ти прийшла. Усі обернулися.", sub: "Інша, більш глянцева епоха впізнає тебе." },
-  'old Hollywood glam': { line: "Студійне освітлення, навіть на вулиці.", sub: "У цього образу є власний піарник." },
-  'old money': { line: "Успадкований смак, або бездоганна підробка.", sub: "У будь-якому разі, ніхто не питає, що саме." },
-  'perennial chic': { line: "Це не застаріє. Воно вже вирішило цього не робити.", sub: "Образ без терміну придатності." },
-  'polished': { line: "Кожен край на своєму місці.", sub: "Виглядає просто. Потребувало дзеркала і плану." },
-  'power': { line: "Кімната перекалібровується, коли ти заходиш.", sub: "У цього образу є план із семи пунктів, і він перемагає." },
-  'power androgyny': { line: "Ні те, ні інше — а отже, все.", sub: "Плечі, плинність, впевненість того, хто вибирає власні правила." },
-  'power dressing': { line: "Одягнена для переговорів, які ти виграєш.", sub: "Кожна лінія тут — це бізнес." },
-  'power femme': { line: "Тут жіночність — це не м'якість. Це точність.", sub: "Кожна деталь — це вибір, і ти зробила їх усі." },
-  'power jewellery': { line: "Small pieces, outsized authority.", sub: "Метал говорить те, що не повинно говорити твоє обличчя." },
-  'powerful': { line: "Це вбрання не просить кімнату. Воно її забирає.", sub: "Тихо, повністю, без обговорень." },
-  'practical chic': { line: "Створено, щоб пережити день і все одно виглядати свідомо.", sub: "Функція на першому місці. Але стиль нікуди не зникав." },
-  'practical cool': { line: "Створено для того, щоб насправді щось робити.", sub: "Виглядає легким, бо так має бути." },
-  'preppy subverted': { line: "Уніформа з вшитим маленьким бунтом.", sub: "Старі правила, новий власник." },
-  'princess energy': { line: "Фатин увійшов у чат.", sub: "М'яка, трохи екстра, абсолютно не хвилюється через 'занадто багато'." },
-  'punk adjacent': { line: "Досить близько до бунту, щоб відчути його.", sub: "Не повноцінне повстання. Але ти точно є на флаєрі." },
-  'punk heritage': { line: "Ця клітинка пам'ятає, звідки вона взялася.", sub: "Скроєний бунт із довгою пам'яттю." },
-  'quiet': { line: "Майже нічого не каже, але має на увазі кожну деталь.", sub: "Стриманість, розгорнута правильно." },
-  'quiet luxury': { line: "Дорого, але без оголошень.", sub: "Найбільш лякаючий вид багатства." },
-  'quiet luxury peak': { line: "Це та версія, яку люди намагаються скопіювати і не можуть.", sub: "Логотипи не потрібні. Нічому з цього не потрібен логотип." },
-  'quiet subversion': { line: "Виглядає правильно. Але не зовсім.", sub: "Правила дотримані достатньо, щоб чисто порушити одне з них." },
-  'quietly powerful': { line: "Не підвищує голос. Не потребує цього.", sub: "Тип влади, який ніколи не пояснює себе." },
-  'rabbit hole': { line: "Ти пішла за білим кроликом і не ставила питань.", sub: "Цікавіше — це і є суть." },
-  'ready for anything': { line: "Екіпірована для плану, який ще не відбувся.", sub: "Практична, готова, якось дивно стильна при цьому." },
-  'regency romantic': { line: "Завищена талія, сучасна зухвалість.", sub: "Виглядає як історична драма, яка знає, що вона історична драма." },
-  'retro glam': { line: "Запозичила епоху і покращила її.", sub: "Вінтажний блиск, сучасний нерв." },
-  'retro glamour': { line: "Стара плівка, нова головна роль.", sub: "У цього образу є власні початкові титри." },
-  'rich girl': { line: "Виглядає дорого. І абсолютно не переймається цим.", sub: "Золоту не потрібен підпис." },
-  'riot grrrl': { line: "Гучно, гордо, трохи загрозливо.", sub: "Ти одягаєшся так, ніби патріархат винен тобі гроші." },
-  'rock': { line: "Шкіра, ставлення, саундтрек, який чуєш лише ти.", sub: "Гучність на максимум ще до того, як ти заговорила." },
-  'rock evening': { line: "Енергія бекстейджу, образ для першого ряду.", sub: "Створено для ночі, яка буде гучною." },
-  'romantic intellectual': { line: "Поезія, але ідеально скроєна.", sub: "Почуття з виносками." },
-  'school-to-stage': { line: "Уніформа зовні, перфоманс всередині.", sub: "Виглядає як покарання. Читається як дебют." },
-  'sculptural': { line: "Це не стільки одяг, скільки структура, яку ти носиш.", sub: "Архітектура одяглася і вийшла на вулицю." },
-  'sculptural minimalism': { line: "Форма зробила всю роботу. Колір залишився тихим.", sub: "Виглядає так, ніби це вирізьблено, а не зшито." },
-  'seventies': { line: "Правильне десятиліття, нарешті.", sub: "Коричневий, кемел і абсолютна впевненість." },
-  'seventies cool': { line: "Вигоріла на сонці і якимось чином все ще гостра.", sub: "Виглядає так, ніби запозичена з обкладинки платівки." },
-  'sentimental': { line: "Носить своє серце там, де його видно.", sub: "Трохи шкільний альбом, трохи назавжди." },
-  'sharp': { line: "Кожна лінія на цьому одязі має що сказати.", sub: "Чітко, точно, трохи небезпечно." },
-  'soft': { line: "Ніжна, але ніколи не випадкова.", sub: "Комфорт, нарядний рівно настільки, наскільки треба." },
-  'soft butch': { line: "Зручно і абсолютно вивірено.", sub: "Ти змушуєш легкість виглядати як цілий стиль життя." },
-  'soft danger': { line: "Мила, поки не подивишся двічі.", sub: "Тут краса робить тиху, але серйозну роботу." },
-  'soft elegance': { line: "Тут нічого не кричить, і все правильно.", sub: "Елегантність, якій не потрібна гучність." },
-  'soft romantic': { line: "Виглядає як любовний лист, читається як стриманість.", sub: "Романтика, навмисно залишена ніжною." },
-  'sporty chic': { line: "Спортивний крій, нуль намірів кудись бігти.", sub: "Створено для лавки запасних, а не для треку." },
-  'sporty-chic': { line: "Спортивна тканина, життєвий темп.", sub: "Виглядає швидко. Рухається зі швидкістю бранчу." },
-  'summer icon': { line: "Цей образ – це хайлайт всього сезону.", sub: "Білий, яскравий і нікуди не зникне." },
-  'summer minimalist': { line: "Менше тканини, та сама кількість намірів.", sub: "Термостійка і все ще продумана." },
-  'summertime': { line: "Улюблений одяг теплої погоди.", sub: "Створено для довгих днів і ще довшого світла." },
-  'theatrical': { line: "Ти прийшла сюди не для того, щоб злитися з натовпом.", sub: "Вихід – це образ. Образ – це вихід." },
-  'theatrical femme': { line: "М'яка, але постановочна.", sub: "Кожна деталь тут має свої мізансцени." },
-  'theatrical goth': { line: "Трагедія, але нехай це буде фатин.", sub: "Виглядає як третій акт." },
-  'theatrical maximalist': { line: "Пір'я, драма, повноцінна постановка.", sub: "Цьому образу потрібен вихід на уклін." },
-  'theatrical soft': { line: "Ніжна, але все ще хоче аудиторію.", sub: "М'якість тут не означає стриманість." },
-  'tomboy': { line: "Позичила кепку, залишила перевагу.", sub: "Комфортна в кожному сенсі цього слова." },
-  'utilitarian chic': { line: "Функція з дуже хорошим смаком.", sub: "Кишені, якими ти дійсно користуєшся, образи, яких ти не очікувала." },
-  'utility': { line: "Створено так, ніби має побувати в бруді.", sub: "Кожен ремінець і пряжка заслужили своє місце." },
-  'victorian goth': { line: "Траурна сукня, сучасна образа.", sub: "Високий комір, ще вищі стандарти." },
-  'weaponised femininity': { line: "М'яка ззовні. Абсолютна загроза всередині.", sub: "Гарна настільки, що змушує людей переглянути власні рішення." },
-  'winter intellectual': { line: "Холодна погода, гарячіші думки.", sub: "Виглядає так, ніби ти читаєш перед каміном навмисно." },
-  'witchy': { line: "Зачарована навмисно.", sub: "Цей образ знає щось, чого не знаєш ти." },
-  'generosity era': { line: "Щедрість — це стиль життя, любий.", sub: "Ти б віддала комусь плаття зі своєї спини — але тільки після ідеальної підгонки." },
-  'nature\'s touch': { line: "Вирощено, а не виготовлено.", sub: "Пелюстки, стрічки й трохи лісової магії. Легкість, що коштувала справжніх зусиль." },
-  'magic winx': { line: "Believix досягнуто.", sub: "Ти не просто вдягнулась. Ти трансформувалась." },
-  'tune it out': { line: "Головна героїня, навушники в вухах.", sub: "Блискуча, гостра й абсолютно незворушна шумом навколо." },
-  'no tears left to cry': { line: "Впала, обтрусилась, пішла далі.", sub: "Найважче вже позаду. Тепер ти просто кружляєш." },
-  'default': { line: "Безпомилково, неповторно ти.", sub: "Ця комбінація ще не має назви. Але матиме." },
-};
-
-let activeCategory = 'iconic-club';
-const onCanvas = {};
-let zCounter = 10;
-let searchMode = false;
-let currentVerdict = null;
-let currentVerdictKey = '';
-
-// Ensure translation starts strictly in English
-let currentLang = 'en';
-
-// ── SONG / SCENE LINKS ──
-const verdictLinks = {
-  'dangerous woman':         { sceneUrl: 'https://music.youtube.com/watch?v=9WbCfHutDSE&si=3KnVbsFeRgSKaTnQ' },
-  'thank u, next':           { scene: 'thank u next Ariana Grande official video' },
-  'sweetener':               { scene: 'God is a woman Ariana Grande' },
-  'bumpin that':             { scene: '360 Charli XCX' },
-  'queen bee':               { sceneUrl: 'https://youtu.be/e8_Z7-97mIw' },
-  'iconic villain era':      { scene: 'Mean Girls burn book scene' },
-  'a little bit dramatic':   { scene: 'Mean Girls a little bit dramatic scene' },
-  'what like its hard':      { songUrl: 'https://music.youtube.com/watch?v=Iak0RqGn5B8&si=Pk5IEgSux1fcvnhA', scene: 'Legally Blonde courtroom scene' },
-  'thirty flirty and thriving': { scene: '13 Going on 30 Thriller dance scene' },
-  'spirit fingers':          { scene: 'Bring It On spirit fingers cheer routine' },
-  'as if':                   { scene: 'Clueless as if closet scene' },
-  'it-girl immunity':        { scene: 'Gossip Girl Serena pilot entrance' },
-  'couldnt help but wonder': { scene: 'Sex and the City opening credits' },
-  'cerulean':                { scene: "Devil Wears Prada cerulean sweater monologue" },
-  'i go both ways':          { scene: "Jennifer's Body I go both ways scene" },
-  'taste maker':             { scene: 'Sabrina Carpenter live concert' },
-  'generosity era':          { scene: 'My Little Pony Rarity generosity moment' },
-  'yes, and?':               { scene: 'Ariana Grande yes and official video' },
-  'no tears left to cry':    { scene: 'Ariana Grande no tears left to cry official video' },
-  'nature\'s touch':         { scene: 'Winx Club Flora Harmonix transformation' },
-  'magic winx':              { scene: 'Winx Club Bloom Harmonix transformation' },
-  'tune it out':             { scene: 'Winx Club Musa Bloomix transformation' },
-};
-
-function spotifySearchUrl(q) { return 'https://open.spotify.com/search/' + encodeURIComponent(q); }
-function youtubeSearchUrl(q) { return 'https://www.youtube.com/results?search_query=' + encodeURIComponent(q); }
-
-function getVerdictLinks(key) {
-  const entry = verdictLinks[key] || {};
-  const songUrl = key === "yes, and?" 
-    ? "https://open.spotify.com/playlist/0YBMWmwqM5DrQMIzCj0qRm?si=otVQpm1ATCOy2ePWQ4M8oQ&utm_source=copy-link" 
-    : (entry.songUrl || spotifySearchUrl(entry.song || (key + ' aesthetic playlist')));
-  
-  const sceneUrl = entry.sceneUrl || youtubeSearchUrl(entry.scene || (key + ' aesthetic edit'));
-  
-  return { songUrl, sceneUrl };
-}
-
-const translations = {
-  en: {
-    eyebrow: "Your style, decoded",
-    back: "Go back to the closet (no pun intended)",
-    listen: "Listen",
-    watch: "Watch the scene",
-    aestheticPrefix: "",
-    aestheticSuffix: ""
-  },
-  uk: {
-    eyebrow: "Ваш стиль, розшифровано",
-    back: "Повернутися до шафи (без каламбурів)",
-    listen: "Слухати",
-    watch: "Дивитись сцену",
-    aestheticPrefix: "Естетика ",
-    aestheticSuffix: ""
-  }
-};
-
-const IMG_DIR = '';
-const IMG_EXTENSIONS = ['png'];
-
-function slugify(name) { return name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim().replace(/'/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, ''); }
-function imgPathCandidates(name) {
-  const slug = slugify(name);
-  return IMG_EXTENSIONS.map(ext => ({ path: IMG_DIR + slug + '.' + ext, ext, slug }));
-}
-function setupImgFallback(imgEl, name, eager, imgSlugOverride) {
-  imgEl.loading = eager ? 'eager' : 'lazy';
-  imgEl.decoding = 'async';
-  if ('fetchPriority' in imgEl) imgEl.fetchPriority = eager ? 'high' : 'low';
-  imgEl.width = 200; imgEl.height = 200;
-  const candidates = imgPathCandidates(imgSlugOverride || name); let i = 0;
-  imgEl.src = candidates[i].path;
-  imgEl.onerror = function() { imgEl.src = `https://placehold.co/200x200/e8e4df/9a9390.png?text=${encodeURIComponent(name)}`; imgEl.onerror = null; };
-}
-
-const verdictMap = {};
-categories.forEach(cat => cat.items.forEach(item => { verdictMap[cat.id + '_' + item.name.replace(/\s+/g, '_')] = item.vibe; }));
-
-const itemLookup = {};
-categories.forEach(cat => cat.items.forEach(item => { itemLookup[cat.id + '_' + item.name.replace(/\s+/g, '_')] = { item, catId: cat.id }; }));
-
-document.getElementById('canvas').addEventListener('mousedown', function(e) { if (e.target === this || e.target.id === 'canvas-empty') setActive(null); });
-document.getElementById('canvas').addEventListener('touchstart', function(e) { if (e.target === this || e.target.id === 'canvas-empty') setActive(null); }, {passive: true});
-
-const ORIGIN_SEEN_KEY = 'dreamCloset_originSeen';
-let originSeenSet = null;
-let originToastTimer = null;
-
-function loadOriginSeenSet() {
-  if (originSeenSet) return originSeenSet;
-  try {
-    const raw = localStorage.getItem(ORIGIN_SEEN_KEY);
-    originSeenSet = new Set(raw ? JSON.parse(raw) : []);
-  } catch (e) { originSeenSet = new Set(); }
-  return originSeenSet;
-}
-
-const RELATIONS = [
-  {
-    key: 'mom', name: 'Mom', initial: 'M', color: '#d49bb1',
-    lines: [
-      "why do you need {name}? you have three just like it at home. ...okay it does look good though",
-      "is this the {vibe} phase now? last week it was minimalist. I can't keep up but I love it on you",
-      "{name}? absolutely not — okay fine, wear it, but text me the second you get there",
-      "I saw {name} and thought of the thing I told you not to buy in 2019. anyway, it looks great"
-    ]
-  },
-  {
-    key: 'dad', name: 'Dad', initial: 'D', color: '#6a8caf',
-    lines: [
-      "how much did {name} cost. actually — don't tell me. looks good though, kid",
-      "{name}? bold choice. very {vibe} of you",
-      "back in my day we just wore whatever was clean. respect the {name} though",
-      "not gonna lie, {name} kind of slaps. don't tell your mother I said 'slaps'"
-    ]
-  },
-  {
-    key: 'ex', name: 'Your Ex', initial: 'X', color: '#8b3a3a',
-    lines: [
-      "of course you'd pick {name}. so on brand for you. so was I, once",
-      "{name}, huh. bet you're not even thinking about me right now. ...are you",
-      "{vibe}? you were always {vibe}. that was kind of the problem",
-      "wow, {name}. anyway I'm doing great, thanks for asking (you didn't ask)"
-    ]
-  },
-  {
-    key: 'bestie', name: 'Bestie', initial: 'B', color: '#c98a94',
-    lines: [
-      "{name}?? okay QUEEN. this is so {vibe} of you and I'm obsessed",
-      "say less. {name} was MADE for you. sending this to the groupchat right now",
-      "{vibe} energy detected. I need to steal {name} the second you're done with it",
-      "okay {name} is unfairly good on you, can you not"
-    ]
-  },
-  {
-    key: 'enemy', name: 'That One Girl From School', initial: '?', color: '#4a4a4a',
-    lines: [
-      "{name}? interesting choice. bold of you to try {vibe} again",
-      "oh, you're wearing {name} now? I have the same one. mine looks better but okay",
-      "{vibe}? if you say so. it's giving trying-too-hard but you do you",
-      "cute that you think {name} is going to work. anyway, good luck with that"
-    ]
-  }
-];
-
-function generateLoreLine(item) {
-  const relation = RELATIONS[Math.floor(Math.random() * RELATIONS.length)];
-  const template = relation.lines[Math.floor(Math.random() * relation.lines.length)];
-  const line = template.replace(/\{name\}/g, item.name).replace(/\{vibe\}/g, item.vibe);
-  return { relation, line };
-}
-
-let bulkAddMode = false;
-let bulkAddToastShown = false;
-
-function maybeShowOrigin(uid, item) {
-  const seen = loadOriginSeenSet();
-  if (seen.has(uid)) return;
-  seen.add(uid);
-  try { localStorage.setItem(ORIGIN_SEEN_KEY, JSON.stringify([...seen])); } catch (e) {}
-
-  if (bulkAddMode) {
-    if (bulkAddToastShown) return; // avoid stacking toasts during multi-item random fit
-    bulkAddToastShown = true;
-  }
-
-  const toast = document.getElementById('origin-toast');
-  const textEl = document.getElementById('origin-line-text');
-  const nameEl = document.getElementById('origin-sender-name');
-  const avatarEl = document.getElementById('origin-avatar');
-  if (!toast || !textEl) return;
-
-  const { relation, line } = generateLoreLine(item);
-  textEl.textContent = line;
-  if (nameEl) nameEl.textContent = relation.name;
-  if (avatarEl) {
-    avatarEl.textContent = relation.initial;
-    avatarEl.style.background = relation.color;
-  }
-
-  clearTimeout(originToastTimer);
-  toast.classList.add('visible');
-  // stretched from 4.2s so there's actually time to read it
-  originToastTimer = setTimeout(() => toast.classList.remove('visible'), 7000);
-}
-
-const NEWS_TEMPLATES = [
-  "SOURCES CONFIRM: SHE'S WEARING {NAME} AGAIN",
-  "BREAKING: {NAME} SPOTTED ON THE SCENE",
-  "EXCLUSIVE: INSIDERS SAY THE {VIBE} ERA HAS OFFICIALLY BEGUN",
-  "DEVELOPING STORY: {NAME} MAKES A COMEBACK",
-  "JUST IN: THE {VIBE} LOOK IS BACK, AND WE HAVE THOUGHTS",
-  "WITNESSES REPORT SEEING {NAME} ON THE STREETS TODAY",
-  "ALLEGED SIGHTING OF {NAME}, CONFIRMED BY MULTIPLE SOURCES"
-];
-let tickerHeadlines = ["WELCOME TO GLASS CLOSET — BUILD YOUR LOOK TO MAKE HEADLINES"];
-
-function pushNewsHeadline(item) {
-  const template = NEWS_TEMPLATES[Math.floor(Math.random() * NEWS_TEMPLATES.length)];
-  const headline = template.replace(/\{NAME\}/g, item.name.toUpperCase()).replace(/\{VIBE\}/g, item.vibe.toUpperCase());
-  tickerHeadlines.unshift(headline);
-  if (tickerHeadlines.length > 5) tickerHeadlines.pop();
-  renderNewsTicker();
-}
-
-function renderNewsTicker() {
-  const track = document.getElementById('news-ticker-track');
-  if (!track) return;
-  track.innerHTML = tickerHeadlines
-    .map(h => `<span class="ticker-tag">🔴 Breaking</span>${h}<span class="ticker-sep">◆</span>`)
-    .join('');
-}
-
-function init() {
-  renderTabs(); 
-  renderGrid(activeCategory); 
-  applyTranslations(); // Enforce English on startup
-  initTeaTicker();
-  renderNewsTicker();
-  restoreInProgressOutfit();
-  updateMissionBadge();
-  preloadAllClosetImages();
-}
-
-// Warms the browser's image cache for every item in every category, right after
-// the first screen has painted, so switching tabs never has to wait on a fetch —
-// the picture is already sitting in cache by the time the grid renders it.
-function preloadAllClosetImages() {
-  const names = [];
-  categories.forEach(cat => cat.items.forEach(item => { if (!isLocked(item)) names.push(item.name); }));
-  let i = 0;
-  function loadNext(deadline) {
-    while (i < names.length && (!deadline || deadline.timeRemaining() > 0)) {
-      const img = new Image();
-      if ('fetchPriority' in img) img.fetchPriority = 'low';
-      img.src = imgPathCandidates(names[i])[0].path;
-      i++;
-    }
-    if (i < names.length) schedule();
-  }
-  function schedule() {
-    if ('requestIdleCallback' in window) requestIdleCallback(loadNext, { timeout: 1000 });
-    else setTimeout(() => loadNext(null), 60);
-  }
-  schedule();
-}
-
-const INPROGRESS_KEY = 'dreamCloset_inProgress';
-
-// ── GUIDED TOUR ──
-const TOUR_KEY = 'dreamCloset_tourSeen';
-const TOUR_STEPS = [
-  { selector: '#canvas', title: 'Your board', desc: "Tap anything below to drop it here, then drag, spin, or resize it to build the fit.", radius: 16, pad: 4, img: 'sasha-guide.png' },
-  { selector: '#drawer', title: 'The closet', desc: 'Browse by category or search. Tap a piece to add it, tap again to take it off.', radius: 16, pad: 4, img: 'sasha-guide.png' },
-  { selector: '#verdict-btn', title: 'Get my verdict', desc: "Once you've built a fit, this decodes what it says about you.", radius: 6, pad: 4, img: 'sasha-guide-thinking.png' },
-  { selector: '#telegram-btn', title: 'Join the groupchat', desc: "Tap here anytime to hop into the Telegram groupchat and share your fits and verdicts.", radius: 20, pad: 5, img: 'sasha-guide.png' },
-  { selector: '#mission-btn', title: 'Secret mission', desc: "Today's little styling challenge. A new one drops daily.", radius: 10, pad: 4, img: 'sasha-guide-thinking.png' },
-  { selector: '#lookbook-btn', title: 'Lookbook', desc: 'Every fit you save lives here for later.', radius: 10, pad: 4, img: 'sasha-guide.png' },
-  { selector: '#inspo-btn', title: 'Inspo board', desc: 'Moodboard references, plus anywhere you can pin your own.', radius: 10, pad: 4, img: 'sasha-guide.png' }
-];
-let tourIdx = 0;
-
-function maybeAutoStartTour() {
-  try { if (localStorage.getItem(TOUR_KEY)) return; } catch (e) {}
-  setTimeout(() => startTour(), 500);
-}
-
-function startTour() {
-  tourIdx = 0;
-  document.getElementById('tour-overlay').classList.add('show');
-  const dots = document.getElementById('tour-dots');
-  dots.innerHTML = TOUR_STEPS.map(() => '<span></span>').join('');
-  showTourStep();
-  window.addEventListener('resize', repositionTourStep);
-}
-
-function repositionTourStep() {
-  if (document.getElementById('tour-overlay').classList.contains('show')) showTourStep();
-}
-
-function showTourStep() {
-  const step = TOUR_STEPS[tourIdx];
-  const target = document.querySelector(step.selector);
-  if (!target || target.offsetParent === null) { tourNext(); return; }
-
-  const rect = target.getBoundingClientRect();
-  const pad = step.pad;
-  const spot = document.getElementById('tour-spotlight');
-  spot.style.top = (rect.top - pad) + 'px';
-  spot.style.left = (rect.left - pad) + 'px';
-  spot.style.width = (rect.width + pad * 2) + 'px';
-  spot.style.height = (rect.height + pad * 2) + 'px';
-  spot.style.borderRadius = step.radius + 'px';
-
-  document.getElementById('tour-step-label').textContent = `Step ${tourIdx + 1} of ${TOUR_STEPS.length}`;
-  document.getElementById('tour-title').textContent = step.title;
-  document.getElementById('tour-desc').textContent = step.desc;
-  const avatar = document.getElementById('tour-avatar');
-  if (step.img) { avatar.src = step.img; avatar.style.display = ''; }
-  else { avatar.style.display = 'none'; }
-  document.getElementById('tour-next').textContent = tourIdx === TOUR_STEPS.length - 1 ? 'Got it' : 'Next';
-  document.querySelectorAll('#tour-dots span').forEach((d, i) => d.classList.toggle('tour-dot-done', i <= tourIdx));
-
-  const tooltip = document.getElementById('tour-tooltip');
-  requestAnimationFrame(() => {
-    const tw = tooltip.offsetWidth, th = tooltip.offsetHeight, margin = 14;
-    const spaceBelow = window.innerHeight - (rect.bottom + pad);
-    const top = spaceBelow > th + margin * 2
-      ? rect.bottom + pad + margin
-      : Math.max(margin, rect.top - pad - th - margin);
-    let left = rect.left + rect.width / 2 - tw / 2;
-    left = Math.max(margin, Math.min(left, window.innerWidth - tw - margin));
-    tooltip.style.top = top + 'px';
-    tooltip.style.left = left + 'px';
-  });
-}
-
-function tourNext() {
-  tourIdx++;
-  if (tourIdx >= TOUR_STEPS.length) { endTour(); return; }
-  showTourStep();
-}
-
-function endTour() {
-  document.getElementById('tour-overlay').classList.remove('show');
-  window.removeEventListener('resize', repositionTourStep);
-  try { localStorage.setItem(TOUR_KEY, '1'); } catch (e) {}
-}
-
-function saveInProgressOutfit() {
-  try {
-    const data = {};
-    Object.keys(onCanvas).forEach(uid => {
-      const entry = onCanvas[uid];
-      if (entry.isRef) return; // reference pins aren't restored across reloads
-      data[uid] = {
-        left: parseFloat(entry.el.style.left) || 0,
-        top: parseFloat(entry.el.style.top) || 0,
-        rotation: entry.state.rotation,
-        scale: entry.state.scale
-      };
-    });
-    localStorage.setItem(INPROGRESS_KEY, JSON.stringify(data));
-  } catch (e) { console.warn('[autosave] failed:', e); }
-}
-
-function restoreInProgressOutfit() {
-  let saved;
-  try {
-    const raw = localStorage.getItem(INPROGRESS_KEY);
-    if (!raw) return;
-    saved = JSON.parse(raw);
-  } catch (e) { return; }
-
-  const uids = Object.keys(saved);
-  if (uids.length === 0) return;
-
-  uids.forEach(uid => {
-    const lookup = itemLookup[uid];
-    if (!lookup) return; // item no longer exists in the catalog
-    addToCanvas(uid, lookup.item, lookup.catId, saved[uid]);
-  });
-}
-
-const TEA_LINES = [
-  "One time, on Telegram, I heard Sasha was dropping out to move to Paris, so I dropped out, so we could be in Paris at the same time. Turns out it was just a rumor.",
-  "Sasha told me my hair looks sexy pushed back. He's not wrong.",
-  "Sasha ghosted a guy. So I found a guy to text me and I ghosted a guy.",
-  "I heard Sasha's gay now and dating some guy named Ricky. It's fucking sick. 💅🏿",
-  "I heard that if you record him snoring and play it backwards, it sounds like Brandy.",
-  "Sasha says 'thank u, next' to homophobes, so I decided to curse out his professor. ...It was awesome."
-];
-
-function initTeaTicker() {
-  const el = document.getElementById('imessage-notification');
-  const textEl = document.getElementById('imessage-text');
-  if (!el || !textEl) return;
-
-  let dismissTimer = null;
-  let nextTimer = null;
-  let i = 0;
-
-  function dismiss() {
-    el.classList.remove('visible');
-    clearTimeout(dismissTimer);
-    setTimeout(() => el.classList.add('hidden'), 450);
-  }
-
-  function show(line, force) {
-    if (!force && Object.keys(onCanvas).length > 0) return false; // don't interrupt someone mid-outfit
-    textEl.textContent = line;
-    el.classList.remove('hidden');
-    el.style.transform = '';
-    void el.offsetWidth; // force reflow so the slide-in transition plays
-    el.classList.add('visible');
-    clearTimeout(dismissTimer);
-    dismissTimer = setTimeout(dismiss, 9000); /* gives enough time to read before fading out */
-    return true;
-  }
-
-  function next(force) {
-    if (i >= TEA_LINES.length) { dismiss(); return; } // shown all 6, done for the session
-    const shown = show(TEA_LINES[i], force);
-    i++;
-    const delay = 5000 + Math.random() * 5000; /* MODIFIED TO 5-10 SECONDS */
-    // if it got skipped (mid-outfit), retry the same line a bit sooner
-    clearTimeout(nextTimer);
-    nextTimer = setTimeout(() => next(false), shown ? delay : 4000);
-    if (!shown) i--; // don't burn this line if we skipped it
-  }
-
-  function spill() {
-    clearTimeout(nextTimer);
-    clearTimeout(dismissTimer);
-    i = 0;
-    
-    // Play the beat once, right when the gossip starts
-    playGossipBeatSnippet();
-    
-    next(true);
-  }
-  window.spillTea = spill;
-
-  // Manual "next" arrow — lets you click through gossip at your own pace
-  // instead of waiting for the auto-advance timer. No repeat sound here;
-  // the beat only plays once, when gossip is first opened via spill().
-  function skipGossip(e) {
-    if (e) e.stopPropagation();
-    clearTimeout(nextTimer);
-    clearTimeout(dismissTimer);
-    next(true);
-  }
-  window.skipGossip = skipGossip;
-
-
-  // --- swipe-up-to-dismiss ---
-  let startY = null, currentY = 0, dragging = false;
-  el.addEventListener('touchstart', e => {
-    startY = e.touches[0].clientY;
-    dragging = true;
-    el.classList.add('dragging');
-    clearTimeout(dismissTimer);
-  }, { passive: true });
-
-  el.addEventListener('touchmove', e => {
-    if (!dragging || startY === null) return;
-    currentY = e.touches[0].clientY - startY;
-    if (currentY < 0) el.style.transform = `translateX(-50%) translateY(${currentY}px)`;
-  }, { passive: true });
-
-  el.addEventListener('touchend', () => {
-    dragging = false;
-    el.classList.remove('dragging');
-    if (currentY < -30) {
-      dismiss();
-    } else {
-      el.style.transform = '';
-      dismissTimer = setTimeout(dismiss, 9000); /* gives enough time to read before fading out */
-    }
-    startY = null; currentY = 0;
-  });
-
-  el.addEventListener('click', dismiss); // tap to dismiss, e.g. on desktop
-}
-
-function renderTabs() {
-  const el = document.getElementById('cat-tabs');
-  el.innerHTML = '';
-  supercategories.forEach(group => {
-    const groupDiv = document.createElement('div'); groupDiv.className = 'super-group';
-    const header = document.createElement('div'); header.className = 'super-header'; header.textContent = group.name; groupDiv.appendChild(header);
-    const rowDiv = document.createElement('div'); rowDiv.className = 'sub-tabs-row';
-    group.cats.forEach(catId => {
-      const cat = categories.find(c => c.id === catId);
-      if (!cat) return;
-      const tab = document.createElement('div');
-      tab.className = 'cat-tab' + (cat.id === activeCategory ? ' active' : '');
-      tab.textContent = cat.label; tab.id = 'tab-' + cat.id;
-      tab.onclick = () => {
-        if (searchMode) clearSearch();
-        activeCategory = cat.id; document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
-        tab.classList.add('active'); renderGrid(cat.id);
-      };
-      rowDiv.appendChild(tab);
-    });
-    groupDiv.appendChild(rowDiv); el.appendChild(groupDiv);
-  });
-}
-
-function ordinal(n) {
-  const s = ['th', 'st', 'nd', 'rd'], v = n % 100;
-  return n + (s[(v - 20) % 10] || s[v] || s[0]);
-}
-
-function formatReleaseLabel(dateStr) {
-  const d = new Date(dateStr + 'T00:00:00');
-  return `Thursday, the ${ordinal(d.getDate())}`;
-}
-
-const OUTFIT_COUNT_KEY = 'dreamCloset_outfitCount';
-
-function getOutfitCount() {
-  const n = parseInt(localStorage.getItem(OUTFIT_COUNT_KEY) || '0', 10);
-  return isNaN(n) ? 0 : n;
-}
-
-function incrementOutfitCount() {
-  const n = getOutfitCount() + 1;
-  try { localStorage.setItem(OUTFIT_COUNT_KEY, String(n)); } catch (e) {}
-  return n;
-}
-
-function isLocked(item) {
-  const hasDate = !!item.releaseDate;
-  const hasMilestone = typeof item.unlockAtOutfits === 'number';
-  if (!hasDate && !hasMilestone) return false;
-
-  const dateUnlocked = hasDate && Date.now() >= new Date(item.releaseDate + 'T00:00:00').getTime();
-  const milestoneUnlocked = hasMilestone && getOutfitCount() >= item.unlockAtOutfits;
-
-  // if an item has both conditions, either one unlocks it — whichever comes first
-  if (hasDate && hasMilestone) return !(dateUnlocked || milestoneUnlocked);
-  return hasDate ? !dateUnlocked : !milestoneUnlocked;
-}
-
-function gridLockCaption(item) {
-  if (typeof item.unlockAtOutfits === 'number') {
-    const remaining = Math.max(0, item.unlockAtOutfits - getOutfitCount());
-    if (remaining <= 0) return 'Unlocking...';
-    return `${remaining} outfit${remaining === 1 ? '' : 's'} to go`;
-  }
-  return `Releases ${formatReleaseLabel(item.releaseDate)}`;
-}
-
-function lockedToastMessage(item) {
-  const hasDate = !!item.releaseDate;
-  const hasMilestone = typeof item.unlockAtOutfits === 'number';
-  if (hasMilestone) {
-    const have = getOutfitCount();
-    const remaining = Math.max(0, item.unlockAtOutfits - have);
-    if (remaining > 0) {
-      let msg = `Build ${remaining} more outfit${remaining === 1 ? '' : 's'} to unlock this — you're at ${have}/${item.unlockAtOutfits}.`;
-      if (hasDate) msg += ` Or just wait for ${formatReleaseLabel(item.releaseDate)}.`;
-      return msg;
-    }
-  }
-  if (hasDate) return `This piece isn't in stores yet. Drops ${formatReleaseLabel(item.releaseDate)} — patience, icon.`;
-  return `This piece isn't unlocked yet.`;
-}
-
-function showLockedToast(message) {
-  const toast = document.getElementById('origin-toast');
-  const textEl = document.getElementById('origin-line-text');
-  const nameEl = document.getElementById('origin-sender-name');
-  const avatarEl = document.getElementById('origin-avatar');
-  if (!toast || !textEl) return;
-  textEl.textContent = message;
-  if (nameEl) nameEl.textContent = 'Glass Closet';
-  if (avatarEl) { avatarEl.textContent = 'GC'; avatarEl.style.background = '#3a3530'; }
-  clearTimeout(originToastTimer);
-  toast.classList.add('visible');
-  originToastTimer = setTimeout(() => toast.classList.remove('visible'), 4500);
-}
-
-function checkForNewlyUnlockedItems(newCount) {
-  const unlocked = [];
-  categories.forEach(cat => cat.items.forEach(item => {
-    if (typeof item.unlockAtOutfits === 'number' && item.unlockAtOutfits === newCount) unlocked.push(item);
-  }));
-  if (unlocked.length === 0) return;
-  const names = unlocked.map(i => i.name).join(', ');
-  showLockedToast(`🔓 You just unlocked: ${names}! Go check the closet.`);
-}
-
-function renderGrid(catId, items) {
-  const cat = categories.find(c => c.id === catId);
-  const src = items || (cat ? cat.items : []);
-  const grid = document.getElementById('item-grid'); grid.innerHTML = '';
-  src.forEach(item => {
-    const uid = (item._catId || catId) + '_' + item.name.replace(/\s+/g, '_');
-    const card = document.createElement('div');
-    card.id = 'gi-' + uid;
-
-    if (isLocked(item)) {
-      card.className = 'grid-item locked-item';
-      card.innerHTML = `<div class="gi-visual gi-locked"><span class="lock-mark">?</span></div><div class="gi-name">${item.name}</div><div class="gi-release">${gridLockCaption(item)}</div>`;
-      card.onclick = () => showLockedToast(lockedToastMessage(item));
-      grid.appendChild(card);
-      return;
-    }
-
-    card.className = 'grid-item' + (onCanvas[uid] ? ' on-board' : '');
-    const isSashaBow = item.name === "Sasha's bow";
-    const vibeCaption = isSashaBow ? "yes, and?" : '';
-    card.innerHTML = `<div class="gi-visual"><img alt="${item.name}" title="Vibe: ${item.vibe}"></div><div class="gi-name">${item.name}</div>${vibeCaption ? `<div class="gi-vibe">${vibeCaption}</div>` : ''}`;
-    setupImgFallback(card.querySelector('img'), item.name, true, item.img);
-    if (item.color) { const dot = document.createElement('div'); dot.className = 'gi-color-dot'; dot.style.background = item.color; card.appendChild(dot); }
-    card.onclick = () => toggleItem(uid, item, item._catId || catId);
-    grid.appendChild(card);
-  });
-
-  const reqCard = document.createElement('div');
-  reqCard.className = 'grid-item request-tile';
-  reqCard.innerHTML = `<div class="gi-visual"><span class="plus-mark">+</span></div><div class="gi-name">Request<br>an item</div>`;
-  reqCard.onclick = () => openRequestForm();
-  grid.appendChild(reqCard);
-}
-
-function handleSearch(query) {
-  if (!query.trim()) { clearSearch(); return; }
-  searchMode = true; const q = query.toLowerCase(); const results = [];
-  categories.forEach(cat => { cat.items.forEach(item => { if (item.name.toLowerCase().includes(q) || item.vibe.toLowerCase().includes(q)) results.push({ ...item, _catId: cat.id }); });});
-  document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
-  renderGrid(null, results);
-}
-
-function clearSearch() { searchMode = false; document.getElementById('search-input').value = ''; const activeTab = document.getElementById('tab-' + activeCategory); if (activeTab) activeTab.classList.add('active'); renderGrid(activeCategory); }
-
-// ── INSPO / MOODBOARD BOARD ──
-// Curated starter looks — named by aesthetic/archetype rather than by real person,
-// since we don't ship licensed celebrity photos in the codebase. Each one still uses
-// the same setupImgFallback() convention as closet items: drop a real photo into the
-// project named to match (e.g. "y2k-pop-star.png") and it'll load automatically in
-// place of the placeholder. Users can also upload their own reference photos below.
-const INSPO_PRESETS = [
-  { id: 'y2k-pop-star',        name: 'Y2K Pop Star',            tag: 'celeb' },
-  { id: 'old-money-heiress',   name: 'Old Money Heiress',       tag: 'celeb' },
-  { id: 'red-carpet-siren',    name: 'Red Carpet Siren',        tag: 'celeb' },
-  { id: 'off-duty-model',      name: 'Off-Duty Model',          tag: 'celeb' },
-  { id: 'anime-heroine',       name: 'Anime Heroine',           tag: 'cartoon' },
-  { id: 'disney-villain',      name: 'Disney Villain Energy',   tag: 'cartoon' },
-  { id: 'powerpuff-core',      name: 'Powerpuff Core',          tag: 'cartoon' },
-  { id: 'cher-clueless',       name: 'Clueless Cher Energy',    tag: 'movie' }
-];
-
-const INSPO_UPLOADS_KEY = 'dreamCloset_inspoUploads';
-
-function loadInspoUploads() {
-  try { return JSON.parse(localStorage.getItem(INSPO_UPLOADS_KEY) || '[]'); } catch (e) { return []; }
-}
-
-function saveInspoUploads(list) {
-  try { localStorage.setItem(INSPO_UPLOADS_KEY, JSON.stringify(list)); }
-  catch (e) {
-    // storage full — drop oldest half and retry once
-    list = list.slice(0, Math.floor(list.length / 2));
-    try { localStorage.setItem(INSPO_UPLOADS_KEY, JSON.stringify(list)); } catch (e2) { console.warn('[inspo] storage full'); }
-  }
-}
-
-function openInspoBoard() {
-  document.getElementById('inspo-overlay').classList.add('show');
-  renderInspoGrid();
-}
-
-function closeInspoBoard() {
-  document.getElementById('inspo-overlay').classList.remove('show');
-}
-
-function renderInspoGrid() {
-  const grid = document.getElementById('inspo-grid');
-  if (!grid) return;
-  grid.innerHTML = '';
-  const uploads = loadInspoUploads();
-
-  INSPO_PRESETS.forEach(p => {
-    const uid = 'preset_' + p.id;
-    const card = document.createElement('div');
-    card.className = 'inspo-card' + (onCanvas[uid] ? ' on-board' : '');
-    card.id = 'ib-' + uid;
-    card.innerHTML = `<div class="ic-visual"><img alt="${p.name}"></div><div class="ic-caption"><div class="ic-name">${p.name}</div><span class="ic-tag ic-tag-${p.tag}">${p.tag}</span></div>`;
-    setupImgFallback(card.querySelector('img'), p.name, true);
-    card.onclick = () => toggleInspoPin(uid, { name: p.name, tag: p.tag });
-    grid.appendChild(card);
-  });
-
-  uploads.forEach(u => {
-    const uid = u.id;
-    const card = document.createElement('div');
-    card.className = 'inspo-card' + (onCanvas[uid] ? ' on-board' : '');
-    card.id = 'ib-' + uid;
-    card.innerHTML = `<div class="ic-visual"><img src="${u.dataUrl}" alt="${u.name}"></div><div class="ic-caption"><div class="ic-name">${u.name}</div><span class="ic-tag ic-tag-mine">yours</span></div><button class="inspo-delete-btn" aria-label="Delete">✕</button>`;
-    card.querySelector('.inspo-delete-btn').onclick = (e) => { e.stopPropagation(); deleteInspoUpload(uid); };
-    card.onclick = () => toggleInspoPin(uid, { name: u.name, dataUrl: u.dataUrl, tag: 'mine' });
-    grid.appendChild(card);
-  });
-
-  const uploadTile = document.createElement('div');
-  uploadTile.className = 'inspo-upload-tile';
-  uploadTile.innerHTML = `<span class="plus-mark">+</span><span class="iu-label">Add your own inspo</span>`;
-  uploadTile.onclick = () => document.getElementById('inspo-file-input').click();
-  grid.appendChild(uploadTile);
-}
-
-function handleInspoUpload(e) {
-  const file = e.target.files && e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = (ev) => {
-    const img = new Image();
-    img.onload = () => {
-      // downscale + compress so localStorage doesn't fill up fast (same pattern as lookbook history)
-      const maxDim = 480;
-      const ratio = Math.min(1, maxDim / Math.max(img.width, img.height));
-      const c = document.createElement('canvas');
-      c.width = img.width * ratio; c.height = img.height * ratio;
-      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
-      const dataUrl = c.toDataURL('image/jpeg', 0.75);
-      const uploads = loadInspoUploads();
-      uploads.unshift({ id: 'upload_' + Date.now(), name: (file.name || 'My inspo').replace(/\.[^.]+$/, '').slice(0, 40), dataUrl });
-      saveInspoUploads(uploads);
-      renderInspoGrid();
-    };
-    img.onerror = () => console.warn('[inspo] could not read image file');
-    img.src = ev.target.result;
-  };
-  reader.readAsDataURL(file);
-  e.target.value = ''; // allow re-selecting the same file later
-}
-
-function deleteInspoUpload(uid) {
-  if (onCanvas[uid]) removeFromCanvas(uid);
-  let uploads = loadInspoUploads();
-  uploads = uploads.filter(u => u.id !== uid);
-  saveInspoUploads(uploads);
-  renderInspoGrid();
-}
-
-function updateInspoCard(uid, active) {
-  const card = document.getElementById('ib-' + uid);
-  if (card) card.classList.toggle('on-board', active);
-}
-
-function toggleInspoPin(uid, entry) {
-  if (onCanvas[uid]) removeFromCanvas(uid); else pinInspoToCanvas(uid, entry);
-  closeInspoBoard();
-}
-
-function pinInspoToCanvas(uid, entry, restoreData) {
-  const canvas = document.getElementById('canvas');
-  document.getElementById('canvas-empty').style.display = 'none';
-  const w = 130, h = 165;
-  const el = document.createElement('div'); el.className = 'on-canvas ref-pin'; el.id = 'oc-' + uid;
-  el.style.width = w + 'px'; el.style.height = h + 'px'; el.style.zIndex = zCounter++;
-  let cx, cy, state;
-  if (restoreData) {
-    cx = restoreData.left; cy = restoreData.top;
-    state = { rotation: restoreData.rotation || 0, scale: restoreData.scale || 1 };
-  } else {
-    cx = canvas.offsetWidth / 2 - w / 2 + (Math.random() - 0.5) * 80;
-    cy = canvas.offsetHeight / 2 - h / 2 + (Math.random() - 0.5) * 60;
-    cx = Math.max(0, cx); cy = Math.max(0, cy);
-    state = { rotation: (Math.random() - 0.5) * 8, scale: 1 };
-  }
-  el.style.left = cx + 'px'; el.style.top = cy + 'px';
-  const spin = document.createElement('div'); spin.className = 'oc-spin';
-  applySpinTransform(spin, state);
-  const inner = document.createElement('div'); inner.className = 'oc-visual ref-visual';
-  const img = document.createElement('img');
-  img.alt = entry.name;
-  img.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;';
-  if (entry.dataUrl) img.src = entry.dataUrl; else setupImgFallback(img, entry.name, true);
-  inner.appendChild(img);
-  const tag = document.createElement('div'); tag.className = 'ref-tag';
-  tag.textContent = entry.tag === 'cartoon' ? '✦ cartoon inspo' : entry.tag === 'mine' ? '✦ your inspo' : '✦ inspo';
-  inner.appendChild(tag);
-  spin.appendChild(inner); el.appendChild(spin);
-  const rm = document.createElement('button'); rm.className = 'remove-btn'; rm.textContent = '✕';
-  rm.onclick = (e) => { e.stopPropagation(); removeFromCanvas(uid); }; el.appendChild(rm);
-  const stem = document.createElement('div'); stem.className = 'rotate-stem'; el.appendChild(stem);
-  const rotateHandle = document.createElement('div'); rotateHandle.className = 'rotate-handle'; rotateHandle.textContent = '↻'; el.appendChild(rotateHandle);
-  const resizeHandle = document.createElement('div'); resizeHandle.className = 'resize-handle'; el.appendChild(resizeHandle);
-  canvas.appendChild(el); setupTransforms(el, spin, rotateHandle, resizeHandle, state, uid);
-  onCanvas[uid] = { el, item: { name: entry.name, isRef: true }, state, isRef: true };
-  updateInspoCard(uid, true);
-  setActive(uid);
-}
-
-function setActive(uid) { document.querySelectorAll('.on-canvas').forEach(el => el.classList.remove('active-item')); if (uid && onCanvas[uid]) { onCanvas[uid].el.classList.add('active-item'); onCanvas[uid].el.style.zIndex = zCounter++; } }
-
-function toggleItem(uid, item, catId) { if (onCanvas[uid]) removeFromCanvas(uid); else addToCanvas(uid, item, catId); }
-
-function addToCanvas(uid, item, catId, restoreData) {
-  const canvas = document.getElementById('canvas');
-  document.getElementById('canvas-empty').style.display = 'none';
-  if (!restoreData) pushNewsHeadline(item); // don't spam headlines on page-load restore
-  const el = document.createElement('div'); el.className = 'on-canvas'; el.id = 'oc-' + uid;
-  el.style.width = item.w + 'px'; el.style.height = item.h + 'px'; el.style.zIndex = zCounter++;
-  let cx, cy, state;
-  if (restoreData) {
-    cx = restoreData.left; cy = restoreData.top;
-    state = { rotation: restoreData.rotation || 0, scale: restoreData.scale || 1 };
-  } else {
-    cx = canvas.offsetWidth / 2 - item.w / 2 + (Math.random() - 0.5) * 80;
-    cy = canvas.offsetHeight / 2 - item.h / 2 + (Math.random() - 0.5) * 60;
-    cx = Math.max(0, cx); cy = Math.max(0, cy);
-    state = { rotation: 0, scale: 1 };
-  }
-  el.style.left = cx + 'px'; el.style.top = cy + 'px';
-  const spin = document.createElement('div'); spin.className = 'oc-spin';
-  applySpinTransform(spin, state);
-  const inner = document.createElement('div'); inner.className = 'oc-visual';
-  inner.innerHTML = `<img alt="${item.name}" title="Vibe: ${item.vibe}" style="width:100%;height:100%;object-fit:contain;">`;
-  setupImgFallback(inner.querySelector('img'), item.name, true, item.img);
-  spin.appendChild(inner); el.appendChild(spin);
-  const rm = document.createElement('button'); rm.className = 'remove-btn'; rm.textContent = '✕';
-  rm.onclick = (e) => { e.stopPropagation(); removeFromCanvas(uid); }; el.appendChild(rm);
-  const stem = document.createElement('div'); stem.className = 'rotate-stem'; el.appendChild(stem);
-  const rotateHandle = document.createElement('div'); rotateHandle.className = 'rotate-handle'; rotateHandle.textContent = '↻'; el.appendChild(rotateHandle);
-  const resizeHandle = document.createElement('div'); resizeHandle.className = 'resize-handle'; el.appendChild(resizeHandle);
-  canvas.appendChild(el); setupTransforms(el, spin, rotateHandle, resizeHandle, state, uid);
-  onCanvas[uid] = { el, item, state }; updateGridCard(uid, true); setActive(uid);
-
-  if (!restoreData) {
-    // sparkle + sound on drop
-    const canvasRect = canvas.getBoundingClientRect();
-    const burstX = canvasRect.left + parseFloat(el.style.left) + item.w / 2;
-    const burstY = canvasRect.top + parseFloat(el.style.top) + item.h / 2;
-    spawnSparkleBurst(burstX, burstY);
-    itemAddCount++;
-    if (itemAddCount % 3 === 1) playTrueItemSelectSound(); // plays on add #1, #4, #7, ...
-    maybeShowOrigin(uid, item);
-  }
-  saveInProgressOutfit();
-}
-
-function removeFromCanvas(uid) {
-  if (!onCanvas[uid]) return;
-  onCanvas[uid].el.remove(); delete onCanvas[uid]; updateGridCard(uid, false); updateInspoCard(uid, false);
-  if (Object.keys(onCanvas).length === 0) {
-    document.getElementById('canvas-empty').style.display = 'block';
-  }
-  saveInProgressOutfit();
-}
-
-function updateGridCard(uid, active) { const card = document.getElementById('gi-' + uid); if (card) card.classList.toggle('on-board', active); }
-
-const MIN_SCALE = 0.4, MAX_SCALE = 2.5;
-function applySpinTransform(spin, state) { spin.style.transform = `rotate(${state.rotation}deg) scale(${state.scale})`; }
-
-function setupTransforms(el, spin, rotateHandle, resizeHandle, state, uid) {
-  let mode = null, startX, startY, origLeft, origTop;
-  let centerX, centerY, startAngle, startRotation, startDist, startScale;
-  let activePointerId = null, rafPending = false, pendingX = 0, pendingY = 0;
-
-  function getCenter() { const rect = el.getBoundingClientRect(); return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 }; }
-
-  function beginGesture(newMode, x, y, capTarget, pointerId) {
-    // Grab this exact pointer for the whole gesture — no matter where the
-    // finger/cursor wanders afterward, only THIS item will keep receiving
-    // its move/up events, so a fast or wide drag can never "hand off" to
-    // whatever happens to be underneath at some later point.
-    try { capTarget.setPointerCapture(pointerId); } catch (e) {}
-    activePointerId = pointerId;
-    setActive(uid);
-    el.style.zIndex = zCounter++;
-    mode = newMode;
-    if (newMode === 'drag') {
-      startX = x; startY = y; origLeft = parseInt(el.style.left)||0; origTop = parseInt(el.style.top)||0;
-    } else if (newMode === 'rotate') {
-      const c = getCenter(); centerX = c.x; centerY = c.y;
-      startAngle = Math.atan2(y-centerY, x-centerX)*180/Math.PI; startRotation = state.rotation;
-    } else if (newMode === 'resize') {
-      const c = getCenter(); centerX = c.x; centerY = c.y;
-      startDist = Math.hypot(x-centerX, y-centerY); startScale = state.scale;
-    }
-  }
-
-  function applyMove(x, y) {
-    if (mode === 'drag') { el.style.left = (origLeft+x-startX)+'px'; el.style.top = (origTop+y-startY)+'px'; }
-    else if (mode === 'rotate') { const angle = Math.atan2(y-centerY, x-centerX)*180/Math.PI; state.rotation = startRotation+(angle-startAngle); applySpinTransform(spin, state); }
-    else if (mode === 'resize') { const dist = Math.hypot(x-centerX, y-centerY); state.scale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, startScale*dist/(startDist||1))); applySpinTransform(spin, state); }
-  }
-
-  function onMove(x, y) {
-    if (!mode) return;
-    pendingX = x; pendingY = y;
-    if (rafPending) return;
-    rafPending = true;
-    requestAnimationFrame(() => { rafPending = false; applyMove(pendingX, pendingY); });
-  }
-
-  function onEnd() { if (mode) saveInProgressOutfit(); mode = null; activePointerId = null; }
-
-  function isHandle(target) { return target===rotateHandle||target===resizeHandle||target.classList.contains('remove-btn'); }
-
-  el.addEventListener('pointerdown', e => {
-    if (isHandle(e.target)) return;
-    if (e.pointerType === 'mouse' && e.button !== 0) return;
-    beginGesture('drag', e.clientX, e.clientY, el, e.pointerId);
-  });
-  rotateHandle.addEventListener('pointerdown', e => { e.stopPropagation(); beginGesture('rotate', e.clientX, e.clientY, rotateHandle, e.pointerId); });
-  resizeHandle.addEventListener('pointerdown', e => { e.stopPropagation(); beginGesture('resize', e.clientX, e.clientY, resizeHandle, e.pointerId); });
-
-  el.addEventListener('pointermove', e => { if (mode && e.pointerId === activePointerId) onMove(e.clientX, e.clientY); });
-  rotateHandle.addEventListener('pointermove', e => { if (mode && e.pointerId === activePointerId) onMove(e.clientX, e.clientY); });
-  resizeHandle.addEventListener('pointermove', e => { if (mode && e.pointerId === activePointerId) onMove(e.clientX, e.clientY); });
-
-  function release(e) { if (e.pointerId === activePointerId) onEnd(); }
-  el.addEventListener('pointerup', release);
-  el.addEventListener('pointercancel', release);
-  rotateHandle.addEventListener('pointerup', release);
-  rotateHandle.addEventListener('pointercancel', release);
-  resizeHandle.addEventListener('pointerup', release);
-  resizeHandle.addEventListener('pointercancel', release);
-}
-
-function toggleDrawer() {
-  const drawer = document.getElementById('drawer');
-  const isCol = drawer.classList.toggle('collapsed');
-  ['cat-tabs','item-grid','search-row'].forEach(id => document.getElementById(id).style.display = isCol ? 'none' : '');
-  document.getElementById('drawer-toggle').textContent = isCol ? '▼' : '▲';
-}
-
-function calculateVerdict() {
-  if (Object.keys(onCanvas).some(uid => onCanvas[uid].item.name === "Sasha's bow")) { return { key: "yes, and?", ...verdicts["yes, and?"] }; }
-  const vibes = Object.keys(onCanvas).map(uid => verdictMap[uid]).filter(Boolean);
-  if (vibes.length === 0) return null;
-  const freq = {}; vibes.forEach(v => freq[v] = (freq[v]||0)+1);
-  let maxFreq = 0; for (let v in freq) if (freq[v] > maxFreq) maxFreq = freq[v];
-  const topVibes = Object.keys(freq).filter(v => freq[v] === maxFreq);
-  const top = topVibes[Math.floor(Math.random()*topVibes.length)];
-  return { key: top, ...(verdicts[top] || verdicts['default']) };
-}
-
-function buildOutfitPreview(previewEl) {
-  const canvas = document.getElementById('canvas');
-  const preview = previewEl || document.getElementById('verdict-outfit-preview');
-  preview.innerHTML = '';
-  preview.style.position = 'relative';
-
-  const canvasRect = canvas.getBoundingClientRect();
-  const canvasW = canvas.offsetWidth, canvasH = canvas.offsetHeight;
-  if (!canvasW || !canvasH) return;
-
-  const uids = Object.keys(onCanvas)
-    .filter(uid => !onCanvas[uid].isRef) // inspo reference pins are for building, not part of the final look
-    .sort((a, b) => (parseInt(onCanvas[a].el.style.zIndex)||0) - (parseInt(onCanvas[b].el.style.zIndex)||0));
-
-  if (uids.length === 0) return;
-
-  // Measure the actual on-screen (rotation-aware) box of every placed item so
-  // the polaroid can fit around the real outfit — nothing hangs off the edge
-  // and gets cropped, even if a piece was dragged or spun past the canvas bounds.
-  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
-  uids.forEach(uid => {
-    const spin = onCanvas[uid].el.querySelector('.oc-spin') || onCanvas[uid].el;
-    const r = spin.getBoundingClientRect();
-    minX = Math.min(minX, r.left - canvasRect.left);
-    minY = Math.min(minY, r.top - canvasRect.top);
-    maxX = Math.max(maxX, r.right - canvasRect.left);
-    maxY = Math.max(maxY, r.bottom - canvasRect.top);
-  });
-
-  const pad = 16; // breathing room so pieces don't touch the frame edge
-  minX -= pad; minY -= pad; maxX += pad; maxY += pad;
-  const boxW = Math.max(1, maxX - minX);
-  const boxH = Math.max(1, maxY - minY);
-
-  preview.style.aspectRatio = `${boxW} / ${boxH}`;
-
-  const previewW = preview.offsetWidth;
-  const scale = previewW / boxW;
-
-  uids.forEach(uid => {
-    const entry = onCanvas[uid];
-    const el = entry.el;
-    const left = (parseFloat(el.style.left) || 0) - minX;
-    const top = (parseFloat(el.style.top) || 0) - minY;
-    const w = parseFloat(el.style.width) || 0;
-    const h = parseFloat(el.style.height) || 0;
-    const spin = el.querySelector('.oc-spin');
-    const img = el.querySelector('img');
-    if (!img) return;
-
-    const clone = document.createElement('div');
-    clone.style.position = 'absolute';
-    clone.style.left = (left * scale) + 'px';
-    clone.style.top = (top * scale) + 'px';
-    clone.style.width = (w * scale) + 'px';
-    clone.style.height = (h * scale) + 'px';
-
-    const spinClone = document.createElement('div');
-    spinClone.style.width = '100%';
-    spinClone.style.height = '100%';
-    spinClone.style.transformOrigin = '50% 50%';
-    if (spin) spinClone.style.transform = spin.style.transform;
-
-    const imgClone = document.createElement('img');
-    imgClone.alt = entry.item.name;
-    imgClone.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:contain;';
-    setupImgFallback(imgClone, entry.item.name, true, entry.item.img);
-
-    spinClone.appendChild(imgClone);
-    clone.appendChild(spinClone);
-    preview.appendChild(clone);
-  });
-}
-
-function downloadOutfitImage(previewEl, btnEl, filename) {
-  const preview = previewEl || document.getElementById('verdict-outfit-preview');
-  const btn = btnEl || document.getElementById('download-outfit-btn');
-  if (!preview || typeof html2canvas === 'undefined') return;
-
-  html2canvas(preview, {
-    backgroundColor: '#ffffff',
-    scale: 2,
-    useCORS: true
-  }).then(canvas => {
-    const link = document.createElement('a');
-    link.download = filename || 'glass-closet-look.png';
-    link.href = canvas.toDataURL('image/png');
-    link.click();
-
-    if (btn) {
-      btn.classList.add('saved');
-      setTimeout(() => btn.classList.remove('saved'), 1800);
-    }
-  }).catch(err => {
-    console.warn('[download] html2canvas capture failed:', err);
-  });
-}
-
-// ── SECRET MISSIONS ──
-const MISSIONS = [
-  { id: 'debate', title: '3AM Philosophical Debate', prompt: "You're two hours deep into an argument about free will at a diner booth. Dress like you're winning.", tags: ['downtown intellectual','cerebral','academic','winter intellectual','romantic intellectual'] },
-  { id: 'villain', title: 'Villain Origin Story', prompt: "Someone wronged you. This is the outfit you wear the day you stop being nice about it.", tags: ['iconic villain era','dangerous','riot grrrl','weaponised femininity'] },
-  { id: 'reunion', title: 'Uninvited, But Showing Up Anyway', prompt: "You weren't on the list. Dress like that was their mistake, not yours.", tags: ['it-girl immunity','a little bit dramatic','queen bee','dramatic entrance'] },
-  { id: 'courtdate', title: 'Court Date, But Make It Fashion', prompt: "You have to look credible in front of a judge and unbothered for the paparazzi outside.", tags: ['power dressing','power','boss','city power'] },
-  { id: 'breakup', title: 'Breakup Text Sent, Vacation Booked', prompt: "You hit send twenty minutes ago. Dress like the healing arc already started.", tags: ['thank u, next','no tears left to cry','taste maker'] },
-  { id: 'gallery', title: "The Gallery Opening You Weren't Invited To", prompt: "Free wine, pretentious lighting, zero explanation for why you're here. Blend in by standing out.", tags: ['downtown art','art student','artsy','arty','downtown artist'] },
-  { id: 'rodeo', title: 'Rodeo, But Your Situationship Is Watching', prompt: "You didn't come here for the bulls. You came here to be seen not caring.", tags: ['camp cowgirl','dark cowgirl','cool Americana'] },
-  { id: 'exwedding', title: "Emergency Glow-Up Before the Ex's Wedding", prompt: "You RSVP'd yes out of spite. Now the outfit has to back that decision up.", tags: ['effortless chic','rich girl','retro glamour','quiet luxury peak'] },
-  { id: 'ceo', title: 'First Day Pretending You Run This Company', prompt: "Nobody asked, but you're acting like the building is yours until someone stops you.", tags: ['boss','effortlessly powerful','director','quietly powerful'] },
-  { id: 'seance', title: 'Midnight Séance With the Group Chat', prompt: "You're summoning something at 12am with people you met on the internet. Dress accordingly.", tags: ['witchy','dark romantic','victorian goth','theatrical goth','autumn witchy'] },
-  { id: 'award', title: "Winning an Award You Weren't Nominated For", prompt: "There's been a mix-up and you're accepting it anyway. Dress like you deserved it all along.", tags: ['editorial','evening editorial','retro glam','all eyes on you','theatrical'] },
-  { id: 'wholefoods', title: "Running Into the New Girlfriend at Whole Foods", prompt: "You're just getting groceries. You are also, unmistakably, thriving.", tags: ['effortless','cool','soft danger','quiet subversion','rich girl'] },
-];
-
-const MISSION_DATE_KEY = 'dreamCloset_missionDate';
-const MISSION_INDEX_KEY = 'dreamCloset_missionIndex';
-const MISSION_RESULT_KEY = 'dreamCloset_missionResult';
-
-function todayDateStr() { return new Date().toISOString().slice(0, 10); }
-
-function getDailyMission() {
-  const today = todayDateStr();
-  const storedDate = localStorage.getItem(MISSION_DATE_KEY);
-  let idx;
-  if (storedDate === today && localStorage.getItem(MISSION_INDEX_KEY) !== null) {
-    idx = parseInt(localStorage.getItem(MISSION_INDEX_KEY), 10);
-  } else {
-    idx = Math.floor(Math.random() * MISSIONS.length);
-    try {
-      localStorage.setItem(MISSION_DATE_KEY, today);
-      localStorage.setItem(MISSION_INDEX_KEY, String(idx));
-      localStorage.removeItem(MISSION_RESULT_KEY);
-    } catch (e) {}
-  }
-  return MISSIONS[idx] || MISSIONS[0];
-}
-
-function getMissionResult() {
-  try {
-    const raw = JSON.parse(localStorage.getItem(MISSION_RESULT_KEY) || 'null');
-    if (raw && raw.date === todayDateStr()) return raw;
-  } catch (e) {}
-  return null;
-}
-
-function updateMissionBadge() {
-  const dot = document.getElementById('mission-btn-dot');
-  if (!dot) return;
-  const result = getMissionResult();
-  dot.classList.remove('active', 'done');
-  if (result) dot.classList.add('active', 'done');
-  else dot.classList.add('active');
-}
-
-function openMissionCard() {
-  const mission = getDailyMission();
-  document.getElementById('mission-title').textContent = mission.title;
-  document.getElementById('mission-prompt').textContent = mission.prompt;
-
-  const statusEl = document.getElementById('mission-status');
-  const result = getMissionResult();
-  statusEl.className = '';
-  if (result && result.missionId === mission.id && result.passed) {
-    statusEl.textContent = 'Mission passed ✓';
-    statusEl.classList.add('show', 'pass');
-  } else {
-    statusEl.classList.remove('show');
-  }
-
-  document.getElementById('mission-overlay').classList.add('show');
-}
-
-function rerollMission() {
-  const current = getDailyMission();
-  let idx;
-  if (MISSIONS.length > 1) {
-    do { idx = Math.floor(Math.random() * MISSIONS.length); } while (MISSIONS[idx].id === current.id);
-  } else {
-    idx = 0;
-  }
-  try {
-    localStorage.setItem(MISSION_DATE_KEY, todayDateStr());
-    localStorage.setItem(MISSION_INDEX_KEY, String(idx));
-    localStorage.removeItem(MISSION_RESULT_KEY);
-  } catch (e) {}
-  updateMissionBadge();
-  openMissionCard();
-}
-
-function closeMissionCard() {
-  document.getElementById('mission-overlay').classList.remove('show');
-}
-
-function evaluateMission(verdictKey) {
-  const mission = getDailyMission();
-  const passed = mission.tags.includes(verdictKey);
-  const result = { date: todayDateStr(), passed, verdictKey, missionId: mission.id };
-  try { localStorage.setItem(MISSION_RESULT_KEY, JSON.stringify(result)); } catch (e) {}
-  updateMissionBadge();
-
-  const stamp = document.getElementById('mission-stamp');
-  if (stamp) {
-    stamp.textContent = passed ? 'Mission\nPassed' : 'Mission\nFailed';
-    stamp.style.whiteSpace = 'pre-line';
-    stamp.classList.remove('pass', 'fail');
-    stamp.classList.add('show', passed ? 'pass' : 'fail');
-  }
-  return result;
-}
-
-function checkMissionVibe() {
-  if (Object.keys(onCanvas).length === 0) {
-    alert("Put some clothes on the canvas first!");
-    return;
-  }
-
-  // Calculate the verdict without showing the full Polaroid screen
-  const tempVerdict = calculateVerdict();
-  const verdictKey = tempVerdict.key;
-
-  const mission = getDailyMission();
-  const passed = mission.tags.includes(verdictKey);
-
-  // Save the result
-  const result = { date: todayDateStr(), passed, verdictKey, missionId: mission.id };
-  try { localStorage.setItem(MISSION_RESULT_KEY, JSON.stringify(result)); } catch (e) {}
-  updateMissionBadge();
-
-  // Update the UI in the mission window
-  const statusEl = document.getElementById('mission-status');
-  statusEl.className = 'show';
-
-  if (passed) {
-    statusEl.textContent = `Mission passed ✓ (Your vibe is ${verdictKey.toUpperCase()})`;
-    statusEl.classList.add('pass');
-  } else {
-    statusEl.textContent = `Mission failed (Your vibe is ${verdictKey.toUpperCase()}) — try again!`;
-    statusEl.classList.add('fail');
-  }
-}
-
-function renderLeaderboard() {
-  const el = document.getElementById('lb-leaderboard');
-  if (!el) return;
-  let history = [];
-  try { history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); } catch (e) { history = []; }
-
-  if (history.length === 0) { el.innerHTML = ''; return; }
-
-  const freq = {};
-  history.forEach(entry => { if (entry.aesthetic) freq[entry.aesthetic] = (freq[entry.aesthetic] || 0) + 1; });
-
-  const total = history.length;
-  const top = Object.keys(freq).sort((a, b) => freq[b] - freq[a]).slice(0, 5);
-
-  const rows = top.map(key => {
-    const pct = Math.round((freq[key] / total) * 100);
-    return `<div class="lb-row">
-      <span class="lb-row-label">${key}</span>
-      <div class="lb-row-bar-track"><div class="lb-row-bar-fill" style="width:${pct}%"></div></div>
-      <span class="lb-row-pct">${pct}%</span>
-    </div>`;
-  }).join('');
-
-  el.innerHTML = `<div id="lb-leaderboard-title">Your most-worn aesthetics</div>${rows}`;
-}
-
-function showVerdict() {
-  if (Object.keys(onCanvas).length === 0) { alert("The closet's full. Pick something to wear."); return; }
-  currentLang = 'en'; // always start each new verdict in English — don't carry over a previous guest's translate toggle
-  currentVerdict = calculateVerdict();
-  currentVerdictKey = currentVerdict.key;
-  
-  applyTranslations();
-  
-  setActive(null); 
-  document.getElementById('verdict-overlay').classList.add('show');
-  requestAnimationFrame(() => requestAnimationFrame(() => {
-    buildOutfitPreview();
-    requestAnimationFrame(() => saveOutfitToHistory());
-  }));
-  playShutterSound();
-}
-
-const HISTORY_KEY = 'dreamCloset_history';
-const HISTORY_MAX = 24;
-
-function saveOutfitToHistory() {
-  const preview = document.getElementById('verdict-outfit-preview');
-  if (!preview || typeof html2canvas === 'undefined') return;
-
-  html2canvas(preview, {
-    backgroundColor: '#ffffff',
-    scale: 1,
-    useCORS: true
-  }).then(canvas => {
-    // downscale + compress so localStorage doesn't fill up fast
-    const thumbCanvas = document.createElement('canvas');
-    const maxDim = 320;
-    const ratio = Math.min(1, maxDim / Math.max(canvas.width, canvas.height));
-    thumbCanvas.width = canvas.width * ratio;
-    thumbCanvas.height = canvas.height * ratio;
-    thumbCanvas.getContext('2d').drawImage(canvas, 0, 0, thumbCanvas.width, thumbCanvas.height);
-    const dataUrl = thumbCanvas.toDataURL('image/jpeg', 0.72);
-
-    let history = [];
-    try { history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); } catch (e) { history = []; }
-
-    history.unshift({
-      img: dataUrl,
-      aesthetic: currentVerdictKey,
-      date: new Date().toISOString()
-    });
-    if (history.length > HISTORY_MAX) history = history.slice(0, HISTORY_MAX);
-
-    try { localStorage.setItem(HISTORY_KEY, JSON.stringify(history)); }
-    catch (e) {
-      // storage full — drop oldest half and retry once
-      history = history.slice(0, Math.floor(history.length / 2));
-      try { localStorage.setItem(HISTORY_KEY, JSON.stringify(history)); } catch (e2) { console.warn('[history] storage full'); }
-    }
-
-    // count this outfit toward milestone-locked items, then refresh the
-    // grid + check if anything just unlocked
-    const newCount = incrementOutfitCount();
-    renderGrid(activeCategory);
-    checkForNewlyUnlockedItems(newCount);
-  }).catch(err => console.warn('[history] capture failed:', err));
-}
-
-function openLookbook() {
-  const overlay = document.getElementById('lookbook-overlay');
-  const grid = document.getElementById('lookbook-grid');
-  let history = [];
-  try { history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); } catch (e) { history = []; }
-
-  renderLeaderboard();
-  grid.innerHTML = '';
-  if (history.length === 0) {
-    grid.innerHTML = '<div id="lookbook-empty">No looks saved yet — hit "Get my verdict" on an outfit to start your lookbook.</div>';
-  } else {
-    history.forEach((entry, idx) => {
-      const card = document.createElement('div');
-      card.className = 'lookbook-card';
-      const dateLabel = new Date(entry.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-      card.innerHTML = `
-        <div class="lookbook-actions">
-          <button class="lb-edit-btn" onclick="editLookbookEntry(${idx})" aria-label="Edit look" title="Edit">✎</button>
-          <button class="lb-delete-btn" onclick="deleteLookbookEntry(${idx})" aria-label="Delete look" title="Delete">✕</button>
-        </div>
-        <img src="${entry.img}" alt="${entry.aesthetic}">
-        <div class="lookbook-caption"><span class="lb-aesthetic">${entry.aesthetic}</span><span class="lb-date">${dateLabel}</span></div>`;
-      grid.appendChild(card);
-    });
-  }
-  overlay.classList.add('show');
-}
-
-function closeLookbook() {
-  document.getElementById('lookbook-overlay').classList.remove('show');
-}
-
-function readLookbookHistory() {
-  try { return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); } catch (e) { return []; }
-}
-
-function writeLookbookHistory(history) {
-  try { localStorage.setItem(HISTORY_KEY, JSON.stringify(history)); } catch (e) { console.warn('[lookbook] save failed:', e); }
-}
-
-function deleteLookbookEntry(idx) {
-  const history = readLookbookHistory();
-  if (idx < 0 || idx >= history.length) return;
-  history.splice(idx, 1);
-  writeLookbookHistory(history);
-  openLookbook(); // re-render
-}
-
-function editLookbookEntry(idx) {
-  const history = readLookbookHistory();
-  if (idx < 0 || idx >= history.length) return;
-  const grid = document.getElementById('lookbook-grid');
-  const card = grid.children[idx];
-  if (!card) return;
-  const captionEl = card.querySelector('.lookbook-caption');
-  const currentLabel = history[idx].aesthetic;
-
-  captionEl.innerHTML = `<input type="text" class="lb-edit-input" value="${currentLabel.replace(/"/g, '&quot;')}" maxlength="40">`;
-  const input = captionEl.querySelector('input');
-  input.focus();
-  input.select();
-
-  function commit() {
-    const h = readLookbookHistory();
-    if (h[idx]) {
-      h[idx].aesthetic = input.value.trim() || currentLabel;
-      writeLookbookHistory(h);
-    }
-    openLookbook(); // re-render with saved label
-  }
-  input.addEventListener('blur', commit, { once: true });
-  input.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') { e.preventDefault(); input.blur(); }
-    if (e.key === 'Escape') { e.preventDefault(); openLookbook(); }
-  });
-}
-
-function openRequestForm() {
-  document.getElementById('request-overlay').classList.add('show');
-  document.getElementById('request-status').textContent = '';
-  document.getElementById('request-status').className = '';
-}
-
-function closeRequestForm() {
-  document.getElementById('request-overlay').classList.remove('show');
-}
-
-async function submitItemRequest(e) {
-  e.preventDefault();
-  const form = document.getElementById('request-form');
-  const textarea = document.getElementById('request-text');
-  const status = document.getElementById('request-status');
-  const btn = document.getElementById('request-submit-btn');
-  if (!textarea.value.trim()) return;
-
-  btn.disabled = true; btn.textContent = 'Sending...';
-  status.textContent = ''; status.className = '';
-
-  try {
-    const res = await fetch('https://formspree.io/f/mzdllkba', {
-      method: 'POST',
-      headers: { 'Accept': 'application/json' },
-      body: new FormData(form)
-    });
-    if (res.ok) {
-      status.textContent = 'Sent — thanks for the suggestion 🖤';
-      status.className = 'success';
-      textarea.value = '';
-      setTimeout(closeRequestForm, 1600);
-    } else {
-      status.textContent = "Something went wrong — try again?";
-      status.className = 'error';
-    }
-  } catch (err) {
-    status.textContent = "Couldn't send — check your connection.";
-    status.className = 'error';
-  } finally {
-    btn.disabled = false; btn.textContent = 'Send request';
-  }
-}
-
-function toggleLanguage() {
-  currentLang = currentLang === 'en' ? 'uk' : 'en';
-  applyTranslations();
-}
-
-function applyTranslations() {
-  const t = translations[currentLang];
-  document.getElementById('verdict-eyebrow').textContent = t.eyebrow;
-  document.getElementById('verdict-close-label').textContent = t.back;
-  document.getElementById('verdict-song-label').textContent = t.listen;
-  document.getElementById('verdict-scene-label').textContent = t.watch;
-  
-  if (currentVerdict) {
-    let sourceDict = currentLang === 'uk' ? verdictsUK : verdicts;
-    let fallbackDict = verdicts;
-    
-    let vLine = sourceDict[currentVerdictKey]?.line || fallbackDict[currentVerdictKey]?.line;
-    let vSub = sourceDict[currentVerdictKey]?.sub || fallbackDict[currentVerdictKey]?.sub;
-    
-    let vAesthetic = currentVerdictKey.toUpperCase();
-    
-    document.getElementById('verdict-aesthetic').textContent = `${t.aestheticPrefix}${vAesthetic}${t.aestheticSuffix}`;
-    document.getElementById('verdict-text').textContent = vLine;
-    document.getElementById('verdict-sub').textContent = vSub;
-
-    const links = getVerdictLinks(currentVerdictKey);
-    
-    const songBtn = document.getElementById('verdict-song-link');
-    const sceneBtn = document.getElementById('verdict-scene-link');
-    
-    // verdictLinks only contains keys for genuine, specifically-curated iconic
-    // moments (a real song or a real named scene). Anything not in that list —
-    // regular wardrobe basics, AND "club kid" (which has no real scene attached) —
-    // gets neither button at all, rather than falling back to a generic search.
-    const linkEntry = verdictLinks[currentVerdictKey];
-
-    if (currentVerdictKey === "yes, and?") {
-      // Sasha's bow — the one verdict with a genuine curated playlist
-      songBtn.style.display = 'flex';
-      songBtn.href = links.songUrl;
-      sceneBtn.style.display = 'none';
-    } else if (linkEntry) {
-      // Any other iconic verdict with a real, specific scene defined
-      songBtn.style.display = 'none';
-      sceneBtn.style.display = 'flex';
-      sceneBtn.href = links.sceneUrl;
-    } else {
-      // Everything else — no buttons at all
-      songBtn.style.display = 'none';
-      sceneBtn.style.display = 'none';
-    }
-  }
-}
-
-function closeVerdict() { 
-  document.getElementById('verdict-overlay').classList.remove('show'); 
-}
-function shareToTelegram() { window.open('https://t.me/+UC1vcZZRBWA0ZDg6', '_blank'); }
-
-function openTelegramModal() {
-  const overlay = document.getElementById('telegram-overlay');
-  const hasOutfit = Object.keys(onCanvas).some(uid => !onCanvas[uid].isRef);
-
-  overlay.classList.toggle('empty', !hasOutfit);
-  overlay.classList.add('show');
-
-  if (hasOutfit) {
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-      buildOutfitPreview(document.getElementById('telegram-outfit-preview'));
-    }));
-  }
-}
-function closeTelegramModal() {
-  document.getElementById('telegram-overlay').classList.remove('show');
-}
-
-init();
-
-// ── GLASS SHATTER SEQUENCE ──
-window.addEventListener('DOMContentLoaded', () => {
-  const canvas = document.getElementById('mirror-canvas');
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-  const W = canvas.width, H = canvas.height;
-
-  const mirrorImg = new Image();
-  let mirrorImgLoaded = false;
-  mirrorImg.onload = () => { mirrorImgLoaded = true; drawMirror(); };
-  mirrorImg.onerror = () => { mirrorImgLoaded = false; };
-  mirrorImg.src = 'mirrorshatter.jpg';
-
-  function drawCoverImage(image, w, h) {
-    const imgRatio = image.width / image.height;
-    const boxRatio = w / h;
-    let sx, sy, sw, sh;
-    if (imgRatio > boxRatio) {
-      sh = image.height; sw = sh * boxRatio; sx = (image.width - sw) / 2; sy = 0;
-    } else {
-      sw = image.width; sh = sw / boxRatio; sx = 0; sy = (image.height - sh) / 2;
-    }
-    ctx.drawImage(image, sx, sy, sw, sh, 0, 0, w, h);
-  }
-
-  function drawMirror() {
-    ctx.clearRect(0, 0, W, H);
-    if (mirrorImgLoaded) {
-      drawCoverImage(mirrorImg, W, H);
-      const sheen = ctx.createLinearGradient(0, 0, W, H);
-      sheen.addColorStop(0, 'rgba(255,255,255,0.08)');
-      sheen.addColorStop(0.5, 'rgba(255,255,255,0.02)');
-      sheen.addColorStop(1, 'rgba(255,255,255,0.08)');
-      ctx.fillStyle = sheen;
-      ctx.fillRect(0, 0, W, H);
-    } else {
-      const streak = ctx.createLinearGradient(0, 0, W, H);
-      streak.addColorStop(0, 'rgba(255,255,255,0.1)');
-      streak.addColorStop(0.45, 'rgba(255,255,255,0)');
-      streak.addColorStop(0.5, 'rgba(255,255,255,0.4)');
-      streak.addColorStop(0.55, 'rgba(255,255,255,0)');
-      streak.addColorStop(1, 'rgba(255,255,255,0.1)');
-      ctx.fillStyle = streak;
-      ctx.fillRect(0, 0, W, H);
-    }
-  }
-
-  let IX, IY;
-
-  function drawCracks() {
-    ctx.strokeStyle = 'rgba(255,255,255,0.85)';
-    ctx.lineWidth = 1.2;
-    const numMain = 10 + Math.floor(Math.random()*5);
-    for (let i = 0; i < numMain; i++) {
-      const angle = (i / numMain) * Math.PI * 2 + (Math.random()-0.5)*0.4;
-      const len = (0.4 + Math.random()*0.6) * Math.max(W,H);
-      let x = IX, y = IY;
-      ctx.beginPath(); ctx.moveTo(x, y);
-      let remainingLen = len;
-      while (remainingLen > 0) {
-        const segLen = 30 + Math.random()*80;
-        const jitter = (Math.random()-0.5)*0.35;
-        x += Math.cos(angle+jitter)*Math.min(segLen, remainingLen);
-        y += Math.sin(angle+jitter)*Math.min(segLen, remainingLen);
-        ctx.lineTo(x, y);
-        if (Math.random() < 0.4 && remainingLen > 80) {
-          const bAngle = angle + (Math.random()-0.5)*1.2;
-          const bLen = remainingLen * (0.2 + Math.random()*0.3);
-          let bx = x, by = y;
-          ctx.moveTo(bx, by);
-          for (let b = 0; b < bLen; b += 40+Math.random()*40) {
-            bx += Math.cos(bAngle+(Math.random()-0.5)*0.3)*40;
-            by += Math.sin(bAngle+(Math.random()-0.5)*0.3)*40;
-            ctx.lineTo(bx, by);
-          }
-          ctx.moveTo(x, y);
-        }
-        remainingLen -= segLen;
-      }
-      ctx.stroke();
-    }
-  }
-
-  function buildShards(numShards) {
-    const points = [[IX, IY]];
-    for (let i = 1; i < numShards; i++) {
-      points.push([Math.random()*W, Math.random()*H]);
-    }
-    return points.map((pt) => {
-      const cx = pt[0], cy = pt[1];
-      const numVerts = 6 + Math.floor(Math.random()*4);
-      const angles = Array.from({length: numVerts}, (_, i) => (i / numVerts) * Math.PI * 2 + (Math.random()-0.5)*0.5);
-      const verts = angles.map(a => {
-        const r = 60 + Math.random() * Math.max(W,H) * 0.18;
-        return [cx + Math.cos(a)*r, cy + Math.sin(a)*r];
-      });
-      return { cx, cy, verts };
-    });
-  }
-
-  let shards = null;
-  let shardStates = [];
-  let offscreen = null;
-
-  function startShatter() {
-    offscreen = document.createElement('canvas');
-    offscreen.width = W;
-    offscreen.height = H;
-    offscreen.getContext('2d').drawImage(canvas, 0, 0);
-
-    shards = buildShards(22);
-    shardStates = shards.map(s => {
-      const dx = s.cx - IX, dy = s.cy - IY;
-      const dist = Math.hypot(dx, dy) || 1;
-      const speed = 4 + Math.random()*8 + (1/(dist/300+0.1))*2;
-      return {
-        vx: (dx/dist)*speed + (Math.random()-0.5)*3,
-        vy: (dy/dist)*speed + (Math.random()-0.5)*3,
-        vr: (Math.random()-0.5)*6,
-        rotation: 0,
-        opacity: 1,
-        tx: 0, ty: 0
-      };
-    });
-    
-    canvas.style.backdropFilter = 'none';
-    canvas.style.webkitBackdropFilter = 'none';
-    
-    requestAnimationFrame(animateShatter);
-  }
-
-  function animateShatter() {
-    ctx.clearRect(0, 0, W, H);
-
-    let allGone = true;
-    shards.forEach((shard, i) => {
-      const st = shardStates[i];
-      st.tx += st.vx; 
-      st.ty += st.vy; 
-      st.vy += 0.4; 
-      st.rotation += st.vr; 
-      st.opacity -= 0.018;
-      
-      if (st.opacity <= 0) return;
-      allGone = false;
-      
-      ctx.save();
-      ctx.globalAlpha = Math.max(0, st.opacity);
-      
-      ctx.translate(shard.cx + st.tx, shard.cy + st.ty);
-      ctx.rotate(st.rotation * Math.PI / 180);
-      ctx.translate(-shard.cx, -shard.cy);
-      
-      ctx.beginPath();
-      ctx.moveTo(shard.verts[0][0], shard.verts[0][1]);
-      shard.verts.forEach(v => ctx.lineTo(v[0], v[1]));
-      ctx.closePath();
-      ctx.clip();
-      
-      ctx.drawImage(offscreen, 0, 0);
-      
-      ctx.fillStyle = 'rgba(255,255,255,0.15)';
-      ctx.fill();
-      ctx.strokeStyle = 'rgba(255,255,255,0.6)';
-      ctx.lineWidth = 1;
-      ctx.stroke();
-      
-      ctx.restore();
-    });
-
-    if (allGone) { 
-      canvas.style.display = 'none'; 
-      maybeAutoStartTour();
-      return; 
-    }
-    requestAnimationFrame(animateShatter);
-  }
-
-  IX = W * 0.48 + (Math.random()-0.5)*80;
-  IY = H * 0.42 + (Math.random()-0.5)*60;
-
-  const tapOverlay = document.getElementById('tap-overlay');
-  const crackAudio = new Audio('crack.mp3');
-  crackAudio.volume = 0.4;
-
-  tapOverlay.addEventListener('click', () => {
-    crackAudio.play().catch(() => {});
-    drawCracks();
-    tapOverlay.style.opacity = '0';
-    setTimeout(() => tapOverlay.style.display = 'none', 400);
-    setTimeout(startShatter, 600);
-  }, { once: true });
-});
-</script>
-
-</body>
-</html>
+  'dangerous woman': { line: "You
