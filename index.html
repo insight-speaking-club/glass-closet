@@ -102,7 +102,7 @@
     border-bottom: 1px solid rgba(0,0,0,0.08); flex-shrink: 0; z-index: 10000;
     position: relative;
   }
-  #topbar-row1 { display: flex; align-items: flex-start; justify-content: space-between; }
+  #topbar-row1 { display: flex; align-items: flex-start; justify-content: flex-start; flex-wrap: wrap; row-gap: 0.5rem; }
 
   #topbar-row2 { margin-top: 0.4rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
   #topbar-gossip-link {
@@ -131,6 +131,7 @@
     display: flex;
     align-items: center;
     gap: 10px;
+    min-width: 0;
   }
 
   .kiss-print {
@@ -144,7 +145,7 @@
     flex-shrink: 0;
   }
 
-  #topbar-cta-group { display: flex; flex-direction: column; align-items: flex-end; gap: 0.35rem; flex-shrink: 0; }
+  #topbar-cta-group { display: flex; flex-direction: column; align-items: flex-end; gap: 0.35rem; flex-shrink: 0; margin-left: auto; max-width: 100%; }
 
   #verdict-btn {
     font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 0.56rem;
@@ -2436,12 +2437,15 @@ function preloadAllClosetImages() {
   const names = [];
   categories.forEach(cat => cat.items.forEach(item => { if (!isLocked(item)) names.push(item.name); }));
   let i = 0;
+  const FALLBACK_BATCH_SIZE = 4; // items per tick when requestIdleCallback isn't supported (all iOS Safari/WebViews)
   function loadNext(deadline) {
-    while (i < names.length && (!deadline || deadline.timeRemaining() > 0)) {
+    let processed = 0;
+    while (i < names.length && (deadline ? deadline.timeRemaining() > 0 : processed < FALLBACK_BATCH_SIZE)) {
       const img = new Image();
       if ('fetchPriority' in img) img.fetchPriority = 'low';
       img.src = imgPathCandidates(names[i])[0].path;
       i++;
+      processed++;
     }
     if (i < names.length) schedule();
   }
@@ -2589,7 +2593,11 @@ function showTourStep() {
   });
 }
 
+let tourAdvanceLock = false;
 function tourNext() {
+  if (tourAdvanceLock) return;
+  tourAdvanceLock = true;
+  setTimeout(() => { tourAdvanceLock = false; }, 350);
   tourIdx++;
   if (tourIdx >= TOUR_STEPS.length) { endTour(); return; }
   showTourStep();
