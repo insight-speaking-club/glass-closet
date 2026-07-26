@@ -123,8 +123,6 @@
     font-family: 'Anton', sans-serif; font-size: 0.95rem; letter-spacing: 0.02em;
     color: var(--ink); font-variant-numeric: tabular-nums;
   }
-  #timer-display.urgent { color: #bb7f97; animation: timer-pulse 1s ease-in-out infinite; }
-  @keyframes timer-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
   #topbar-title-container {
     position: relative;
@@ -1029,33 +1027,6 @@
   #telegram-join-link { background: var(--accent); color: var(--ink); }
   #telegram-join-link:hover { opacity: 0.85; }
 
-  /* ── TIME'S UP OVERLAY ── */
-  #timesup-overlay {
-    display: none; position: fixed; inset: 0;
-    background: #100d0a;
-    z-index: 25000 !important; flex-direction: column; align-items: center;
-    justify-content: center; padding: 2.5rem 1.5rem; text-align: center;
-  }
-  #timesup-overlay.show { display: flex; }
-  #timesup-eyebrow { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.3em; color: #9a9390; margin-bottom: 0.5rem; }
-  #timesup-title { font-family: 'Anton', sans-serif; text-transform: uppercase; letter-spacing: 0.01em; font-size: clamp(2rem, 9vw, 3rem); line-height: 1.05; color: #f7f4f0; margin-bottom: 0.8rem; }
-  #timesup-sub { font-family: 'Playfair Display', serif; font-style: italic; font-size: 1.1rem; color: #a8a09b; line-height: 1.5; max-width: 320px; margin: 0 auto 2.2rem; }
-  #timesup-actions { display: flex; flex-direction: column; gap: 0.6rem; width: 100%; max-width: 300px; margin: 0 auto; }
-  #timesup-send-btn {
-    font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 0.72rem;
-    text-transform: uppercase; letter-spacing: 0.1em; background: var(--accent);
-    color: var(--ink); border: none; padding: 0.75rem 1rem; border-radius: 3px;
-    cursor: pointer; transition: opacity 0.15s, transform 0.1s;
-  }
-  #timesup-send-btn:hover { opacity: 0.85; }
-  #timesup-send-btn:active { transform: scale(0.98); }
-  #timesup-dismiss-btn {
-    font-family: 'DM Sans', sans-serif; font-weight: 500; font-size: 0.62rem;
-    text-transform: uppercase; letter-spacing: 0.1em; color: #a8a09b;
-    background: none; border: none; text-decoration: underline; text-underline-offset: 3px;
-    cursor: pointer; padding: 0.4rem; margin-top: 0.2rem;
-  }
-
   /* ── START NOW GATE (between the tour and the countdown) ── */
   #startnow-overlay {
     display: none; position: fixed; inset: 0;
@@ -1330,7 +1301,7 @@
 
 <div id="telegram-overlay">
   <div id="telegram-top">
-    <div id="telegram-text">Send it in</div>
+    <div id="telegram-text">Send your outfit here</div>
     <div id="telegram-sub">Download your look, then send it to the Vogue Committee.</div>
   </div>
 
@@ -1359,16 +1330,6 @@
       <span class="tun-signature">THANK<span class="tun-thin">U</span><span class="tun-thin">,</span>NEXT</span>
       <span class="verdict-close-label">Go back to the closet (no pun intended)</span>
     </button>
-  </div>
-</div>
-
-<div id="timesup-overlay">
-  <div id="timesup-eyebrow">Time's up</div>
-  <div id="timesup-title">To the table</div>
-  <div id="timesup-sub">Grab your partner and head to the table to present your case — but send your outfit to the Vogue Committee first.</div>
-  <div id="timesup-actions">
-    <button id="timesup-send-btn" onclick="closeTimesUp(); openTelegramModal();">Send your outfit here</button>
-    <button id="timesup-dismiss-btn" onclick="closeTimesUp()">Give me a minute</button>
   </div>
 </div>
 
@@ -2487,19 +2448,11 @@ function startEmergencyTimer() {
       display.textContent = "Time's up";
       clearInterval(emergencyTimerInterval);
       emergencyTimerInterval = null;
-      showTimesUp();
+      openTelegramModal();
       return;
     }
     display.textContent = formatTimer(emergencySecondsLeft);
-    display.classList.toggle('urgent', emergencySecondsLeft <= 60);
   }, 1000);
-}
-
-function showTimesUp() {
-  document.getElementById('timesup-overlay').classList.add('show');
-}
-function closeTimesUp() {
-  document.getElementById('timesup-overlay').classList.remove('show');
 }
 
 // Called once the intro (first-visit card or glass shatter) has finished.
