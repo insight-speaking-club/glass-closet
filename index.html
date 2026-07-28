@@ -1078,11 +1078,11 @@
       <img src="kissprint.png" alt="" class="kiss-print">
     </div>
     <div id="topbar-cta-group">
-      <button id="telegram-btn" onclick="openTelegramModal()" aria-label="Join the Vogue Committee groupchat" title="Join the Vogue Committee groupchat">
+      <button id="telegram-btn" onclick="openTelegramModal()" aria-label="Send your outfit here" title="Send your outfit here">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
           <path d="M3 11.5 20.5 4 17 20 11 15.5 8 18v-4L18 7"></path>
         </svg>
-        Join Vogue Committee
+        Send Your Outfit Here
       </button>
       <button id="verdict-btn" onclick="showVerdict()">Fit Check</button>
     </div>
@@ -1302,7 +1302,7 @@
 <div id="telegram-overlay">
   <div id="telegram-top">
     <div id="telegram-text">Send your outfit here</div>
-    <div id="telegram-sub">Download your look, then send it to the Vogue Committee.</div>
+    <div id="telegram-sub">Download your look, then send your outfit here.</div>
   </div>
 
   <div id="telegram-photo-frame">
@@ -1454,7 +1454,6 @@ const categories = [
       { name: 'I ❤ Insight shirt', color: '#1a1a1a', vibe: 'club kid', w: 105, h: 105 },
       { name: "Sasha's bow", color: '#111', vibe: 'yes, and?', w: 80, h: 70 },
       { name: 'Bunny ears', color: '#111', vibe: 'rabbit hole', w: 85, h: 65, img: 'sashas-bunny-ears' },
-      { name: 'Heart locket', color: '#d4a017', vibe: 'sentimental', w: 55, h: 65 },
       { name: "Sasha's bunny pin", color: '#e8b8c8', vibe: 'club kid', w: 45, h: 45 },
       { name: "Nelly's cat pin", color: '#2a2a2a', vibe: 'club kid', w: 45, h: 45 }
     ]
@@ -1467,10 +1466,7 @@ const categories = [
       { name: 'Serena’s undone school tie', color: '#1a2a4a', vibe: 'it-girl immunity', w: 45, h: 115 },
       { name: 'Carrie’s nameplate necklace', color: '#d4a017', vibe: 'couldnt help but wonder', w: 75, h: 40 },
       { name: 'Cerulean blue sweater', color: '#2a52be', vibe: 'cerulean', w: 110, h: 115 },
-      { name: '"A little bit dramatic" shirt', color: '#f0b8c0', vibe: 'a little bit dramatic', w: 105, h: 105 },
       { name: "Jennifer's pink heart top", color: '#f4a3c0', vibe: 'i go both ways', w: 100, h: 95 },
-      { name: "Regina George's pink Wednesday top", color: '#ff8fc4', vibe: 'on Wednesdays we wear pink', w: 105, h: 100, unlockAtOutfits: 5 },
-      { name: "Elle Woods' graduation dress", color: '#ffb6d9', vibe: "what, like it's hard?", w: 110, h: 140, unlockAtOutfits: 8 },
       { name: 'Burn book', color: '#d89eb7', vibe: 'iconic villain era', w: 90, h: 110 },
       { name: 'Elle’s courtroom pen', color: '#ff69b4', vibe: 'what like its hard', w: 90, h: 25 },
       { name: '13 Going on 30 wrapping paper dress', color: '#f7c9dc', vibe: 'thirty flirty and thriving', w: 100, h: 145 },
@@ -1486,7 +1482,6 @@ const categories = [
       { name: 'Brat green mini dress', color: '#8bce00', vibe: 'bumpin that', w: 100, h: 140 },
       { name: 'Ariana’s thigh-high boots', color: '#111', vibe: 'dangerous woman', w: 105, h: 155 },
       { name: 'Ariana’s no tears left to cry dress', color: '#1a1a1a', vibe: 'no tears left to cry', w: 105, h: 150 },
-      { name: "Britney's schoolgirl outfit", color: '#d63a4a', vibe: 'hit me one more time', w: 100, h: 120, unlockAtOutfits: 12 },
       { name: '"A little bit needy" shirt', color: '#f0ede8', vibe: 'thank u, next', w: 105, h: 105 }
     ]
   },
@@ -2491,7 +2486,7 @@ const TOUR_KEY = 'dreamCloset_tourSeen';
 const TOUR_STEPS = [
   { selector: '#drawer', title: 'Create your look', desc: 'Browse by category or search, then tap a piece to add it to your board.', radius: 16, pad: 4, img: 'sasha-guide.png' },
   { selector: '#canvas', title: 'Create your look', desc: 'Now drag, spin, or resize each piece on your board to build the fit.', radius: 16, pad: 4, img: 'sasha-guide.png' },
-  { selector: '#telegram-btn', title: 'Join Vogue Committee', desc: "When your look is done, tap here to join the Vogue Committee group chat on Telegram and send your outfit in.", radius: 6, pad: 5, img: 'sasha-guide.png' }
+  { selector: '#telegram-btn', title: 'Send Your Outfit Here', desc: "When your look is done, tap here to send your outfit in.", radius: 6, pad: 5, img: 'sasha-guide.png' }
 ];
 let tourIdx = 0;
 
