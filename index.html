@@ -1076,15 +1076,16 @@
     <div id="topbar-title-container">
       <img src="glasscloset.png" alt="Glass Closet" style="max-height: 25px; width: auto;" onerror="this.style.display='none'">
       <img src="kissprint.png" alt="" class="kiss-print">
+      <img src="banner.png" alt="" style="max-height: 60px; width: auto;" onerror="this.style.display='none'">
     </div>
     <div id="topbar-cta-group">
-      <button id="telegram-btn" onclick="openTelegramModal()" aria-label="Send your outfit here" title="Send your outfit here">
+      <button id="telegram-btn" onclick="showVerdict()" aria-label="Fit Check" title="Fit Check">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
           <path d="M3 11.5 20.5 4 17 20 11 15.5 8 18v-4L18 7"></path>
         </svg>
-        Send Your Outfit Here
+        Fit Check
       </button>
-      <button id="verdict-btn" onclick="showVerdict()">Fit Check</button>
+      <button id="verdict-btn" onclick="openTelegramModal()">Send Your Look Here</button>
     </div>
   </div>
   <div id="topbar-icon-row">
@@ -2486,7 +2487,7 @@ const TOUR_KEY = 'dreamCloset_tourSeen';
 const TOUR_STEPS = [
   { selector: '#drawer', title: 'Create your look', desc: 'Browse by category or search, then tap a piece to add it to your board.', radius: 16, pad: 4, img: 'sasha-guide.png' },
   { selector: '#canvas', title: 'Create your look', desc: 'Now drag, spin, or resize each piece on your board to build the fit.', radius: 16, pad: 4, img: 'sasha-guide.png' },
-  { selector: '#telegram-btn', title: 'Send Your Outfit Here', desc: "When your look is done, tap here to send your outfit in.", radius: 6, pad: 5, img: 'sasha-guide.png' }
+  { selector: '#verdict-btn', title: 'Send Your Look Here', desc: "When your look is done, tap here to send your outfit in.", radius: 6, pad: 5, img: 'sasha-guide.png' }
 ];
 let tourIdx = 0;
 
