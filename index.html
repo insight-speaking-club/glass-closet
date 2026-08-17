@@ -138,10 +138,20 @@
   #topbar {
     display: flex; flex-direction: column;
     padding: 0.85rem 1.2rem 0.7rem;
-    /* Muted dusty pink gradient */
-    background: linear-gradient(135deg, #edc3cf 0%, #d49bb1 55%, #bb7f97 100%);
+    /* Slow-shifting dusty pink → rose → blush → violet gradient */
+    background: linear-gradient(135deg, #edc3cf 0%, #d49bb1 30%, #bb7f97 60%, #c79ad6 100%);
+    background-size: 300% 300%;
+    animation: banner-drift 18s ease-in-out infinite;
     border-bottom: 1px solid rgba(0,0,0,0.08); flex-shrink: 0; z-index: 10000;
     position: relative;
+  }
+  @keyframes banner-drift {
+    0%   { background-position: 0% 30%; }
+    50%  { background-position: 100% 70%; }
+    100% { background-position: 0% 30%; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #topbar { animation: none; }
   }
   #topbar-row1 { display: flex; align-items: flex-start; justify-content: flex-start; flex-wrap: wrap; row-gap: 0.5rem; }
 
@@ -2348,7 +2358,37 @@ const RELATIONS = [
       "{vibe}? if you say so. it's giving trying-too-hard but you do you",
       "cute that you think {name} is going to work. anyway, good luck with that"
     ]
+  },
+  {
+    key: 'vogue-committee',
+    name: 'Alex/Sasha/Nelly/Luka/Elina/Tanya/Alina/🦄/Nadiyka (The Vogue Committee™)',
+    initial: '🦄', color: '#a86c78',
+    lines: [
+      "THE COMMITTEE HAS CONVENED regarding {name}. verdict: unanimous. the {vibe} era is officially ratified.",
+      "motion to approve {name}: seconded, seconded again, and then everyone just started clapping.",
+      "emergency session called re: {name}. deliberation time: four seconds. outcome: iconic. meeting adjourned.",
+      "quorum was reached the second {name} went on. no further discussion needed, we're all just staring now.",
+      "minutes from today's meeting: {name} was worn. gasps were had. nobody has fully recovered.",
+      "the committee formally protests how good {name} looks. protest denied by unanimous vote — it's just facts at this point.",
+      "{vibe}? the committee already drafted the press release, printed it, and framed it.",
+      "roll call for the {vibe} vote: everyone's here, everyone agrees, {name} wins by landslide.",
+      "the committee would like it on record that {name} was NOT expected to go this hard. respectfully, wow.",
+      "official statement from the committee: we did not plan to be obsessed with {name} today, and yet, here we are."
+    ]
   }
+];
+
+// Shown instead of the normal lore line when an item's already had its first-time
+// moment — keeps repeat clicks feeling alive instead of going silent.
+const REPEAT_SENDER = { name: 'The Groupchat', initial: 'G', color: '#a86c78' };
+const REPEAT_LINES = [
+  "back for {name} already? we stan a consistent icon.",
+  "{name}, take two. rewear culture is thriving in this house.",
+  "you really said 'let's do {vibe} again' and honestly? valid.",
+  "putting {name} back on, we see you. no notes, keep going.",
+  "{name} making a repeat appearance. it's not a habit, it's a signature.",
+  "oh we KNOW about {name}. this is basically a recurring character now.",
+  "{vibe} again? say less. some things don't need to be reinvented."
 ];
 
 function generateLoreLine(item) {
@@ -2363,9 +2403,11 @@ let bulkAddToastShown = false;
 
 function maybeShowOrigin(uid, item) {
   const seen = loadOriginSeenSet();
-  if (seen.has(uid)) return;
-  seen.add(uid);
-  try { localStorage.setItem(ORIGIN_SEEN_KEY, JSON.stringify([...seen])); } catch (e) {}
+  const isRepeat = seen.has(uid);
+  if (!isRepeat) {
+    seen.add(uid);
+    try { localStorage.setItem(ORIGIN_SEEN_KEY, JSON.stringify([...seen])); } catch (e) {}
+  }
 
   if (bulkAddMode) {
     if (bulkAddToastShown) return; // avoid stacking toasts during multi-item random fit
@@ -2378,7 +2420,15 @@ function maybeShowOrigin(uid, item) {
   const avatarEl = document.getElementById('origin-avatar');
   if (!toast || !textEl) return;
 
-  const { relation, line } = generateLoreLine(item);
+  let relation, line;
+  if (isRepeat) {
+    relation = REPEAT_SENDER;
+    const template = REPEAT_LINES[Math.floor(Math.random() * REPEAT_LINES.length)];
+    line = template.replace(/\{name\}/g, item.name).replace(/\{vibe\}/g, item.vibe);
+  } else {
+    ({ relation, line } = generateLoreLine(item));
+  }
+
   textEl.textContent = line;
   if (nameEl) nameEl.textContent = relation.name;
   if (avatarEl) {
