@@ -1,6 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>
+  // Runs before any CSS paints so there's no flash of the wrong theme.
+  (function() {
+    try {
+      var stored = localStorage.getItem('dreamCloset_theme');
+      var theme = (stored === 'day' || stored === 'night')
+        ? stored
+        : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'night' : 'day');
+      document.documentElement.setAttribute('data-theme', theme);
+    } catch (e) {}
+  })();
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>Glass Closet</title>
@@ -23,11 +35,40 @@
     --drawer-border: #3a3530;
     --drawer-muted: #6a6460;
     --drawer-active: #f0ede8;
-    
+    --card-bg: #ffffff;
+    --canvas-bg: #ffffff;
+    --overlay-scrim: rgba(10, 8, 6, 0.55);
+
     /* ── THANK U, NEXT DUSTY PINK ── */
     --accent: #d49bb1; 
     --tag-bg: rgba(212, 155, 177, 0.15);
   }
+
+  /* ── NIGHT THEME ── same structure, chrome flips dark, canvas/mirror
+     stays light on purpose — it's meant to read like a lit vanity mirror
+     even when the rest of the app has gone dark around it. ── */
+  html[data-theme="night"] {
+    --bg: #14100e;
+    --ink: #f3ede8;
+    --muted: #8a827c;
+    --rail: #241c19;
+    --drawer-bg: #0f0a0c;
+    --drawer-border: #322a27;
+    --drawer-muted: #6a6460;
+    --drawer-active: #f0ede8;
+    --card-bg: #1c1613;
+    --canvas-bg: #efe9e3;
+    --overlay-scrim: rgba(0, 0, 0, 0.7);
+
+    --accent: #e3aec2;
+    --tag-bg: rgba(227, 174, 194, 0.18);
+  }
+
+  html { transition: none; }
+  body, #topbar, #canvas, .drawer, #verdict-outfit-preview {
+    transition: background-color 0.35s ease, color 0.35s ease, border-color 0.35s ease;
+  }
+
 
   html, body { height: 100%; }
   body {
@@ -187,13 +228,13 @@
   #help-btn {
     width: 26px; height: 26px; border-radius: 50%;
     background: transparent; border: none;
-    color: rgba(26,20,20,0.45); text-decoration: none;
+    color: var(--ink); opacity: 0.45; text-decoration: none;
     display: flex; align-items: center; justify-content: center;
-    cursor: pointer; transition: background 0.15s, transform 0.1s, color 0.15s;
+    cursor: pointer; transition: background 0.15s, transform 0.1s, opacity 0.15s;
     margin-left: 0.15rem;
   }
   #help-btn svg { width: 14px; height: 14px; }
-  #help-btn:active { transform: scale(0.9); background: rgba(26,20,20,0.14); color: rgba(26,20,20,0.7); }
+  #help-btn:active { transform: scale(0.9); opacity: 0.85; }
 
   #mission-btn-dot {
     position: absolute; top: -3px; right: -6px;
@@ -205,7 +246,7 @@
   #mission-btn-dot.done { background: #7fbf8f; }
 
   /* ── CANVAS ── */
-  #canvas { flex: 1; position: relative; overflow: hidden; background: #ffffff; touch-action: none; transition: height 0.3s ease; }
+  #canvas { flex: 1; position: relative; overflow: hidden; background: var(--canvas-bg); touch-action: none; transition: height 0.3s ease, background-color 0.35s ease; }
   #canvas::before {
     content: ''; position: absolute; inset: 0; z-index: 0; pointer-events: none;
     background-image: radial-gradient(rgba(26,22,18,0.05) 1px, transparent 1px);
@@ -943,6 +984,8 @@
   #download-outfit-btn svg { width: 13px; height: 13px; stroke: currentColor; fill: none; }
   #download-outfit-btn.saved svg { display: none; }
   #download-outfit-btn.saved::after { content: '✓'; font-size: 0.7rem; line-height: 1; }
+  #download-outfit-btn.preparing { opacity: 1; cursor: wait; animation: dl-pulse 0.9s ease-in-out infinite; }
+  @keyframes dl-pulse { 0%, 100% { opacity: 0.55; } 50% { opacity: 1; } }
 
   #verdict-bottom { gap: 0.5rem; max-width: 400px; margin: 0.5rem auto 0; }
 
@@ -1099,6 +1142,7 @@
     </div>
   </div>
   <div id="topbar-row2">
+    <div id="topbar-gossip-link" onclick="window.spillLatestGossip && window.spillLatestGossip()">See the latest gossip &rsaquo;</div>
     <div id="emergency-timer">
       <span id="timer-label">Style Emergency ends in</span>
       <span id="timer-display">7:00</span>
@@ -2375,7 +2419,26 @@ function renderNewsTicker() {
     .join('');
 }
 
+// ── DAY / NIGHT THEME ──
+// Night mode + its toggle have been retired. Always force 'day', even if a
+// user's browser has an old 'night' value saved in localStorage from before,
+// or their device prefers dark mode — this page has one look now.
+const THEME_KEY = 'dreamCloset_theme';
+
+function getPreferredTheme() {
+  return 'day';
+}
+
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', 'day');
+}
+
+function initTheme() {
+  applyTheme(getPreferredTheme());
+}
+
 function init() {
+  initTheme();
   renderTabs(); 
   renderGrid(activeCategory); 
   applyTranslations(); // Enforce English on startup
@@ -2604,6 +2667,24 @@ const TEA_LINES = [
   "Sasha says 'thank u, next' to homophobes, so I decided to curse out his professor. ...It was awesome."
 ];
 
+// On-demand pool for "See the latest gossip" — innocent, fashion-only rumors
+// about the wider group. Written Gossip Girl-style: breathless, a little
+// dramatic, always signed off with love. Nothing here is mean, just nosy.
+const GOSSIP_LATEST_LINES = [
+  "BREAKING: Tanya bought another coat. Scientists are calling it a natural disaster. Meteorologists are calling it a personality.",
+  "Nelly wore the red dress AGAIN, heart necklace and all. At this point it's not an outfit, it's a load-bearing wall of her identity.",
+  "Someone called Alina's bangs-and-glasses combo 'lit gothic' and she has not stopped bringing it up since. We get it. You're lit gothic.",
+  "Luka wore a jean vest over a cool black dress and somehow made it look like the two pieces asked to be together. We didn't invite that kind of chemistry.",
+  "Katya's bear plushie has now appeared in more photos than most of the actual humans in this group. We're calling HR.",
+  "Alex's 'КВІР' shirt walked into the room before Alex did. Respectfully, the shirt ate.",
+  "Nadiyka showed up in something practical and comfortable while everyone else suffered for the aesthetic. Truly the only sane person here.",
+  "Elina — sorry, BLAIR — styled three other people's outfits before even touching her own. Girl is basically running an unlicensed salon out of her closet.",
+  "Word on the street is Blair's dropping a solo album with an actual fashion song on it. We would like to pre-order our copy and also be in the music video.",
+  "Tanya and Luka both showed up dark, structured, and unbothered on the same day. Nobody planned this. Everybody's suspicious.",
+  "Katya's bear got more compliments at the last event than the humans standing next to it. The bear has agents circling now.",
+  "Nelly told the necklace story for the fourth time tonight with the exact same dramatic pause. A star was born and it happened four times."
+];
+
 function initTeaTicker() {
   const el = document.getElementById('imessage-notification');
   const textEl = document.getElementById('imessage-text');
@@ -2611,6 +2692,7 @@ function initTeaTicker() {
 
   let dismissTimer = null;
   let nextTimer = null;
+  let currentLines = TEA_LINES;
   let i = 0;
 
   function dismiss() {
@@ -2632,8 +2714,8 @@ function initTeaTicker() {
   }
 
   function next(force) {
-    if (i >= TEA_LINES.length) { dismiss(); return; } // shown all 6, done for the session
-    const shown = show(TEA_LINES[i], force);
+    if (i >= currentLines.length) { dismiss(); return; } // shown all lines, done for the session
+    const shown = show(currentLines[i], force);
     i++;
     const delay = 5000 + Math.random() * 5000; /* MODIFIED TO 5-10 SECONDS */
     // if it got skipped (mid-outfit), retry the same line a bit sooner
@@ -2642,21 +2724,30 @@ function initTeaTicker() {
     if (!shown) i--; // don't burn this line if we skipped it
   }
 
-  function spill() {
+  function startSequence(lines) {
     clearTimeout(nextTimer);
     clearTimeout(dismissTimer);
+    currentLines = lines;
     i = 0;
-    
+
     // Play the beat once, right when the gossip starts
     playGossipBeatSnippet();
-    
+
     next(true);
   }
+
+  function spill() { startSequence(TEA_LINES); }
   window.spillTea = spill;
+
+  // "See the latest gossip" — same bubble, same mechanics, different pool.
+  // Always forces the bubble open even mid-outfit, since the person tapped
+  // this on purpose and is clearly not busy dragging clothes right now.
+  function spillLatestGossip() { startSequence(GOSSIP_LATEST_LINES); }
+  window.spillLatestGossip = spillLatestGossip;
 
   // Manual "next" arrow — lets you click through gossip at your own pace
   // instead of waiting for the auto-advance timer. No repeat sound here;
-  // the beat only plays once, when gossip is first opened via spill().
+  // the beat only plays once, when gossip is first opened.
   function skipGossip(e) {
     if (e) e.stopPropagation();
     clearTimeout(nextTimer);
@@ -3230,27 +3321,63 @@ function buildOutfitPreview(previewEl) {
   });
 }
 
+// Waits for every <img> inside a container to be fully loaded and decoded.
+// html2canvas snapshots the DOM as-is the instant it's called — if an image's
+// src was just set (as it is in buildOutfitPreview) and hasn't finished loading
+// yet, html2canvas can capture it mid-load and stretch/flatten it to fill its
+// box instead of honoring object-fit: contain. This is what caused the
+// occasional distorted/oversized items in downloaded outfits.
+function waitForImagesReady(container) {
+  const imgs = Array.from(container.querySelectorAll('img'));
+  return Promise.all(imgs.map(img => {
+    if (img.complete && img.naturalWidth > 0) {
+      // already loaded — but still run decode() so the browser has fully
+      // rasterized it (complete=true can fire slightly before decode is done)
+      return img.decode ? img.decode().catch(() => {}) : Promise.resolve();
+    }
+    return new Promise(resolve => {
+      const done = () => resolve();
+      img.addEventListener('load', () => {
+        (img.decode ? img.decode().catch(() => {}) : Promise.resolve()).then(done);
+      }, { once: true });
+      img.addEventListener('error', done, { once: true });
+    });
+  }));
+}
+
 function downloadOutfitImage(previewEl, btnEl, filename) {
   const preview = previewEl || document.getElementById('verdict-outfit-preview');
   const btn = btnEl || document.getElementById('download-outfit-btn');
   if (!preview || typeof html2canvas === 'undefined') return;
 
-  html2canvas(preview, {
+  const originalLabel = btn ? btn.getAttribute('aria-label') : null;
+  if (btn) {
+    btn.classList.add('preparing');
+    btn.setAttribute('aria-label', 'Preparing…');
+  }
+
+  waitForImagesReady(preview).then(() => html2canvas(preview, {
     backgroundColor: '#ffffff',
     scale: 2,
     useCORS: true
-  }).then(canvas => {
+  })).then(canvas => {
     const link = document.createElement('a');
     link.download = filename || 'glass-closet-look.png';
     link.href = canvas.toDataURL('image/png');
     link.click();
 
     if (btn) {
+      btn.classList.remove('preparing');
+      if (originalLabel) btn.setAttribute('aria-label', originalLabel);
       btn.classList.add('saved');
       setTimeout(() => btn.classList.remove('saved'), 1800);
     }
   }).catch(err => {
     console.warn('[download] html2canvas capture failed:', err);
+    if (btn) {
+      btn.classList.remove('preparing');
+      if (originalLabel) btn.setAttribute('aria-label', originalLabel);
+    }
   });
 }
 
