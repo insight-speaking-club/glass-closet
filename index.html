@@ -183,6 +183,24 @@
     min-width: 0;
   }
 
+  #topbar-toggle {
+    width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
+    background: rgba(26,20,20,0.14); border: none;
+    color: rgba(26,20,20,0.75);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: background 0.15s, transform 0.1s;
+  }
+  #topbar-toggle svg { width: 13px; height: 13px; transition: transform 0.25s; }
+  #topbar-toggle:hover { background: rgba(26,20,20,0.22); }
+  #topbar-toggle:active { transform: scale(0.92); }
+  #topbar.collapsed #topbar-toggle svg { transform: rotate(180deg); }
+
+  #topbar.collapsed #topbar-cta-group,
+  #topbar.collapsed #help-btn,
+  #topbar.collapsed #topbar-row2 { display: none; }
+  #topbar.collapsed #topbar-icon-row { margin-top: 0; }
+  #topbar.collapsed { padding-bottom: 0.7rem; }
+
   .kiss-print {
     width: 30px;
     height: auto;
@@ -195,16 +213,6 @@
   }
 
   #topbar-cta-group { display: flex; flex-direction: column; align-items: flex-end; gap: 0.35rem; flex-shrink: 0; margin-left: auto; max-width: 100%; }
-
-  #verdict-btn {
-    font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 0.56rem;
-    text-transform: uppercase; letter-spacing: 0.1em; background: var(--ink);
-    color: #fff; border: none; padding: 0.38rem 0.65rem; border-radius: 2px;
-    cursor: pointer; transition: opacity 0.15s;
-    box-shadow: 1px 2px 4px rgba(0,0,0,0.2);
-    flex-shrink: 0;
-  }
-  #verdict-btn:hover { opacity: 0.75; }
 
   #telegram-btn {
     font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 0.68rem;
@@ -595,73 +603,63 @@
   #search-input { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--drawer-border); border-radius: 3px; padding: 0.4rem 0.8rem; font-family: 'DM Sans', sans-serif; font-size: 0.7rem; color: #ccc; outline: none; }
   #search-input:focus { border-color: var(--accent); }
 
-  #cat-tabs { display: flex; overflow-x: auto; padding: 0 1rem 0.5rem; gap: 2rem; scrollbar-width: none; flex-shrink: 0; }
-  #cat-tabs::-webkit-scrollbar { display: none; }
-  
-  .super-group { display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 0.5rem; }
-  .super-header { 
-    font-family: 'Anton', sans-serif; 
-    text-transform: uppercase;
-    letter-spacing: 0.015em;
-    color: #f7f4f0; 
-    font-size: 1.15rem; 
-    padding-left: 0.2rem; 
-    border-bottom: 1px solid rgba(212, 155, 177, 0.3);
-    padding-bottom: 0.3rem;
-  }
-  .sub-tabs-row { display: flex; gap: 0.5rem; }
+  #super-tabs, #cat-tabs { display: flex; overflow-x: auto; padding: 0 1rem 0.55rem; gap: 0.55rem; scrollbar-width: none; flex-shrink: 0; }
+  #super-tabs::-webkit-scrollbar, #cat-tabs::-webkit-scrollbar { display: none; }
 
-  .cat-tab {
-    flex: 0 0 auto; padding: 0.4rem 0.9rem; border: 1px solid var(--drawer-border);
-    border-radius: 20px; font-size: 0.6rem; text-transform: uppercase;
-    letter-spacing: 0.1em; color: var(--drawer-muted); cursor: pointer;
+  .super-tab, .cat-tab {
+    flex: 0 0 auto; border: 1px solid var(--drawer-border);
+    border-radius: 22px; text-transform: uppercase;
+    letter-spacing: 0.09em; color: var(--drawer-muted); cursor: pointer;
     white-space: nowrap; transition: all 0.15s; background: rgba(255,255,255,0.03);
   }
-  .cat-tab.active {
+  .super-tab { padding: 0.55rem 1.1rem; font-size: 0.68rem; font-weight: 500; }
+  .cat-tab { padding: 0.42rem 0.85rem; font-size: 0.58rem; }
+
+  .super-tab.active, .cat-tab.active {
     background: linear-gradient(160deg, #f2c9d6 0%, var(--accent) 55%, #bb7f97 100%);
-    color: var(--ink); border-color: var(--accent); font-weight: 700;
+    color: var(--ink); border-color: var(--accent); font-weight: 800;
     box-shadow: inset 0 1px 1px rgba(255,255,255,0.6), 0 2px 5px rgba(0,0,0,0.25);
   }
 
-  #item-grid { display: flex; overflow-x: auto; padding: 0.4rem 1rem 1.5rem; gap: 0.6rem; scrollbar-width: none; align-items: flex-start; flex-shrink: 0; flex-wrap: nowrap; }
+  #item-grid { display: flex; overflow-x: auto; scroll-snap-type: x proximity; padding: 0.3rem 1rem 1.6rem; gap: 0.85rem; scrollbar-width: none; align-items: flex-start; flex-shrink: 0; flex-wrap: nowrap; }
   #item-grid::-webkit-scrollbar { display: none; }
 
-  .grid-item { flex: 0 0 auto; width: 76px; background: #252118; border: 1px solid var(--drawer-border); border-radius: 5px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; cursor: pointer; transition: border-color 0.15s; padding: 6px 4px 6px; position: relative; }
-  .grid-item:active { transform: scale(0.96); }
-  .grid-item.on-board { border-color: var(--accent); background: #2a2418; }
-  .grid-item .gi-visual { position: relative; width: 100%; height: 54px; }
+  .grid-item { flex: 0 0 auto; scroll-snap-align: start; width: 132px; background: #1c1712; border: 1px solid var(--drawer-border); border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; cursor: pointer; transition: border-color 0.15s, transform 0.1s; padding: 10px 10px 12px; position: relative; }
+  .grid-item:active { transform: scale(0.97); }
+  .grid-item.on-board { border-color: var(--accent); background: #262015; }
+  .grid-item .gi-visual { position: relative; width: 100%; height: 112px; border-radius: 6px; overflow: hidden; background: rgba(232,228,223,0.06); }
   .grid-item .gi-visual img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
-  .grid-item .gi-name { font-size: 0.44rem; text-transform: uppercase; letter-spacing: 0.05em; color: #ccc; margin-top: 6px; text-align: center; line-height: 1.3; width: 100%; }
-  .grid-item .gi-vibe { font-size: 0.38rem; text-transform: uppercase; letter-spacing: 0.05em; color: #6a6460; margin-top: 2px; text-align: center; line-height: 1.2; width: 100%; }
+  .grid-item .gi-name { font-size: 0.56rem; text-transform: uppercase; letter-spacing: 0.06em; color: #ccc; margin-top: 10px; text-align: center; line-height: 1.35; width: 100%; }
+  .grid-item .gi-vibe { font-size: 0.42rem; text-transform: uppercase; letter-spacing: 0.05em; color: #6a6460; margin-top: 3px; text-align: center; line-height: 1.2; width: 100%; }
   .grid-item.on-board .gi-name, .grid-item.on-board .gi-vibe { color: var(--accent); }
-  .grid-item .gi-color-dot { width: 6px; height: 6px; border-radius: 50%; position: absolute; top: 4px; right: 4px; opacity: 0.7; }
+  .grid-item .gi-color-dot { width: 9px; height: 9px; border-radius: 50%; position: absolute; top: 16px; right: 16px; opacity: 0.85; box-shadow: 0 1px 3px rgba(0,0,0,0.4); }
 
   /* ── THURSDAY DROPS: locked/mystery items ── */
   .grid-item.locked-item { cursor: pointer; opacity: 0.85; }
   .gi-visual.gi-locked {
     display: flex; align-items: center; justify-content: center;
-    border: 1px dashed var(--drawer-muted); border-radius: 4px;
+    border: 1px dashed var(--drawer-muted); border-radius: 6px;
     background: rgba(255,255,255,0.02);
   }
   .gi-locked .lock-mark {
-    font-family: 'Anton', sans-serif; font-size: 1.1rem; color: var(--drawer-muted);
+    font-family: 'Anton', sans-serif; font-size: 1.8rem; color: var(--drawer-muted);
   }
   /* ── REQUEST AN ITEM TILE ── */
   .grid-item.request-tile { cursor: pointer; opacity: 0.9; }
   .grid-item.request-tile .gi-visual {
     display: flex; align-items: center; justify-content: center;
-    border: 1px dashed var(--accent); border-radius: 4px;
+    border: 1px dashed var(--accent); border-radius: 6px;
     background: rgba(212, 155, 177, 0.06);
   }
   .grid-item.request-tile .plus-mark {
-    font-family: 'Anton', sans-serif; font-size: 1.3rem; color: var(--accent);
+    font-family: 'Anton', sans-serif; font-size: 2rem; color: var(--accent);
   }
   .grid-item.request-tile .gi-name { color: var(--accent); }
   .grid-item.request-tile:active { transform: scale(0.96); }
 
   .grid-item .gi-release {
-    font-size: 0.36rem; text-transform: uppercase; letter-spacing: 0.05em;
-    color: var(--accent); margin-top: 2px; text-align: center; line-height: 1.2; width: 100%;
+    font-size: 0.46rem; text-transform: uppercase; letter-spacing: 0.05em;
+    color: var(--accent); margin-top: 3px; text-align: center; line-height: 1.2; width: 100%;
   }
 
   /* ── INSPO BOARD (top-bar overlay, same pattern as Lookbook) ── */
@@ -1117,8 +1115,8 @@
 <div id="intro-simple-overlay">
   <div id="intro-simple-card">
     <img id="intro-simple-avatar" src="sasha-guide.png" alt="" onerror="this.style.display='none'">
-    <p id="intro-simple-eyebrow">You've got a</p>
-    <h1 id="intro-simple-title">STYLE<br>EMERGENCY</h1>
+    <p id="intro-simple-eyebrow">Welcome to</p>
+    <h1 id="intro-simple-title">GLASS<br>CLOSET</h1>
     <p id="intro-simple-sub">Grab your partner. Build the fit. Send it to the group chat.</p>
     <button id="intro-simple-btn" onclick="dismissSimpleIntro()">Let's go</button>
   </div>
@@ -1137,11 +1135,13 @@
         </svg>
         Fit Check
       </button>
-      <button id="verdict-btn" onclick="openTelegramModal()">Send Your Look Here</button>
     </div>
   </div>
   <div id="topbar-icon-row">
     <div id="topbar-icon-group">
+      <button id="topbar-toggle" onclick="toggleTopbar()" aria-label="Collapse banner" title="Collapse banner">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
+      </button>
       <button id="help-btn" onclick="startTour(true)" aria-label="How this works" title="How this works">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="9"></circle>
@@ -1223,6 +1223,7 @@
   <div id="search-row">
     <input type="text" id="search-input" placeholder="Search..." oninput="handleSearch(this.value)">
   </div>
+  <div id="super-tabs"></div>
   <div id="cat-tabs"></div>
   <div id="item-grid"></div>
 </div>
@@ -2205,6 +2206,7 @@ const verdictsUK = {
 };
 
 let activeCategory = 'iconic-club';
+let activeSuperGroup = 0;
 const onCanvas = {};
 let zCounter = 10;
 let searchMode = false;
@@ -2345,7 +2347,7 @@ const RELATIONS = [
     key: 'bestie', name: 'Bestie', initial: 'B', color: '#c98a94',
     lines: [
       "{name}?? okay QUEEN. this is so {vibe} of you and I'm obsessed",
-      "say less. {name} was MADE for you. sending this to the groupchat right now",
+      "say less. {name} was MADE for you. I'm obsessed",
       "{vibe} energy detected. I need to steal {name} the second you're done with it",
       "okay {name} is unfairly good on you, can you not"
     ]
@@ -2358,37 +2360,7 @@ const RELATIONS = [
       "{vibe}? if you say so. it's giving trying-too-hard but you do you",
       "cute that you think {name} is going to work. anyway, good luck with that"
     ]
-  },
-  {
-    key: 'vogue-committee',
-    name: 'Alex/Sasha/Nelly/Luka/Elina/Tanya/Alina/🦄/Nadiyka (The Vogue Committee™)',
-    initial: '🦄', color: '#a86c78',
-    lines: [
-      "THE COMMITTEE HAS CONVENED regarding {name}. verdict: unanimous. the {vibe} era is officially ratified.",
-      "motion to approve {name}: seconded, seconded again, and then everyone just started clapping.",
-      "emergency session called re: {name}. deliberation time: four seconds. outcome: iconic. meeting adjourned.",
-      "quorum was reached the second {name} went on. no further discussion needed, we're all just staring now.",
-      "minutes from today's meeting: {name} was worn. gasps were had. nobody has fully recovered.",
-      "the committee formally protests how good {name} looks. protest denied by unanimous vote — it's just facts at this point.",
-      "{vibe}? the committee already drafted the press release, printed it, and framed it.",
-      "roll call for the {vibe} vote: everyone's here, everyone agrees, {name} wins by landslide.",
-      "the committee would like it on record that {name} was NOT expected to go this hard. respectfully, wow.",
-      "official statement from the committee: we did not plan to be obsessed with {name} today, and yet, here we are."
-    ]
   }
-];
-
-// Shown instead of the normal lore line when an item's already had its first-time
-// moment — keeps repeat clicks feeling alive instead of going silent.
-const REPEAT_SENDER = { name: 'The Groupchat', initial: 'G', color: '#a86c78' };
-const REPEAT_LINES = [
-  "back for {name} already? we stan a consistent icon.",
-  "{name}, take two. rewear culture is thriving in this house.",
-  "you really said 'let's do {vibe} again' and honestly? valid.",
-  "putting {name} back on, we see you. no notes, keep going.",
-  "{name} making a repeat appearance. it's not a habit, it's a signature.",
-  "oh we KNOW about {name}. this is basically a recurring character now.",
-  "{vibe} again? say less. some things don't need to be reinvented."
 ];
 
 function generateLoreLine(item) {
@@ -2420,14 +2392,9 @@ function maybeShowOrigin(uid, item) {
   const avatarEl = document.getElementById('origin-avatar');
   if (!toast || !textEl) return;
 
-  let relation, line;
-  if (isRepeat) {
-    relation = REPEAT_SENDER;
-    const template = REPEAT_LINES[Math.floor(Math.random() * REPEAT_LINES.length)];
-    line = template.replace(/\{name\}/g, item.name).replace(/\{vibe\}/g, item.vibe);
-  } else {
-    ({ relation, line } = generateLoreLine(item));
-  }
+  if (isRepeat) return; // no pop-up on repeat clicks now that the Groupchat sender is gone
+
+  const { relation, line } = generateLoreLine(item);
 
   textEl.textContent = line;
   if (nameEl) nameEl.textContent = relation.name;
@@ -2483,12 +2450,33 @@ function applyTheme(theme) {
   document.documentElement.setAttribute('data-theme', 'day');
 }
 
+const TOPBAR_COLLAPSED_KEY = 'dreamCloset_topbarCollapsed';
+
+function toggleTopbar() {
+  const el = document.getElementById('topbar');
+  const collapsed = el.classList.toggle('collapsed');
+  const btn = document.getElementById('topbar-toggle');
+  if (btn) btn.setAttribute('aria-label', collapsed ? 'Expand banner' : 'Collapse banner');
+  try { localStorage.setItem(TOPBAR_COLLAPSED_KEY, collapsed ? '1' : '0'); } catch (e) {}
+}
+
+function restoreTopbarState() {
+  let collapsed = false;
+  try { collapsed = localStorage.getItem(TOPBAR_COLLAPSED_KEY) === '1'; } catch (e) {}
+  if (collapsed) {
+    document.getElementById('topbar').classList.add('collapsed');
+    const btn = document.getElementById('topbar-toggle');
+    if (btn) btn.setAttribute('aria-label', 'Expand banner');
+  }
+}
+
 function initTheme() {
   applyTheme(getPreferredTheme());
 }
 
 function init() {
   initTheme();
+  restoreTopbarState();
   renderTabs(); 
   renderGrid(activeCategory); 
   applyTranslations(); // Enforce English on startup
@@ -2544,23 +2532,11 @@ function hideEmergencyTimer() {
   if (el) el.style.display = 'none';
 }
 
+// Style Emergency countdown deactivated — startEmergencyTimer/beginEmergencyTimer
+// are now no-ops that just keep the timer hidden, so nothing calls the
+// "Start the clock" gate or auto-opens the send-look modal on expiry.
 function startEmergencyTimer() {
-  if (currentVisitCount !== 1) { hideEmergencyTimer(); return; }
-  const display = document.getElementById('timer-display');
-  if (!display || emergencyTimerInterval) return;
-  display.textContent = formatTimer(emergencySecondsLeft);
-  emergencyTimerInterval = setInterval(() => {
-    emergencySecondsLeft--;
-    if (emergencySecondsLeft <= 0) {
-      emergencySecondsLeft = 0;
-      display.textContent = "Time's up";
-      clearInterval(emergencyTimerInterval);
-      emergencyTimerInterval = null;
-      openTelegramModal();
-      return;
-    }
-    display.textContent = formatTimer(emergencySecondsLeft);
-  }, 1000);
+  hideEmergencyTimer();
 }
 
 // Called once the intro (first-visit card or glass shatter) has finished.
@@ -2571,9 +2547,9 @@ function enterApp() {
   if (onboardingActive) {
     if (!hasSeenTour()) {
       startTour();
-    } else {
-      showStartNow();
     }
+    // Style Emergency gate deactivated — previously fell through to
+    // showStartNow() here when the tour had already been seen.
   }
   // else: onboarding is done for good — the shatter already happened and
   // the app is simply left visible underneath, no further gate or timer.
@@ -2598,8 +2574,7 @@ let tourIsManual = false;
 const TOUR_KEY = 'dreamCloset_tourSeen';
 const TOUR_STEPS = [
   { selector: '#drawer', title: 'Create your look', desc: 'Browse by category or search, then tap a piece to add it to your board.', radius: 16, pad: 4, img: 'sasha-guide.png' },
-  { selector: '#canvas', title: 'Create your look', desc: 'Now drag, spin, or resize each piece on your board to build the fit.', radius: 16, pad: 4, img: 'sasha-guide.png' },
-  { selector: '#verdict-btn', title: 'Send Your Look Here', desc: "When your look is done, tap here to send your outfit in.", radius: 6, pad: 5, img: 'sasha-guide.png' }
+  { selector: '#canvas', title: 'Create your look', desc: 'Now drag, spin, or resize each piece on your board to build the fit.', radius: 16, pad: 4, img: 'sasha-guide.png' }
 ];
 let tourIdx = 0;
 
@@ -2668,9 +2643,8 @@ function endTour() {
   document.getElementById('tour-overlay').classList.remove('show');
   window.removeEventListener('resize', repositionTourStep);
   try { localStorage.setItem(TOUR_KEY, '1'); } catch (e) {}
-  if (!tourIsManual && onboardingActive) {
-    showStartNow();
-  }
+  // Style Emergency gate + countdown deactivated — tour finishing no longer
+  // opens the "Start the clock" overlay.
 }
 
 function saveInProgressOutfit() {
@@ -2838,26 +2812,52 @@ function initTeaTicker() {
 }
 
 function renderTabs() {
+  const superEl = document.getElementById('super-tabs');
+  superEl.innerHTML = '';
+  supercategories.forEach((group, idx) => {
+    const tab = document.createElement('div');
+    tab.className = 'super-tab' + (idx === activeSuperGroup ? ' active' : '');
+    tab.textContent = group.name; tab.id = 'super-tab-' + idx;
+    tab.onclick = () => {
+      if (searchMode) clearSearch();
+      selectSuperGroup(idx);
+    };
+    superEl.appendChild(tab);
+  });
+  renderSubTabs();
+}
+
+function selectSuperGroup(idx) {
+  activeSuperGroup = idx;
+  document.querySelectorAll('.super-tab').forEach(t => t.classList.remove('active'));
+  const superTab = document.getElementById('super-tab-' + idx);
+  if (superTab) superTab.classList.add('active');
+  const group = supercategories[idx];
+  const firstCat = group.cats.find(catId => categories.find(c => c.id === catId));
+  renderSubTabs();
+  if (firstCat) {
+    activeCategory = firstCat;
+    renderGrid(firstCat);
+  }
+}
+
+function renderSubTabs() {
   const el = document.getElementById('cat-tabs');
   el.innerHTML = '';
-  supercategories.forEach(group => {
-    const groupDiv = document.createElement('div'); groupDiv.className = 'super-group';
-    const header = document.createElement('div'); header.className = 'super-header'; header.textContent = group.name; groupDiv.appendChild(header);
-    const rowDiv = document.createElement('div'); rowDiv.className = 'sub-tabs-row';
-    group.cats.forEach(catId => {
-      const cat = categories.find(c => c.id === catId);
-      if (!cat) return;
-      const tab = document.createElement('div');
-      tab.className = 'cat-tab' + (cat.id === activeCategory ? ' active' : '');
-      tab.textContent = cat.label; tab.id = 'tab-' + cat.id;
-      tab.onclick = () => {
-        if (searchMode) clearSearch();
-        activeCategory = cat.id; document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
-        tab.classList.add('active'); renderGrid(cat.id);
-      };
-      rowDiv.appendChild(tab);
-    });
-    groupDiv.appendChild(rowDiv); el.appendChild(groupDiv);
+  const group = supercategories[activeSuperGroup];
+  if (!group) return;
+  group.cats.forEach(catId => {
+    const cat = categories.find(c => c.id === catId);
+    if (!cat) return;
+    const tab = document.createElement('div');
+    tab.className = 'cat-tab' + (cat.id === activeCategory ? ' active' : '');
+    tab.textContent = cat.label; tab.id = 'tab-' + cat.id;
+    tab.onclick = () => {
+      if (searchMode) clearSearch();
+      activeCategory = cat.id; document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active'); renderGrid(cat.id);
+    };
+    el.appendChild(tab);
   });
 }
 
@@ -2988,7 +2988,7 @@ function handleSearch(query) {
   renderGrid(null, results);
 }
 
-function clearSearch() { searchMode = false; document.getElementById('search-input').value = ''; const activeTab = document.getElementById('tab-' + activeCategory); if (activeTab) activeTab.classList.add('active'); renderGrid(activeCategory); }
+function clearSearch() { searchMode = false; document.getElementById('search-input').value = ''; renderSubTabs(); renderGrid(activeCategory); }
 
 // ── INSPO / MOODBOARD BOARD ──
 // Curated starter looks — named by aesthetic/archetype rather than by real person,
@@ -3282,7 +3282,7 @@ function setupTransforms(el, spin, rotateHandle, resizeHandle, state, uid) {
 function toggleDrawer() {
   const drawer = document.getElementById('drawer');
   const isCol = drawer.classList.toggle('collapsed');
-  ['cat-tabs','item-grid','search-row'].forEach(id => document.getElementById(id).style.display = isCol ? 'none' : '');
+  ['super-tabs','cat-tabs','item-grid','search-row'].forEach(id => document.getElementById(id).style.display = isCol ? 'none' : '');
   document.getElementById('drawer-toggle').textContent = isCol ? '▼' : '▲';
 }
 
@@ -3889,10 +3889,10 @@ window.addEventListener('DOMContentLoaded', () => {
   // very first-ever visit. Every visit after that: just the shatter, then
   // straight into the closet, no tour, no timer.
   onboardingActive = visitCount === 1;
-  if (visitCount >= 2) hideEmergencyTimer();
+  hideEmergencyTimer(); // Style Emergency countdown deactivated
 
   // First time on the site: skip the glass shatter entirely and show a plain
-  // "style emergency" title card instead. The shatter is saved for the second
+  // welcome title card instead. The shatter is saved for the second
   // visit onward.
   if (visitCount === 1) {
     if (canvas) canvas.style.display = 'none';
