@@ -184,21 +184,20 @@
   }
 
   #topbar-toggle {
-    width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
+    width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0;
     background: rgba(26,20,20,0.14); border: none;
     color: rgba(26,20,20,0.75);
     display: flex; align-items: center; justify-content: center;
     cursor: pointer; transition: background 0.15s, transform 0.1s;
   }
-  #topbar-toggle svg { width: 13px; height: 13px; transition: transform 0.25s; }
+  #topbar-toggle svg { width: 12px; height: 12px; transition: transform 0.25s; }
   #topbar-toggle:hover { background: rgba(26,20,20,0.22); }
   #topbar-toggle:active { transform: scale(0.92); }
   #topbar.collapsed #topbar-toggle svg { transform: rotate(180deg); }
 
   #topbar.collapsed #topbar-cta-group,
-  #topbar.collapsed #help-btn,
+  #topbar.collapsed #topbar-icon-row,
   #topbar.collapsed #topbar-row2 { display: none; }
-  #topbar.collapsed #topbar-icon-row { margin-top: 0; }
   #topbar.collapsed { padding-bottom: 0.7rem; }
 
   .kiss-print {
@@ -272,6 +271,28 @@
     opacity: 0.6;
   }
   #canvas-empty { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -60%); text-align: center; pointer-events: none; opacity: 0.4; z-index: 1; }
+  #clear-all-btn {
+    position: absolute; top: 10px; right: 10px; z-index: 50;
+    display: none; align-items: center; gap: 0.32rem;
+    background: rgba(20,16,14,0.55); color: #f7f4f0; border: none;
+    padding: 0.42rem 0.75rem 0.42rem 0.6rem; border-radius: 999px;
+    font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 0.58rem;
+    text-transform: uppercase; letter-spacing: 0.09em; cursor: pointer;
+    backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+    opacity: 0.8; transition: opacity 0.15s ease, background 0.15s ease, transform 0.1s ease;
+  }
+  #clear-all-btn svg { width: 11px; height: 11px; flex-shrink: 0; }
+  #clear-all-btn:hover { opacity: 1; background: rgba(20,16,14,0.72); }
+  #clear-all-btn:active { transform: scale(0.93); }
+  #clear-all-btn.show { display: flex; }
+  .gi-count {
+    position: absolute; top: 5px; left: 5px; z-index: 2;
+    background: var(--accent); color: var(--ink);
+    font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 0.52rem;
+    letter-spacing: 0.02em; padding: 1px 5px; border-radius: 999px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3); pointer-events: none;
+  }
   #canvas-empty .big-label { font-family: 'Anton', sans-serif; text-transform: uppercase; letter-spacing: 0.02em; font-size: 1.5rem; color: var(--ink); margin-bottom: 0.4rem; }
   #canvas-empty p { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.18em; color: var(--muted); }
 
@@ -1127,6 +1148,9 @@
     <div id="topbar-title-container">
       <img src="glasscloset.png" alt="Glass Closet" style="max-height: 25px; width: auto;" onerror="this.style.display='none'">
       <img src="kissprint.png" alt="" class="kiss-print">
+      <button id="topbar-toggle" onclick="toggleTopbar()" aria-label="Collapse banner" title="Collapse banner">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
+      </button>
     </div>
     <div id="topbar-cta-group">
       <button id="telegram-btn" onclick="showVerdict()" aria-label="Fit Check" title="Fit Check">
@@ -1139,9 +1163,6 @@
   </div>
   <div id="topbar-icon-row">
     <div id="topbar-icon-group">
-      <button id="topbar-toggle" onclick="toggleTopbar()" aria-label="Collapse banner" title="Collapse banner">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
-      </button>
       <button id="help-btn" onclick="startTour(true)" aria-label="How this works" title="How this works">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="9"></circle>
@@ -1212,6 +1233,14 @@
     <div class="big-label">Your look, your rules.</div>
     <p>Tap anything below to start.</p>
   </div>
+  <button id="clear-all-btn" onclick="clearCanvas()" aria-label="Clear all items" title="Clear all">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4 7h16"></path>
+      <path d="M9 7V4.5A1.5 1.5 0 0 1 10.5 3h3A1.5 1.5 0 0 1 15 4.5V7"></path>
+      <path d="M6 7l1 13a2 2 0 0 0 2 1.9h6a2 2 0 0 0 2-1.9l1-13"></path>
+    </svg>
+    <span>Clear all</span>
+  </button>
   <div id="news-ticker"><div id="news-ticker-track"></div></div>
 </div>
 
@@ -2654,6 +2683,7 @@ function saveInProgressOutfit() {
       const entry = onCanvas[uid];
       if (entry.isRef) return; // reference pins aren't restored across reloads
       data[uid] = {
+        baseUid: entry.baseUid || uid,
         left: parseFloat(entry.el.style.left) || 0,
         top: parseFloat(entry.el.style.top) || 0,
         rotation: entry.state.rotation,
@@ -2676,10 +2706,13 @@ function restoreInProgressOutfit() {
   if (uids.length === 0) return;
 
   uids.forEach(uid => {
-    const lookup = itemLookup[uid];
+    const entryData = saved[uid];
+    const baseUid = entryData.baseUid || uid; // old saves (pre multi-add) used uid itself as the base
+    const lookup = itemLookup[baseUid];
     if (!lookup) return; // item no longer exists in the catalog
-    addToCanvas(uid, lookup.item, lookup.catId, saved[uid]);
+    addToCanvas(uid, lookup.item, lookup.catId, entryData, baseUid);
   });
+  updateClearAllBtn();
 }
 
 const TEA_LINES = [
@@ -2963,13 +2996,14 @@ function renderGrid(catId, items) {
       return;
     }
 
-    card.className = 'grid-item' + (onCanvas[uid] ? ' on-board' : '');
+    const startCount = countOnCanvas(uid);
+    card.className = 'grid-item' + (startCount > 0 ? ' on-board' : '');
     const isSashaBow = item.name === "Sasha's bow";
     const vibeCaption = isSashaBow ? "yes, and?" : '';
-    card.innerHTML = `<div class="gi-visual"><img alt="${item.name}" title="Vibe: ${item.vibe}"></div><div class="gi-name">${item.name}</div>${vibeCaption ? `<div class="gi-vibe">${vibeCaption}</div>` : ''}`;
+    card.innerHTML = `<div class="gi-visual">${startCount > 1 ? `<span class="gi-count">×${startCount}</span>` : ''}<img alt="${item.name}" title="Vibe: ${item.vibe}"></div><div class="gi-name">${item.name}</div>${vibeCaption ? `<div class="gi-vibe">${vibeCaption}</div>` : ''}`;
     setupImgFallback(card.querySelector('img'), item.name, true, item.img);
     if (item.color) { const dot = document.createElement('div'); dot.className = 'gi-color-dot'; dot.style.background = item.color; card.appendChild(dot); }
-    card.onclick = () => toggleItem(uid, item, item._catId || catId);
+    card.onclick = () => addItemInstance(uid, item, item._catId || catId);
     grid.appendChild(card);
   });
 
@@ -3147,14 +3181,30 @@ function pinInspoToCanvas(uid, entry, restoreData) {
   canvas.appendChild(el); setupTransforms(el, spin, rotateHandle, resizeHandle, state, uid);
   onCanvas[uid] = { el, item: { name: entry.name, isRef: true }, state, isRef: true };
   updateInspoCard(uid, true);
+  updateClearAllBtn();
   setActive(uid);
 }
 
 function setActive(uid) { document.querySelectorAll('.on-canvas').forEach(el => el.classList.remove('active-item')); if (uid && onCanvas[uid]) { onCanvas[uid].el.classList.add('active-item'); onCanvas[uid].el.style.zIndex = zCounter++; } }
 
-function toggleItem(uid, item, catId) { if (onCanvas[uid]) removeFromCanvas(uid); else addToCanvas(uid, item, catId); }
+// Every tap on a closet item adds a fresh, independently-draggable copy to
+// the canvas — items are no longer capped at one instance each. Each copy
+// gets its own unique instance id, while `baseUid` keeps track of which
+// catalog item it came from (for grid highlighting, vibe scoring, etc).
+let instanceSeq = 0;
+function makeInstanceUid(baseUid) { return baseUid + '__i' + Date.now().toString(36) + (instanceSeq++); }
 
-function addToCanvas(uid, item, catId, restoreData) {
+function countOnCanvas(baseUid) {
+  let n = 0;
+  for (const k in onCanvas) { if (!onCanvas[k].isRef && (onCanvas[k].baseUid || k) === baseUid) n++; }
+  return n;
+}
+
+function addItemInstance(baseUid, item, catId) {
+  addToCanvas(makeInstanceUid(baseUid), item, catId, null, baseUid);
+}
+
+function addToCanvas(uid, item, catId, restoreData, baseUid) {
   const canvas = document.getElementById('canvas');
   document.getElementById('canvas-empty').style.display = 'none';
   if (!restoreData) pushNewsHeadline(item); // don't spam headlines on page-load restore
@@ -3183,7 +3233,7 @@ function addToCanvas(uid, item, catId, restoreData) {
   const rotateHandle = document.createElement('div'); rotateHandle.className = 'rotate-handle'; rotateHandle.textContent = '↻'; el.appendChild(rotateHandle);
   const resizeHandle = document.createElement('div'); resizeHandle.className = 'resize-handle'; el.appendChild(resizeHandle);
   canvas.appendChild(el); setupTransforms(el, spin, rotateHandle, resizeHandle, state, uid);
-  onCanvas[uid] = { el, item, state }; updateGridCard(uid, true); setActive(uid);
+  onCanvas[uid] = { el, item, state, baseUid: baseUid || uid }; updateGridCard(baseUid || uid); setActive(uid);
 
   if (!restoreData) {
     // sparkle + sound on drop
@@ -3193,21 +3243,60 @@ function addToCanvas(uid, item, catId, restoreData) {
     spawnSparkleBurst(burstX, burstY);
     itemAddCount++;
     if (itemAddCount % 3 === 1) playTrueItemSelectSound(); // plays on add #1, #4, #7, ...
-    maybeShowOrigin(uid, item);
+    maybeShowOrigin(baseUid || uid, item);
   }
+  updateClearAllBtn();
   saveInProgressOutfit();
 }
 
 function removeFromCanvas(uid) {
   if (!onCanvas[uid]) return;
-  onCanvas[uid].el.remove(); delete onCanvas[uid]; updateGridCard(uid, false); updateInspoCard(uid, false);
+  const baseUid = onCanvas[uid].baseUid || uid;
+  onCanvas[uid].el.remove(); delete onCanvas[uid]; updateGridCard(baseUid); updateInspoCard(uid, false);
   if (Object.keys(onCanvas).length === 0) {
     document.getElementById('canvas-empty').style.display = 'block';
   }
+  updateClearAllBtn();
   saveInProgressOutfit();
 }
 
-function updateGridCard(uid, active) { const card = document.getElementById('gi-' + uid); if (card) card.classList.toggle('on-board', active); }
+function updateGridCard(baseUid) {
+  const card = document.getElementById('gi-' + baseUid);
+  if (!card) return;
+  const count = countOnCanvas(baseUid);
+  card.classList.toggle('on-board', count > 0);
+  const visual = card.querySelector('.gi-visual');
+  let badge = card.querySelector('.gi-count');
+  if (count > 1) {
+    if (!badge && visual) { badge = document.createElement('span'); badge.className = 'gi-count'; visual.prepend(badge); }
+    if (badge) badge.textContent = '×' + count;
+  } else if (badge) {
+    badge.remove();
+  }
+}
+
+// Clears every item (and reference pin) off the canvas in one tap.
+function clearCanvas() {
+  const uids = Object.keys(onCanvas);
+  if (uids.length === 0) return;
+  if (uids.length > 1 && !confirm('Clear the whole board and start fresh?')) return;
+  const baseUids = new Set();
+  uids.forEach(uid => {
+    const entry = onCanvas[uid];
+    baseUids.add(entry.baseUid || uid);
+    entry.el.remove();
+    delete onCanvas[uid];
+  });
+  baseUids.forEach(b => { updateGridCard(b); updateInspoCard(b, false); });
+  document.getElementById('canvas-empty').style.display = 'block';
+  updateClearAllBtn();
+  saveInProgressOutfit();
+}
+
+function updateClearAllBtn() {
+  const btn = document.getElementById('clear-all-btn');
+  if (btn) btn.classList.toggle('show', Object.keys(onCanvas).length > 0);
+}
 
 const MIN_SCALE = 0.4, MAX_SCALE = 2.5;
 function applySpinTransform(spin, state) { spin.style.transform = `rotate(${state.rotation}deg) scale(${state.scale})`; }
@@ -3288,7 +3377,7 @@ function toggleDrawer() {
 
 function calculateVerdict() {
   if (Object.keys(onCanvas).some(uid => onCanvas[uid].item.name === "Sasha's bow")) { return { key: "yes, and?", ...verdicts["yes, and?"] }; }
-  const vibes = Object.keys(onCanvas).map(uid => verdictMap[uid]).filter(Boolean);
+  const vibes = Object.keys(onCanvas).map(uid => verdictMap[onCanvas[uid].baseUid || uid]).filter(Boolean);
   if (vibes.length === 0) return null;
   const freq = {}; vibes.forEach(v => freq[v] = (freq[v]||0)+1);
   let maxFreq = 0; for (let v in freq) if (freq[v] > maxFreq) maxFreq = freq[v];
