@@ -293,31 +293,6 @@
     letter-spacing: 0.02em; padding: 1px 5px; border-radius: 999px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.3); pointer-events: none;
   }
-
-  /* ── SECRET DOLL EASTER EGG ── */
-  #secret-doll-toggle {
-    position: absolute; top: 10px; left: 10px; z-index: 50;
-    display: none; align-items: center; justify-content: center;
-    width: 30px; height: 30px; border-radius: 50%;
-    background: rgba(20,16,14,0.5); color: #f7f4f0; border: none;
-    cursor: pointer; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.18);
-    opacity: 0.8; transition: opacity 0.15s ease, background 0.15s ease, transform 0.1s ease;
-  }
-  #secret-doll-toggle.unlocked { display: flex; }
-  #secret-doll-toggle svg { width: 14px; height: 14px; }
-  #secret-doll-toggle:hover { opacity: 1; background: rgba(20,16,14,0.68); }
-  #secret-doll-toggle:active { transform: scale(0.9); }
-  #secret-doll-toggle.doll-out { background: var(--accent); color: var(--ink); opacity: 1; }
-
-  #secret-doll-base {
-    position: absolute; z-index: 0; pointer-events: none;
-    left: 50%; bottom: 0; transform: translateX(-50%);
-    height: 82%; max-height: 560px; width: auto;
-    opacity: 0; transition: opacity 0.4s ease;
-    filter: drop-shadow(0 6px 10px rgba(0,0,0,0.12));
-  }
-  #secret-doll-base.show { opacity: 1; }
   #canvas-empty .big-label { font-family: 'Anton', sans-serif; text-transform: uppercase; letter-spacing: 0.02em; font-size: 1.5rem; color: var(--ink); margin-bottom: 0.4rem; }
   #canvas-empty p { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.18em; color: var(--muted); }
 
@@ -1266,12 +1241,6 @@
     </svg>
     <span>Clear all</span>
   </button>
-  <button id="secret-doll-toggle" onclick="toggleSecretDoll()" aria-label="Bring him out" title="Bring him out">
-    <svg viewBox="0 0 24 24" fill="currentColor" stroke="none">
-      <path d="M12 2.5c.6 3.4 1.5 5.6 3 7.1s3.7 2.4 7.1 3c-3.4.6-5.6 1.5-7.1 3s-2.4 3.7-3 7.1c-.6-3.4-1.5-5.6-3-7.1s-3.7-2.4-7.1-3c3.4-.6 5.6-1.5 7.1-3s2.4-3.7 3-7.1z"></path>
-    </svg>
-  </button>
-  <img id="secret-doll-base" src="secret-doll.png" alt="">
   <div id="news-ticker"><div id="news-ticker-track"></div></div>
 </div>
 
@@ -2543,7 +2512,6 @@ function init() {
   initTeaTicker();
   renderNewsTicker();
   restoreInProgressOutfit();
-  restoreSecretDollState();
   updateMissionBadge();
   preloadAllClosetImages();
 }
@@ -2575,63 +2543,6 @@ function preloadAllClosetImages() {
 }
 
 const INPROGRESS_KEY = 'dreamCloset_inProgress';
-
-// ── SECRET DOLL EASTER EGG ──
-// Tap the "Bottoms" super-tab 5 times in a row (within a couple seconds of
-// each other) to unlock a hidden character who can be brought out onto the
-// canvas and dressed like a paper doll. The unlock is permanent (per
-// browser) once found, but the button stays invisible to anyone who hasn't
-// found the trick — no hint is ever shown in the UI.
-const SECRET_DOLL_UNLOCK_KEY = 'dreamCloset_secretDollUnlocked';
-const SECRET_DOLL_VISIBLE_KEY = 'dreamCloset_secretDollVisible';
-const SECRET_TAP_TARGET = 5;
-const SECRET_TAP_WINDOW_MS = 1800;
-let secretTapCount = 0;
-let secretTapTimer = null;
-
-function isSecretDollUnlocked() {
-  try { return localStorage.getItem(SECRET_DOLL_UNLOCK_KEY) === '1'; } catch (e) { return false; }
-}
-
-function registerBottomsTap() {
-  if (isSecretDollUnlocked()) return; // already found, no need to keep counting
-  secretTapCount++;
-  clearTimeout(secretTapTimer);
-  secretTapTimer = setTimeout(() => { secretTapCount = 0; }, SECRET_TAP_WINDOW_MS);
-  if (secretTapCount >= SECRET_TAP_TARGET) {
-    secretTapCount = 0;
-    clearTimeout(secretTapTimer);
-    unlockSecretDoll();
-  }
-}
-
-function unlockSecretDoll() {
-  try { localStorage.setItem(SECRET_DOLL_UNLOCK_KEY, '1'); } catch (e) {}
-  const btn = document.getElementById('secret-doll-toggle');
-  if (btn) btn.classList.add('unlocked');
-  showLockedToast('Shh… you found him. Tap the star to bring him out.');
-  const rect = btn ? btn.getBoundingClientRect() : { left: 30, top: 30 };
-  spawnSparkleBurst(rect.left + 15, rect.top + 15, 16);
-}
-
-function toggleSecretDoll() {
-  if (!isSecretDollUnlocked()) return;
-  const showing = document.getElementById('secret-doll-base').classList.toggle('show');
-  document.getElementById('secret-doll-toggle').classList.toggle('doll-out', showing);
-  try { localStorage.setItem(SECRET_DOLL_VISIBLE_KEY, showing ? '1' : '0'); } catch (e) {}
-}
-
-function restoreSecretDollState() {
-  if (!isSecretDollUnlocked()) return;
-  const btn = document.getElementById('secret-doll-toggle');
-  if (btn) btn.classList.add('unlocked');
-  let visible = false;
-  try { visible = localStorage.getItem(SECRET_DOLL_VISIBLE_KEY) === '1'; } catch (e) {}
-  if (visible) {
-    document.getElementById('secret-doll-base').classList.add('show');
-    if (btn) btn.classList.add('doll-out');
-  }
-}
 
 // ── GUIDED TOUR ──
 // ── STYLE EMERGENCY TIMER ──
@@ -2942,7 +2853,6 @@ function renderTabs() {
     tab.textContent = group.name; tab.id = 'super-tab-' + idx;
     tab.onclick = () => {
       if (searchMode) clearSearch();
-      if (group.name === 'Bottoms') registerBottomsTap();
       selectSuperGroup(idx);
     };
     superEl.appendChild(tab);
