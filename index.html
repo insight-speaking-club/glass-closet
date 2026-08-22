@@ -1579,6 +1579,37 @@ const categories = [
     ]
   },
   {
+    id: 'iconic-avataria', label: 'Avataria',
+    items: [
+      { name: 'Avatar Wedding Dress', color: '#e8e8e8', vibe: 'digital hoarder', w: 140, h: 140, img: 'avatar-wedding-dress' },
+      { name: 'VIP Bow Crop Top', color: '#f0f0f0', vibe: 'embezzlement', w: 100, h: 100, img: 'vip-bow-crop-top' },
+      { name: 'Peacock Club Dress', color: '#1a1a8a', vibe: 'digital hoarder', w: 130, h: 130, img: 'peacock-club-dress' },
+      { name: 'Default Noob Tee', color: '#f0ede8', vibe: 'embezzlement', w: 100, h: 100, img: 'default-noob-tee' },
+      { name: 'Alpha Clan Hoodie', color: '#e8e4df', vibe: 'digital hoarder', w: 110, h: 115, img: 'alpha-clan-hoodie' },
+      { name: 'Halloween Blood Top', color: '#8b0000', vibe: 'embezzlement', w: 90, h: 90, img: 'halloween-blood-top' },
+      { name: 'Y2K Heart Belt Jeans', color: '#00bfff', vibe: 'digital hoarder', w: 90, h: 140, img: 'y2k-heart-belt-jeans' },
+      { name: 'Diamond VIP Tank', color: '#f5deb3', vibe: 'embezzlement', w: 90, h: 100, img: 'diamond-vip-tank' },
+      { name: 'Red VIP Corset', color: '#ff0000', vibe: 'digital hoarder', w: 90, h: 90, img: 'red-vip-corset' },
+      { name: 'Zombie Event Dress', color: '#e8e8e8', vibe: 'embezzlement', w: 120, h: 150, img: 'zombie-event-dress' },
+      { name: 'Blood Splatter Aura', color: '#cc0000', vibe: 'embezzlement', w: 100, h: 90, img: 'blood-splatter-aura' },
+      { name: 'Blue School Skirt', color: '#4a6fa5', vibe: 'digital hoarder', w: 110, h: 90, img: 'blue-school-skirt' },
+      { name: 'Red Avatar Cap', color: '#cc0000', vibe: 'embezzlement', w: 80, h: 60, img: 'red-avatar-cap' },
+      { name: 'Distressed Denim Mini', color: '#1a2a4a', vibe: 'digital hoarder', w: 90, h: 90, img: 'distressed-denim-mini' },
+      { name: 'Vine Wrap Club Dress', color: '#111', vibe: 'embezzlement', w: 120, h: 140, img: 'vine-wrap-club-dress' },
+      { name: 'Pink Noob Longsleeve', color: '#e8a9bc', vibe: 'digital hoarder', w: 100, h: 100, img: 'pink-noob-longsleeve' },
+      { name: 'Romance Rose Prop', color: '#cc0000', vibe: 'digital hoarder', w: 60, h: 100, img: 'romance-rose-prop' },
+      { name: 'Mustard Fall Coat', color: '#c2903a', vibe: 'embezzlement', w: 120, h: 140, img: 'mustard-fall-coat' },
+      { name: 'Mustard Fall Beret', color: '#c2903a', vibe: 'digital hoarder', w: 80, h: 60, img: 'mustard-fall-beret' },
+      { name: 'White VIP Babydoll', color: '#f0ede8', vibe: 'embezzlement', w: 95, h: 120, img: 'white-vip-babydoll' },
+      { name: 'Spa Day Robe', color: '#e8a9bc', vibe: 'digital hoarder', w: 130, h: 130, img: 'spa-day-robe' },
+      { name: 'Flamingo Slippers', color: '#e8a9bc', vibe: 'embezzlement', w: 80, h: 50, img: 'flamingo-slippers' },
+      { name: 'Pink Silk Slip', color: '#a8456d', vibe: 'digital hoarder', w: 90, h: 130, img: 'pink-silk-slip' },
+      { name: 'Solid Gold Cowl', color: '#d4a017', vibe: 'embezzlement', w: 100, h: 110, img: 'solid-gold-cowl' },
+      { name: 'Pink Prom Gown', color: '#ff69b4', vibe: 'digital hoarder', w: 140, h: 160, img: 'pink-prom-gown' },
+      { name: 'Royal Lace Gown', color: '#ff1493', vibe: 'embezzlement', w: 150, h: 160, img: 'royal-lace-gown' }
+    ]
+  },
+  {
     id: 'tops-basic', label: 'Basics',
     items: [
       { name: 'White tee', color: '#f0ede8', vibe: 'classic', w: 110, h: 105 },
@@ -1887,7 +1918,7 @@ const categories = [
 ];
 
 const supercategories = [
-  { name: "Iconic Pieces", cats: ["iconic-club", "iconic-movies-tv", "iconic-music", "iconic-cartoons"] },
+  { name: "Iconic Pieces", cats: ["iconic-club", "iconic-movies-tv", "iconic-music", "iconic-cartoons", "iconic-avataria"] },
   { name: "Tops", cats: ["tops-basic", "tops-shirts", "tops-knitwear", "tops-statement"] },
   { name: "Bottoms", cats: ["bottoms-trousers", "bottoms-jeans", "bottoms-skirts"] },
   { name: "Dresses & Jumpsuits", cats: ["dresses"] },
@@ -1897,6 +1928,8 @@ const supercategories = [
 ];
 
 const verdicts = {
+  'digital hoarder': { line: "Your closet has a save file.", sub: "You've been logging into a 2014 avatar game to maintain your look. Respect." },
+  'embezzlement': { line: "Your aesthetic is facing embezzlement charges.", sub: "You spent rent money on a 2D outfit in 2014 and you still refuse to let it go." },
   'yes, and?': { line: "Yes, and?", sub: "You did that. No further questions, no follow-up needed." },
   'club kid': { line: "Out past the point of explaining yourself.", sub: "That Insight tee did all the talking. Nobody's asking questions after that." },
   'iconic villain era': { line: "Irresistible sabotage.", sub: "You turned a Burn Book prank into a school-wide trend. Everyone is cutting holes in their shirts tomorrow." },
