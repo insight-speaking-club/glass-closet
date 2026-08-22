@@ -244,7 +244,7 @@
   #request-btn svg { width: 16px; height: 16px; }
   #request-btn:active { transform: scale(0.9); background: rgba(26,20,20,0.24); }
 
-  #help-btn {
+  .top-icon-btn {
     width: 26px; height: 26px; border-radius: 50%;
     background: transparent; border: none;
     color: var(--ink); opacity: 0.45; text-decoration: none;
@@ -252,8 +252,8 @@
     cursor: pointer; transition: background 0.15s, transform 0.1s, opacity 0.15s;
     margin-left: 0.15rem;
   }
-  #help-btn svg { width: 14px; height: 14px; }
-  #help-btn:active { transform: scale(0.9); opacity: 0.85; }
+  .top-icon-btn svg { width: 14px; height: 14px; }
+  .top-icon-btn:active { transform: scale(0.9); opacity: 0.85; }
 
   #mission-btn-dot {
     position: absolute; top: -3px; right: -6px;
@@ -1165,7 +1165,31 @@
   </div>
   <div id="topbar-icon-row">
     <div id="topbar-icon-group">
-      <button id="help-btn" onclick="startTour(true)" aria-label="How this works" title="How this works">
+      <!-- Next Track Button -->
+      <button id="skip-track-btn" class="top-icon-btn" onclick="skipTrack()" aria-label="Next track" title="Next track">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="5 4 15 12 5 20 5 4"></polygon>
+          <line x1="19" y1="5" x2="19" y2="19"></line>
+        </svg>
+      </button>
+      
+      <!-- Mute Button -->
+      <button id="mute-btn" class="top-icon-btn" onclick="toggleMute()" aria-label="Toggle sound" title="Toggle sound">
+        <!-- Unmuted Icon -->
+        <svg id="icon-unmuted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+        </svg>
+        <!-- Muted Icon -->
+        <svg id="icon-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <line x1="23" y1="9" x2="17" y2="15"></line>
+          <line x1="17" y1="9" x2="23" y2="15"></line>
+        </svg>
+      </button>
+
+      <!-- Help Button -->
+      <button id="help-btn" class="top-icon-btn" onclick="startTour(true)" aria-label="How this works" title="How this works">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="9"></circle>
           <path d="M9.3 9.3a2.7 2.7 0 1 1 3.9 2.4c-.8.4-1.2 1-1.2 1.9v.3"></path>
@@ -1428,26 +1452,58 @@
 
 <script>
 // ── SOUND FX ──
-// All sound effects are muted from the start. Flip this to false (and add a
-// toggle in the UI) if audio should ever be turned back on.
-const SOUND_MUTED = false;
+let isMuted = false;
 const GOSSIP_BEAT_SRC = 'item-select.mp3';
 const TRUE_ITEM_SELECT_SRC = 'true-item-select.mp3';
 const SHUTTER_SRC = 'shutter.mp3';
 let itemAddCount = 0; 
 
-const BG_MUSIC_SRC = 'avataria-bg.mp3';
-const bgAudio = new Audio(BG_MUSIC_SRC);
+// Add as many MP3 files here as you want! It will loop through them.
+const BG_TRACKS = [
+  'avataria-bg.mp3', 
+  'avataria-salon.mp3', 
+  'avataria-club.mp3', 
+  'avataria-shop.mp3'
+];
+let currentTrackIdx = 0;
+
+const bgAudio = new Audio(BG_TRACKS[currentTrackIdx]);
 bgAudio.loop = true;
 bgAudio.volume = 0.15; // Kept low so it's ambient
-bgAudio.muted = SOUND_MUTED;
+bgAudio.muted = isMuted;
+
+const crackAudio = new Audio('crack.mp3'); // Moved up here so we can mute it globally
+crackAudio.volume = 0.4;
+crackAudio.muted = isMuted;
 
 function startBackgroundMusic() {
-  if (SOUND_MUTED) return;
+  if (isMuted) return;
   try {
     const p = bgAudio.play();
     if (p && p.catch) p.catch(() => console.warn('[sound fx] BG music blocked by browser'));
   } catch (e) {}
+}
+
+function toggleMute() {
+  isMuted = !isMuted;
+
+  // Mute/Unmute all audio elements
+  bgAudio.muted = isMuted;
+  shutterAudio.muted = isMuted;
+  crackAudio.muted = isMuted;
+  gossipBeatAudio.muted = isMuted;
+
+  // Swap the icons
+  document.getElementById('icon-unmuted').style.display = isMuted ? 'none' : 'block';
+  document.getElementById('icon-muted').style.display = isMuted ? 'block' : 'none';
+}
+
+function skipTrack() {
+  currentTrackIdx = (currentTrackIdx + 1) % BG_TRACKS.length; // Cycles to the next track
+  bgAudio.src = BG_TRACKS[currentTrackIdx];
+  if (!isMuted) {
+    bgAudio.play().catch(() => {});
+  }
 }
 
 function preloadSoundCheck(src, label) {
@@ -1467,7 +1523,7 @@ preloadSoundCheck(SHUTTER_SRC, 'shutter sound');
 
 const gossipBeatAudio = new Audio(GOSSIP_BEAT_SRC);
 gossipBeatAudio.volume = 0.28;
-gossipBeatAudio.muted = SOUND_MUTED;
+gossipBeatAudio.muted = isMuted;
 
 // Continues playing without cutting off.
 function playGossipBeatSnippet() {
@@ -1490,7 +1546,7 @@ function playTrueItemSelectSound() {
   try {
     const a = new Audio(TRUE_ITEM_SELECT_SRC);
     a.volume = 0.5;
-    a.muted = SOUND_MUTED;
+    a.muted = isMuted;
     const p = a.play();
     if (p && p.catch) {
       p.catch(err => console.warn('[sound fx] item-select playback blocked/failed:', err.message));
@@ -1502,7 +1558,7 @@ function playTrueItemSelectSound() {
 
 const shutterAudio = new Audio(SHUTTER_SRC);
 shutterAudio.volume = 0.6;
-shutterAudio.muted = SOUND_MUTED;
+shutterAudio.muted = isMuted;
 function playShutterSound() {
   try {
     shutterAudio.pause();
@@ -4198,9 +4254,6 @@ window.addEventListener('DOMContentLoaded', () => {
   IY = H * 0.42 + (Math.random()-0.5)*60;
 
   const tapOverlay = document.getElementById('tap-overlay');
-  const crackAudio = new Audio('crack.mp3');
-  crackAudio.volume = 0.4;
-  crackAudio.muted = SOUND_MUTED;
 
   tapOverlay.addEventListener('click', () => {
     startBackgroundMusic(); // Starts music when shattering glass
