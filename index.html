@@ -975,6 +975,51 @@
   }
   #mission-reroll-btn:active { opacity: 0.65; }
 
+  /* ── SECRET MEME EASTER EGGS ── */
+  #egg-overlay {
+    display: none; position: fixed; inset: 0; z-index: 20000 !important;
+    background: rgba(16,13,10,0.9); backdrop-filter: blur(6px);
+    align-items: center; justify-content: center; padding: 1.2rem;
+  }
+  #egg-overlay.show { display: flex; }
+  #egg-panel {
+    background: #1a1414; border-radius: 12px; padding: 1.6rem 1.3rem 1.3rem;
+    width: 100%; max-width: 380px; box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    position: relative; text-align: center;
+  }
+  #egg-close {
+    position: absolute; top: 0.7rem; right: 0.7rem;
+    width: 30px; height: 30px; border-radius: 50%;
+    background: rgba(255,255,255,0.1); border: none; color: #f7f4f0;
+    font-size: 0.9rem; cursor: pointer;
+  }
+  #egg-eyebrow {
+    font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 0.6rem;
+    text-transform: uppercase; letter-spacing: 0.24em; color: var(--accent); margin-bottom: 0.6rem;
+  }
+  #egg-title {
+    font-family: 'Anton', sans-serif; text-transform: uppercase; letter-spacing: 0.01em;
+    font-size: 1.35rem; line-height: 1.15; color: #f7f4f0; margin-bottom: 1rem;
+  }
+  #egg-media {
+    width: 100%; border-radius: 8px; overflow: hidden; margin-bottom: 1.1rem;
+    background: #100d0a; min-height: 50px; display: flex; align-items: center; justify-content: center;
+  }
+  #egg-media img { width: 100%; display: block; }
+  #egg-media .egg-media-fallback {
+    padding: 1.4rem 1rem; color: #a8a09b; font-family: 'Playfair Display', serif;
+    font-style: italic; font-size: 0.85rem;
+  }
+  #egg-link-btn {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    background: var(--accent); color: #1a1414; font-family: 'DM Sans', sans-serif;
+    font-weight: 700; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em;
+    padding: 0.65rem 1.2rem; border-radius: 20px; text-decoration: none; cursor: pointer;
+    transition: opacity 0.15s;
+  }
+  #egg-link-btn:hover { opacity: 0.85; }
+  #egg-link-btn:active { transform: scale(0.97); }
+
   /* ── glow pill (links out to glow-book.html) ── */
   .lookbook-caption input.lb-edit-input {
     font-family: 'DM Sans', sans-serif; font-weight: 500; font-size: 0.62rem;
@@ -1176,7 +1221,7 @@
 <div id="topbar">
   <div id="topbar-row1">
     <div id="topbar-title-container">
-      <img src="glasscloset.png" alt="Glass Closet" style="max-height: 25px; width: auto;" onerror="this.style.display='none'">
+      <img id="topbar-logo" src="glasscloset.png" alt="Glass Closet" style="max-height: 25px; width: auto; cursor: pointer;" onerror="this.style.display='none'" onclick="handleLogoTap()">
       <img src="kissprint.png" alt="" class="kiss-print">
     </div>
     <div id="topbar-right-controls">
@@ -1379,6 +1424,16 @@
     <div id="mission-status"></div>
     <div id="mission-hint">Build your outfit on the canvas, then hit "Check Vibe" to see if you passed.</div>
     <button id="mission-reroll-btn" onclick="rerollMission()">Choose another scenario</button>
+  </div>
+</div>
+
+<div id="egg-overlay">
+  <div id="egg-panel">
+    <button id="egg-close" onclick="closeMemeEgg()" aria-label="Close">✕</button>
+    <div id="egg-eyebrow">You found something...</div>
+    <div id="egg-title"></div>
+    <div id="egg-media"></div>
+    <a id="egg-link-btn" href="#" target="_blank" rel="noopener">See it</a>
   </div>
 </div>
 
@@ -3002,6 +3057,113 @@ function initTeaTicker() {
   el.addEventListener('click', dismiss); // tap to dismiss, e.g. on desktop
 }
 
+// ── SECRET MEME EASTER EGGS ──
+// Wear a specific combo of items at the same time (all must be on the canvas
+// together — order doesn't matter, extra items are fine) and a hidden modal
+// pops up linking to a meme. Names must match `name` in the wardrobe data
+// EXACTLY (copy-paste them to be safe — smart quotes vs straight quotes matter).
+// `url` can be a direct image/gif link (previews inline) or any regular page
+// link (shows a "See it" button that opens in a new tab either way).
+const MEME_EGGS = [
+  { combo: ["Cher’s yellow plaid blazer", "Burn book"], title: "you've officially been taken down", url: "https://www.instagram.com/reel/DcMbri0TKIo/?igsi=N2F2cWVrZWJ4NDdy" },
+  { combo: ["Carrie’s nameplate necklace", "Cerulean blue sweater", "Blair’s red headband"], title: "the Met Gala discourse has entered the chat", url: "https://www.instagram.com/reel/DYAxEaAyZqS/?igsi=aW03a2Y4bWszaWEz" },
+  { combo: ["Sasha's bow", "Bunny ears"], title: "yes, and? 🐰", url: "https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif" },
+  // Add up to ~50 more here, same shape:
+  // { combo: ["Item Name One", "Item Name Two"], title: "caption for the modal", url: "https://..." },
+];
+
+function isImageUrl(url) { return /\.(gif|png|jpe?g|webp)(\?.*)?$/i.test(url); }
+
+let activeEggIds = new Set();
+
+function currentCanvasItemNames() {
+  const set = new Set();
+  Object.keys(onCanvas).forEach(uid => { const e = onCanvas[uid]; if (!e.isRef) set.add(e.item.name); });
+  return set;
+}
+
+// Called after every canvas change. Fires the reveal modal only on the
+// transition from "combo not present" to "combo present" — adding an
+// unrelated item on top of an already-satisfied combo won't re-trigger it.
+// Pass silent=true (used on page-load restore) to sync state without popping
+// the modal for combos that were already sitting on a restored canvas.
+function syncEggState(silent) {
+  const names = currentCanvasItemNames();
+  MEME_EGGS.forEach((egg, idx) => {
+    const id = 'egg_' + idx;
+    const satisfied = egg.combo.every(n => names.has(n));
+    if (satisfied && !activeEggIds.has(id)) {
+      activeEggIds.add(id);
+      if (!silent) revealMemeEgg(egg);
+    } else if (!satisfied && activeEggIds.has(id)) {
+      activeEggIds.delete(id);
+    }
+  });
+}
+
+function revealMemeEgg(egg) {
+  document.getElementById('egg-eyebrow').textContent = egg.eyebrow || 'You found something...';
+  document.getElementById('egg-title').textContent = egg.title;
+  const media = document.getElementById('egg-media');
+  media.innerHTML = '';
+  if (isImageUrl(egg.url)) {
+    const img = document.createElement('img');
+    img.src = egg.url; img.alt = egg.title;
+    media.appendChild(img);
+  } else {
+    media.innerHTML = `<div class="egg-media-fallback">Tap below to see it</div>`;
+  }
+  const link = document.getElementById('egg-link-btn');
+  link.href = egg.url;
+  link.textContent = 'See it';
+
+  const canvasRect = document.getElementById('canvas').getBoundingClientRect();
+  spawnSparkleBurst(canvasRect.left + canvasRect.width / 2, canvasRect.top + canvasRect.height / 2, 20);
+  playTrueItemSelectSound();
+
+  document.getElementById('egg-overlay').classList.add('show');
+}
+
+// ── LOGO EASTER EGG: triple-tap the wordmark for the Vogue Committee reveal ──
+const VOGUE_ARTICLE_URL = 'https://telegra.ph/Sasha-Did-Not-Ask-For-This-Sasha-Would-Also-Like-You-to-Know-That-07-18';
+const VOGUE_TEASER = "As anticipation reaches historic levels, our Senior Journalist, Tanya finally secured what many believed impossible: an interview with SASHA™, Founder and Editor-in-Chief of the Vogue Committee.";
+
+let logoTapCount = 0;
+let logoTapTimer = null;
+function handleLogoTap() {
+  logoTapCount++;
+  clearTimeout(logoTapTimer);
+  logoTapTimer = setTimeout(() => { logoTapCount = 0; }, 600);
+  if (logoTapCount >= 3) {
+    logoTapCount = 0;
+    clearTimeout(logoTapTimer);
+    revealVogueEgg();
+  }
+}
+
+function revealVogueEgg() {
+  document.getElementById('egg-eyebrow').textContent = 'Vogue Committee exclusive';
+  document.getElementById('egg-title').textContent = 'SASHA™ Would Like a Word';
+  const media = document.getElementById('egg-media');
+  media.innerHTML = `<div class="egg-media-fallback" style="text-align:left;">${VOGUE_TEASER}</div>`;
+  const link = document.getElementById('egg-link-btn');
+  link.href = VOGUE_ARTICLE_URL;
+  link.textContent = 'Read the exclusive';
+
+  const logo = document.getElementById('topbar-logo');
+  if (logo) {
+    const r = logo.getBoundingClientRect();
+    spawnSparkleBurst(r.left + r.width / 2, r.top + r.height / 2, 26);
+  }
+  playTrueItemSelectSound();
+
+  document.getElementById('egg-overlay').classList.add('show');
+}
+
+function closeMemeEgg() {
+  document.getElementById('egg-overlay').classList.remove('show');
+}
+
 function renderTabs() {
   const superEl = document.getElementById('super-tabs');
   superEl.innerHTML = '';
@@ -3405,6 +3567,7 @@ function addToCanvas(uid, item, catId, restoreData, baseUid) {
   }
   updateClearAllBtn();
   saveInProgressOutfit();
+  syncEggState(!!restoreData); // silent on page-load restore, don't re-pop already-found combos
 }
 
 function removeFromCanvas(uid) {
@@ -3416,6 +3579,7 @@ function removeFromCanvas(uid) {
   }
   updateClearAllBtn();
   saveInProgressOutfit();
+  syncEggState();
 }
 
 function updateGridCard(baseUid) {
@@ -3449,6 +3613,7 @@ function clearCanvas() {
   document.getElementById('canvas-empty').style.display = 'block';
   updateClearAllBtn();
   saveInProgressOutfit();
+  syncEggState();
 }
 
 function updateClearAllBtn() {
@@ -3463,6 +3628,8 @@ function setupTransforms(el, spin, rotateHandle, resizeHandle, state, uid) {
   let mode = null, startX, startY, origLeft, origTop;
   let centerX, centerY, startAngle, startRotation, startDist, startScale;
   let activePointerId = null, rafPending = false, pendingX = 0, pendingY = 0;
+  let trailX = 0, trailY = 0; // last spot a trail sparkle was dropped, drag mode only
+  const TRAIL_MIN_DIST = 40; // px of pointer movement between trail sparkles
 
   function getCenter() { const rect = el.getBoundingClientRect(); return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 }; }
 
@@ -3478,6 +3645,7 @@ function setupTransforms(el, spin, rotateHandle, resizeHandle, state, uid) {
     mode = newMode;
     if (newMode === 'drag') {
       startX = x; startY = y; origLeft = parseInt(el.style.left)||0; origTop = parseInt(el.style.top)||0;
+      trailX = x; trailY = y;
     } else if (newMode === 'rotate') {
       const c = getCenter(); centerX = c.x; centerY = c.y;
       startAngle = Math.atan2(y-centerY, x-centerX)*180/Math.PI; startRotation = state.rotation;
@@ -3488,7 +3656,14 @@ function setupTransforms(el, spin, rotateHandle, resizeHandle, state, uid) {
   }
 
   function applyMove(x, y) {
-    if (mode === 'drag') { el.style.left = (origLeft+x-startX)+'px'; el.style.top = (origTop+y-startY)+'px'; }
+    if (mode === 'drag') {
+      el.style.left = (origLeft+x-startX)+'px'; el.style.top = (origTop+y-startY)+'px';
+      // sparkle trail: drop a small burst every ~40px of pointer travel
+      if (Math.hypot(x - trailX, y - trailY) >= TRAIL_MIN_DIST) {
+        spawnSparkleBurst(x, y, 3);
+        trailX = x; trailY = y;
+      }
+    }
     else if (mode === 'rotate') { const angle = Math.atan2(y-centerY, x-centerX)*180/Math.PI; state.rotation = startRotation+(angle-startAngle); applySpinTransform(spin, state); }
     else if (mode === 'resize') { const dist = Math.hypot(x-centerX, y-centerY); state.scale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, startScale*dist/(startDist||1))); applySpinTransform(spin, state); }
   }
