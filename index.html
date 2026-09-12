@@ -91,15 +91,6 @@
     background: rgba(255, 255, 255, 0.15);
   }
 
-  #tap-overlay {
-    position: fixed; inset: 0; z-index: 100000;
-    display: flex; align-items: center; justify-content: center;
-    background: rgba(10, 8, 6, 0.35);
-    color: #fff; font-family: 'DM Sans', sans-serif; font-weight: 500;
-    font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.2em;
-    cursor: pointer; transition: opacity 0.4s ease;
-  }
-
   /* ── FIRST-VISIT INTRO (no shatter — that shows up starting the 2nd visit) ── */
   #intro-simple-overlay {
     display: none;
@@ -121,10 +112,6 @@
   #intro-simple-title {
     font-family: 'Anton', sans-serif; text-transform: uppercase; letter-spacing: 0.01em;
     font-size: clamp(2rem, 9vw, 3rem); line-height: 1.05; color: #f7f4f0; margin-bottom: 0.8rem;
-  }
-  #intro-simple-sub {
-    font-family: 'Playfair Display', serif; font-style: italic; font-size: 1.1rem;
-    color: #a8a09b; line-height: 1.5; max-width: 320px; margin: 0 auto 2.2rem;
   }
   #intro-simple-btn {
     font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 0.68rem;
@@ -159,12 +146,6 @@
 
   #topbar-row2 { margin-top: 0.45rem; display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; }
   #topbar-row2-right { display: flex; align-items: center; gap: 0.65rem; margin-left: auto; flex-shrink: 0; }
-  #topbar-gossip-link {
-    font-family: 'DM Sans', sans-serif; font-weight: 500; font-size: 0.62rem;
-    color: rgba(26,20,20,0.55); text-decoration: underline; text-underline-offset: 3px;
-    cursor: pointer; width: fit-content; letter-spacing: 0.01em;
-  }
-  #topbar-gossip-link:hover { color: rgba(26,20,20,0.8); }
 
   #emergency-timer {
     display: flex; align-items: baseline; gap: 0.35rem;
@@ -184,7 +165,7 @@
     align-items: center;
     gap: 10px;
     min-width: 0;
-    flex-shrink: 0;
+    flex-shrink: 1;
   }
 
   #topbar-right-controls {
@@ -220,6 +201,14 @@
     flex-shrink: 0;
     margin-right: 6px;
   }
+
+  #topbar-credit {
+    font-family: 'DM Sans', sans-serif; font-weight: 500; font-size: 0.58rem;
+    color: rgba(26,20,20,0.55); text-decoration: none; letter-spacing: 0.01em;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    min-width: 0; flex-shrink: 1;
+  }
+  #topbar-credit:hover { color: rgba(26,20,20,0.8); text-decoration: underline; text-underline-offset: 3px; }
 
   #telegram-btn {
     font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 0.62rem;
@@ -301,8 +290,11 @@
     opacity: 0.6;
   }
   #canvas-empty { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -60%); text-align: center; pointer-events: none; opacity: 0.4; z-index: 1; }
-  #clear-all-btn {
+  #canvas-actions {
     position: absolute; top: 10px; right: 10px; z-index: 50;
+    display: flex; align-items: center; gap: 0.4rem;
+  }
+  #clear-all-btn, #undo-btn {
     display: none; align-items: center; gap: 0.24rem;
     background: rgba(20,16,14,0.55); color: #f7f4f0; border: none;
     padding: 0.28rem 0.55rem 0.28rem 0.42rem; border-radius: 999px;
@@ -312,10 +304,10 @@
     box-shadow: 0 2px 8px rgba(0,0,0,0.18);
     opacity: 0.8; transition: opacity 0.15s ease, background 0.15s ease, transform 0.1s ease;
   }
-  #clear-all-btn svg { width: 9px; height: 9px; flex-shrink: 0; }
-  #clear-all-btn:hover { opacity: 1; background: rgba(20,16,14,0.72); }
-  #clear-all-btn:active { transform: scale(0.93); }
-  #clear-all-btn.show { display: flex; }
+  #clear-all-btn svg, #undo-btn svg { width: 9px; height: 9px; flex-shrink: 0; }
+  #clear-all-btn:hover, #undo-btn:hover { opacity: 1; background: rgba(20,16,14,0.72); }
+  #clear-all-btn:active, #undo-btn:active { transform: scale(0.93); }
+  #clear-all-btn.show, #undo-btn.show { display: flex; }
   .gi-count {
     position: absolute; top: 5px; left: 5px; z-index: 2;
     background: var(--accent); color: var(--ink);
@@ -1200,12 +1192,6 @@
 <body>
 
 <canvas id="mirror-canvas"></canvas>
-<div id="tap-overlay">
-  <div style="text-align: center; line-height: 1.6; text-shadow: 0 2px 10px rgba(0,0,0,0.85), 0 0 25px rgba(0,0,0,0.5);">
-    The closet was made of glass.<br>
-    <span style="font-weight: 700; font-size: 1.2rem; letter-spacing: 0.15em;">SHATTER IT.</span>
-  </div>
-</div>
 
 <!-- First-time-only intro: no glass shatter, that's saved for the second visit onward -->
 <div id="intro-simple-overlay">
@@ -1213,7 +1199,6 @@
     <img id="intro-simple-avatar" src="sasha-guide.png" alt="" onerror="this.style.display='none'">
     <p id="intro-simple-eyebrow">Welcome to</p>
     <h1 id="intro-simple-title">GLASS<br>CLOSET</h1>
-    <p id="intro-simple-sub">Grab your partner. Build the fit. Send it to the group chat.</p>
     <button id="intro-simple-btn" onclick="dismissSimpleIntro()">Let's go</button>
   </div>
 </div>
@@ -1221,8 +1206,9 @@
 <div id="topbar">
   <div id="topbar-row1">
     <div id="topbar-title-container">
-      <img id="topbar-logo" src="glasscloset.png" alt="Glass Closet" style="max-height: 25px; width: auto; cursor: pointer;" onerror="this.style.display='none'" onclick="handleLogoTap()">
+      <img id="topbar-logo" src="logo.png" alt="Glass Closet" style="max-height: 25px; width: auto; cursor: pointer;" onerror="this.style.display='none'" onclick="handleLogoTap()">
       <img src="kissprint.png" alt="" class="kiss-print">
+      <a id="topbar-credit" href="https://www.instagram.com/z3xhwi14?stkn=MXdsZjBnNGhxYWQ0NA==" target="_blank" rel="noopener noreferrer">Created by 𝒪𝓁𝓮𝓀𝓈𝒶𝓃𝒹𝓇 𝐵.</a>
     </div>
     <div id="topbar-right-controls">
       <div id="topbar-overflow-wrap">
@@ -1234,14 +1220,6 @@
           </svg>
         </button>
         <div id="topbar-overflow-menu">
-          <button id="skip-track-btn" class="top-icon-btn" onclick="skipTrack()" aria-label="Next track" title="Next track">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-              <polygon points="5 4 15 12 5 20 5 4"></polygon>
-              <line x1="19" y1="5" x2="19" y2="19"></line>
-            </svg>
-            <span class="top-icon-label">Next track</span>
-          </button>
-
           <button id="mute-btn" class="top-icon-btn" onclick="toggleMute()" aria-label="Toggle sound" title="Toggle sound">
             <svg id="icon-unmuted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
               <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
@@ -1272,7 +1250,6 @@
   </div>
   <div id="topbar-row2">
     <div id="topbar-row2-right">
-      <div id="topbar-gossip-link" onclick="window.spillLatestGossip && window.spillLatestGossip()">See the latest gossip &rsaquo;</div>
       <div id="emergency-timer">
         <span id="timer-label">Style Emergency ends in</span>
         <span id="timer-display">7:00</span>
@@ -1339,14 +1316,23 @@
     <div class="big-label">Your look, your rules.</div>
     <p>Tap anything below to start.</p>
   </div>
-  <button id="clear-all-btn" onclick="clearCanvas()" aria-label="Clear all items" title="Clear all">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M4 7h16"></path>
-      <path d="M9 7V4.5A1.5 1.5 0 0 1 10.5 3h3A1.5 1.5 0 0 1 15 4.5V7"></path>
-      <path d="M6 7l1 13a2 2 0 0 0 2 1.9h6a2 2 0 0 0 2-1.9l1-13"></path>
-    </svg>
-    <span>Clear all</span>
-  </button>
+  <div id="canvas-actions">
+    <button id="undo-btn" onclick="undoLastAction()" aria-label="Undo last remove" title="Undo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 14 4 9l5-5"></path>
+        <path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"></path>
+      </svg>
+      <span>Undo</span>
+    </button>
+    <button id="clear-all-btn" onclick="clearCanvas()" aria-label="Clear all items" title="Clear all">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 7h16"></path>
+        <path d="M9 7V4.5A1.5 1.5 0 0 1 10.5 3h3A1.5 1.5 0 0 1 15 4.5V7"></path>
+        <path d="M6 7l1 13a2 2 0 0 0 2 1.9h6a2 2 0 0 0 2-1.9l1-13"></path>
+      </svg>
+      <span>Clear all</span>
+    </button>
+  </div>
   <div id="news-ticker"><div id="news-ticker-track"></div></div>
 </div>
 
@@ -1548,37 +1534,14 @@ const TRUE_ITEM_SELECT_SRC = 'true-item-select.mp3';
 const SHUTTER_SRC = 'shutter.mp3';
 let itemAddCount = 0; 
 
-// Add as many MP3 files here as you want! It will loop through them.
-const BG_TRACKS = [
-  'avataria-bg.mp3', 
-  'avataria-salon.mp3', 
-  'avataria-club.mp3', 
-  'avataria-shop.mp3'
-];
-let currentTrackIdx = 0;
-
-const bgAudio = new Audio(BG_TRACKS[currentTrackIdx]);
-bgAudio.loop = true;
-bgAudio.volume = 0.15; // Kept low so it's ambient
-bgAudio.muted = isMuted;
-
 const crackAudio = new Audio('crack.mp3'); // Moved up here so we can mute it globally
 crackAudio.volume = 0.4;
 crackAudio.muted = isMuted;
-
-function startBackgroundMusic() {
-  if (isMuted) return;
-  try {
-    const p = bgAudio.play();
-    if (p && p.catch) p.catch(() => console.warn('[sound fx] BG music blocked by browser'));
-  } catch (e) {}
-}
 
 function toggleMute() {
   isMuted = !isMuted;
 
   // Mute/Unmute all audio elements
-  bgAudio.muted = isMuted;
   shutterAudio.muted = isMuted;
   crackAudio.muted = isMuted;
   gossipBeatAudio.muted = isMuted;
@@ -1586,14 +1549,6 @@ function toggleMute() {
   // Swap the icons
   document.getElementById('icon-unmuted').style.display = isMuted ? 'none' : 'block';
   document.getElementById('icon-muted').style.display = isMuted ? 'block' : 'none';
-}
-
-function skipTrack() {
-  currentTrackIdx = (currentTrackIdx + 1) % BG_TRACKS.length; // Cycles to the next track
-  bgAudio.src = BG_TRACKS[currentTrackIdx];
-  if (!isMuted) {
-    bgAudio.play().catch(() => {});
-  }
 }
 
 function preloadSoundCheck(src, label) {
@@ -1697,7 +1652,6 @@ const categories = [
   {
     id: 'iconic-club', label: 'Club',
     items: [
-      { name: 'I ♡ Insight T-shirt', color: '#1a1a1a', vibe: 'club kid', w: 105, h: 105, img: 'i-insight-shirt' },
       { name: "Sasha's bow", color: '#111', vibe: 'yes, and?', w: 80, h: 70 },
       { name: 'Bunny ears', color: '#111', vibe: 'rabbit hole', w: 85, h: 65, img: 'sashas-bunny-ears' },
       { name: "Sasha's bunny pin", color: '#e8b8c8', vibe: 'club kid', w: 45, h: 45 },
@@ -2941,24 +2895,6 @@ const TEA_LINES = [
   "Sasha says 'thank u, next' to homophobes, so I decided to curse out his professor. ...It was awesome."
 ];
 
-// On-demand pool for "See the latest gossip" — innocent, fashion-only rumors
-// about the wider group. Written Gossip Girl-style: breathless, a little
-// dramatic, always signed off with love. Nothing here is mean, just nosy.
-const GOSSIP_LATEST_LINES = [
-  "BREAKING: Tanya bought another coat. Scientists are calling it a natural disaster. Meteorologists are calling it a personality.",
-  "Nelly wore the red dress AGAIN, heart necklace and all. At this point it's not an outfit, it's a load-bearing wall of her identity.",
-  "Someone called Alina's bangs-and-glasses combo 'lit gothic' and she has not stopped bringing it up since. We get it. You're lit gothic.",
-  "Luka wore a jean vest over a cool black dress and somehow made it look like the two pieces asked to be together. We didn't invite that kind of chemistry.",
-  "Katya's bear plushie has now appeared in more photos than most of the actual humans in this group. We're calling HR.",
-  "Alex's Insight tee walked into the room before Alex did — full club kid energy, 'КВІР' across the front, two whole articles printed on the back like it had something to prove. Respectfully, the shirt ate.",
-  "Nadiyka showed up in something practical and comfortable while everyone else suffered for the aesthetic. Truly the only sane person here.",
-  "Elina — sorry, BLAIR — styled three other people's outfits before even touching her own. Girl is basically running an unlicensed salon out of her closet.",
-  "Word on the street is Blair's dropping a solo album with an actual fashion song on it. We would like to pre-order our copy and also be in the music video.",
-  "Tanya and Luka both showed up dark, structured, and unbothered on the same day. Nobody planned this. Everybody's suspicious.",
-  "Katya's bear got more compliments at the last event than the humans standing next to it. The bear has agents circling now.",
-  "Nelly told the necklace story for the fourth time tonight with the exact same dramatic pause. A star was born and it happened four times."
-];
-
 function initTeaTicker() {
   const el = document.getElementById('imessage-notification');
   const textEl = document.getElementById('imessage-text');
@@ -3012,12 +2948,6 @@ function initTeaTicker() {
 
   function spill() { startSequence(TEA_LINES); }
   window.spillTea = spill;
-
-  // "See the latest gossip" — same bubble, same mechanics, different pool.
-  // Always forces the bubble open even mid-outfit, since the person tapped
-  // this on purpose and is clearly not busy dragging clothes right now.
-  function spillLatestGossip() { startSequence(GOSSIP_LATEST_LINES); }
-  window.spillLatestGossip = spillLatestGossip;
 
   // Manual "next" arrow — lets you click through gossip at your own pace
   // instead of waiting for the auto-advance timer. No repeat sound here;
@@ -3503,7 +3433,7 @@ function pinInspoToCanvas(uid, entry, restoreData) {
   const rotateHandle = document.createElement('div'); rotateHandle.className = 'rotate-handle'; rotateHandle.textContent = '↻'; el.appendChild(rotateHandle);
   const resizeHandle = document.createElement('div'); resizeHandle.className = 'resize-handle'; el.appendChild(resizeHandle);
   canvas.appendChild(el); setupTransforms(el, spin, rotateHandle, resizeHandle, state, uid);
-  onCanvas[uid] = { el, item: { name: entry.name, isRef: true }, state, isRef: true };
+  onCanvas[uid] = { el, item: { name: entry.name, isRef: true }, state, isRef: true, refEntry: entry };
   updateInspoCard(uid, true);
   updateClearAllBtn();
   setActive(uid);
@@ -3576,8 +3506,10 @@ function addToCanvas(uid, item, catId, restoreData, baseUid) {
 
 function removeFromCanvas(uid) {
   if (!onCanvas[uid]) return;
+  const snapshot = captureUndoEntry(uid);
   const baseUid = onCanvas[uid].baseUid || uid;
   onCanvas[uid].el.remove(); delete onCanvas[uid]; updateGridCard(baseUid); updateInspoCard(uid, false);
+  if (snapshot) pushUndoAction([snapshot]);
   if (Object.keys(onCanvas).length === 0) {
     document.getElementById('canvas-empty').style.display = 'block';
   }
@@ -3606,6 +3538,7 @@ function clearCanvas() {
   const uids = Object.keys(onCanvas);
   if (uids.length === 0) return;
   if (uids.length > 1 && !confirm('Clear the whole board and start fresh?')) return;
+  const snapshots = uids.map(uid => captureUndoEntry(uid)).filter(Boolean);
   const baseUids = new Set();
   uids.forEach(uid => {
     const entry = onCanvas[uid];
@@ -3614,10 +3547,65 @@ function clearCanvas() {
     delete onCanvas[uid];
   });
   baseUids.forEach(b => { updateGridCard(b); updateInspoCard(b, false); });
+  if (snapshots.length) pushUndoAction(snapshots);
   document.getElementById('canvas-empty').style.display = 'block';
   updateClearAllBtn();
   saveInProgressOutfit();
   syncEggState();
+}
+
+// ── UNDO ──
+// Tracks recently removed items (single removes and Clear All batches) so
+// they can be brought back with one tap. Each stack entry is an array of
+// snapshots, so a Clear All undoes as one unit.
+let undoStack = [];
+const UNDO_STACK_LIMIT = 15;
+
+function captureUndoEntry(uid) {
+  const entryData = onCanvas[uid];
+  if (!entryData) return null;
+  return {
+    uid,
+    baseUid: entryData.baseUid,
+    isRef: !!entryData.isRef,
+    item: entryData.item,
+    refEntry: entryData.refEntry,
+    restoreData: {
+      left: parseFloat(entryData.el.style.left) || 0,
+      top: parseFloat(entryData.el.style.top) || 0,
+      rotation: entryData.state.rotation,
+      scale: entryData.state.scale
+    }
+  };
+}
+
+function pushUndoAction(entries) {
+  if (!entries || !entries.length) return;
+  undoStack.push(entries);
+  if (undoStack.length > UNDO_STACK_LIMIT) undoStack.shift();
+  updateUndoBtn();
+}
+
+function undoLastAction() {
+  const entries = undoStack.pop();
+  updateUndoBtn();
+  if (!entries) return;
+  entries.forEach(entry => {
+    if (onCanvas[entry.uid]) return; // already back somehow, don't duplicate
+    if (entry.isRef) {
+      pinInspoToCanvas(entry.uid, entry.refEntry, entry.restoreData);
+    } else {
+      addToCanvas(entry.uid, entry.item, null, entry.restoreData, entry.baseUid);
+    }
+  });
+  updateClearAllBtn();
+  saveInProgressOutfit();
+  syncEggState(true); // silent restore, don't re-pop a combo popup
+}
+
+function updateUndoBtn() {
+  const btn = document.getElementById('undo-btn');
+  if (btn) btn.classList.toggle('show', undoStack.length > 0);
 }
 
 function updateClearAllBtn() {
@@ -4298,7 +4286,6 @@ function bumpVisitCount() {
   return n;
 }
 function dismissSimpleIntro() {
-  startBackgroundMusic(); // Starts music for first-time visitors
   const overlay = document.getElementById('intro-simple-overlay');
   overlay.style.opacity = '0';
   setTimeout(() => {
@@ -4309,7 +4296,6 @@ function dismissSimpleIntro() {
 
 window.addEventListener('DOMContentLoaded', () => {
   const canvas = document.getElementById('mirror-canvas');
-  const tapOverlayEl = document.getElementById('tap-overlay');
   const visitCount = bumpVisitCount();
   currentVisitCount = visitCount;
   // The tour + "Start Now" gate + countdown timer only ever happen on the
@@ -4323,7 +4309,6 @@ window.addEventListener('DOMContentLoaded', () => {
   // visit onward.
   if (visitCount === 1) {
     if (canvas) canvas.style.display = 'none';
-    if (tapOverlayEl) tapOverlayEl.style.display = 'none';
     document.getElementById('intro-simple-overlay').classList.add('show');
     return;
   }
@@ -4334,10 +4319,27 @@ window.addEventListener('DOMContentLoaded', () => {
   canvas.height = window.innerHeight;
   const W = canvas.width, H = canvas.height;
 
-  // Remove the mirrorImg loading logic completely
+  // The closet photo that appears to shatter — loaded here, drawn cover-fit
+  // behind the glass sheen. If it fails to load, we just fall back to the
+  // plain sheen so the shatter effect still works.
+  const closetMirrorImg = new Image();
+  closetMirrorImg.onload = drawMirror;
+  closetMirrorImg.onerror = () => console.warn('[glass closet] sasha-closet.png failed to load — check the file exists next to index.html.');
+  closetMirrorImg.src = 'sasha-closet.png';
 
   function drawMirror() {
     ctx.clearRect(0, 0, W, H);
+    if (closetMirrorImg.complete && closetMirrorImg.naturalWidth) {
+      const imgRatio = closetMirrorImg.naturalWidth / closetMirrorImg.naturalHeight;
+      const canvasRatio = W / H;
+      let dw, dh, dx, dy;
+      if (imgRatio > canvasRatio) {
+        dh = H; dw = H * imgRatio; dx = (W - dw) / 2; dy = 0;
+      } else {
+        dw = W; dh = W / imgRatio; dx = 0; dy = (H - dh) / 2;
+      }
+      ctx.drawImage(closetMirrorImg, dx, dy, dw, dh);
+    }
     const streak = ctx.createLinearGradient(0, 0, W, H);
     streak.addColorStop(0, 'rgba(255,255,255,0.15)');
     streak.addColorStop(0.45, 'rgba(255,255,255,0.0)');
@@ -4485,19 +4487,15 @@ window.addEventListener('DOMContentLoaded', () => {
   IX = W * 0.48 + (Math.random()-0.5)*80;
   IY = H * 0.42 + (Math.random()-0.5)*60;
 
-  const tapOverlay = document.getElementById('tap-overlay');
-
-  tapOverlay.addEventListener('click', () => {
-    startBackgroundMusic(); // Starts music when shattering glass
+  // Give the closet image a beat to be seen, then shatter on its own — no tap needed.
+  setTimeout(() => {
     try {
       const playResult = crackAudio.play();
       if (playResult && typeof playResult.catch === 'function') playResult.catch(() => {});
     } catch (e) {}
     drawCracks();
-    tapOverlay.style.opacity = '0';
-    setTimeout(() => tapOverlay.style.display = 'none', 400);
     setTimeout(startShatter, 600);
-  }, { once: true });
+  }, 900);
 });
 </script>
 
