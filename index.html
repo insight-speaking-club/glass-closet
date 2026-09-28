@@ -3932,7 +3932,112 @@ function waitForImagesReady(container) {
       }, { once: true });
       img.addEventListener('error', done, { once: true });
     });
-  }));
+  })).then(() => applyContainFit(container));
+}
+
+// html2canvas 1.4.1 does NOT support CSS `object-fit`, so it stretches every
+// image to fill its whole box (this is what made clothes look squished/warped
+// in the downloaded picture while looking fine on the live canvas). Instead of
+// relying on object-fit, size + center each <img> explicitly to its "contain"
+// dimensions using its natural aspect ratio, so the capture matches the screen.
+function applyContainFit(container) {
+  container.querySelectorAll('img').forEach(img => {
+    const box = img.parentElement;
+    if (!box || !img.naturalWidth || !img.naturalHeight) return;
+    const cs = getComputedStyle(box);
+    const boxW = parseFloat(cs.width) || box.offsetWidth;
+    const boxH = parseFloat(cs.height) || box.offsetHeight;
+    if (!boxW || !boxH) return;
+    const fit = Math.min(boxW / img.naturalWidth, boxH / img.naturalHeight);
+    const w = img.naturalWidth * fit;
+    const h = img.naturalHeight * fit;
+    img.style.position = 'absolute';
+    img.style.inset = 'auto';
+    img.style.objectFit = 'fill';
+    img.style.width = w + 'px';
+    img.style.height = h + 'px';
+    img.style.left = ((boxW - w) / 2) + 'px';
+    img.style.top = ((boxH - h) / 2) + 'px';
+  });
+}
+
+// Draws the outfit preview straight onto a <canvas> from the item data (image +
+// position + size + rotation) instead of screenshotting the DOM with html2canvas.
+// html2canvas re-lays-out the page in a hidden iframe, and with the rotated
+// polaroid frame / fixed scrolling overlay / object-fit it mis-sizes items
+// (that's the "too big" / stretched export). Drawing directly guarantees the
+// download matches what's on screen.
+function renderPreviewToCanvas(preview, scale) {
+  const W = preview.offsetWidth, H = preview.offsetHeight;
+  if (!W || !H) throw new Error('preview has no size');
+  const out = document.createElement('canvas');
+  out.width = Math.round(W * scale);
+  out.height = Math.round(H * scale);
+  const ctx = out.getContext('2d');
+  ctx.scale(scale, scale);
+  ctx.imageSmoothingQuality = 'high';
+
+  ctx.fillStyle = '#fdfbf7';
+  ctx.fillRect(0, 0, W, H);
+
+  // same subtle photo tone as the on-screen preview (ignored where unsupported)
+  const hadFilter = 'filter' in ctx;
+  if (hadFilter) ctx.filter = 'sepia(0.05) contrast(1.02) saturate(1.05)';
+
+  Array.from(preview.children).forEach(box => {
+    const img = box.querySelector('img');
+    if (!img || !img.naturalWidth || !img.naturalHeight) return;
+    const bx = parseFloat(box.style.left) || 0;
+    const by = parseFloat(box.style.top) || 0;
+    const bw = parseFloat(box.style.width) || 0;
+    const bh = parseFloat(box.style.height) || 0;
+    if (!bw || !bh) return;
+
+    // object-fit: contain
+    const fit = Math.min(bw / img.naturalWidth, bh / img.naturalHeight);
+    const dw = img.naturalWidth * fit, dh = img.naturalHeight * fit;
+
+    const spin = box.firstElementChild;
+    const tf = (spin && spin.style.transform) || '';
+    let m = null;
+    if (tf) { try { m = new DOMMatrix(tf); } catch (e) { m = null; } }
+
+    ctx.save();
+    ctx.translate(bx + bw / 2, by + bh / 2);            // rotate about box centre
+    if (m) ctx.transform(m.a, m.b, m.c, m.d, 0, 0);
+    ctx.drawImage(img, -dw / 2, -dh / 2, dw, dh);
+    ctx.restore();
+  });
+
+  if (hadFilter) ctx.filter = 'none';
+
+  // vignette (matches the ::after overlay)
+  ctx.save();
+  ctx.translate(W / 2, H / 2);
+  ctx.scale(W / 2 * Math.SQRT2, H / 2 * Math.SQRT2);
+  const g = ctx.createRadialGradient(0, 0, 0, 0, 0, 1);
+  g.addColorStop(0.6, 'rgba(0,0,0,0)');
+  g.addColorStop(1, 'rgba(20,15,10,0.15)');
+  ctx.fillStyle = g;
+  ctx.fillRect(-1, -1, 2, 2);
+  ctx.restore();
+
+  return out;
+}
+
+// Direct draw first; fall back to html2canvas only if the direct draw fails
+// (e.g. a cross-origin image tainting the canvas).
+function capturePreview(preview, scale) {
+  return waitForImagesReady(preview).then(() => {
+    try {
+      const c = renderPreviewToCanvas(preview, scale);
+      c.toDataURL('image/png'); // throws if tainted
+      return c;
+    } catch (err) {
+      console.warn('[capture] direct draw failed, falling back to html2canvas:', err);
+      return html2canvas(preview, { backgroundColor: '#ffffff', scale: scale, useCORS: true });
+    }
+  });
 }
 
 function downloadOutfitImage(previewEl, btnEl, filename) {
@@ -3946,11 +4051,7 @@ function downloadOutfitImage(previewEl, btnEl, filename) {
     btn.setAttribute('aria-label', 'Preparing…');
   }
 
-  waitForImagesReady(preview).then(() => html2canvas(preview, {
-    backgroundColor: '#ffffff',
-    scale: 2,
-    useCORS: true
-  })).then(canvas => {
+  capturePreview(preview, 2).then(canvas => {
     const link = document.createElement('a');
     link.download = filename || 'glass-closet-look.png';
     link.href = canvas.toDataURL('image/png');
@@ -4164,11 +4265,7 @@ function saveOutfitToHistory() {
   const preview = document.getElementById('verdict-outfit-preview');
   if (!preview || typeof html2canvas === 'undefined') return;
 
-  html2canvas(preview, {
-    backgroundColor: '#ffffff',
-    scale: 1,
-    useCORS: true
-  }).then(canvas => {
+  capturePreview(preview, 1).then(canvas => {
     // downscale + compress so localStorage doesn't fill up fast
     const thumbCanvas = document.createElement('canvas');
     const maxDim = 320;
